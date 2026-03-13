@@ -6,37 +6,36 @@ function RegisterDoctor(){
 const [name,setName]=useState("");
 const [specialization,setSpecialization]=useState("");
 
-const handleSubmit=async()=>{
+const submit = async ()=>{
 
- await registerDoctor({
-   name,
-   specialization,
-   slotDuration:15,
-   startTime:"10:00",
-   endTime:"16:00"
- });
+await registerDoctor({
+name,
+specialization
+});
 
- alert("Doctor Registered");
+alert("Doctor registered");
 
 };
 
 return(
 
-<div className="container">
+<div className="container mt-5">
 
 <h2>Register Doctor</h2>
 
 <input
+className="form-control mb-3"
 placeholder="Doctor Name"
 onChange={(e)=>setName(e.target.value)}
 />
 
 <input
+className="form-control mb-3"
 placeholder="Specialization"
 onChange={(e)=>setSpecialization(e.target.value)}
 />
 
-<button onClick={handleSubmit}>
+<button className="btn btn-primary" onClick={submit}>
 Register
 </button>
 
