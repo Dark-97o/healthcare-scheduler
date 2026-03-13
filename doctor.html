@@ -3,70 +3,671 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Doctor Panel | MediCare+</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <title>Doctor Portal | MediCare+</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
-    :root{--mint:#00C6A7;--deep:#0A1628;--navy:#112240;--slate:#1E3A5F;--accent:#FFD166;--rose:#FF6B9D;--border:rgba(0,198,167,.25);}
+    :root{
+      --teal:#00C6A7;--deep:#07111F;--card:#0D1E30;--navy:#112640;
+      --accent:#F4C542;--rose:#FF6B8A;--lavender:#A78BFA;
+      --border:rgba(0,198,167,.2);--text:#D8EEF8;--muted:#6A93B0;
+    }
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{background:var(--deep);color:#e8f4f8;font-family:'DM Sans',sans-serif;min-height:100vh;}
-    .bg-grid{position:fixed;inset:0;z-index:0;background-image:linear-gradient(rgba(0,198,167,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,198,167,.04) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;}
-    nav{position:relative;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:1.5rem 3rem;border-bottom:1px solid var(--border);}
-    .logo{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:900;color:var(--mint);}
-    .logo span{color:var(--accent);}
-    .back-btn{padding:.5rem 1.2rem;border:1px solid var(--border);border-radius:50px;color:#aac8e0;background:transparent;cursor:pointer;font-size:.85rem;text-decoration:none;transition:all .2s;}
-    .back-btn:hover{border-color:var(--mint);color:var(--mint);}
-    .container{position:relative;z-index:5;padding:3rem;}
-    .doctor-header{display:flex;align-items:center;gap:1.5rem;margin-bottom:2.5rem;}
-    .doctor-avatar{width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--mint);}
-    .doctor-info h1{font-family:'Playfair Display',serif;font-size:2rem;color:#f0f8ff;}
-    .doctor-info p{color:#7da8c4;margin-top:.25rem;}
-    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem;}
-    .card{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:16px;padding:1.5rem;}
-    .card-title{font-family:'Playfair Display',serif;font-size:1.1rem;color:#f0f8ff;margin-bottom:1rem;}
-    .appt-item{display:flex;justify-content:space-between;align-items:center;padding:.75rem 0;border-bottom:1px solid rgba(0,198,167,.1);}
-    .appt-item:last-child{border-bottom:none;}
-    .appt-name{font-weight:600;color:#f0f8ff;font-size:.9rem;}
-    .appt-sym{font-size:.8rem;color:#7da8c4;}
-    .appt-time{font-size:.85rem;color:var(--mint);text-align:right;}
-    .badge-status{padding:.25rem .75rem;border-radius:50px;font-size:.75rem;font-weight:600;}
-    .badge-confirmed{background:rgba(0,198,167,.15);color:var(--mint);}
-    .badge-pending{background:rgba(255,209,102,.15);color:var(--accent);}
-    .avail-toggle{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem;}
-    .toggle{width:48px;height:26px;background:var(--mint);border-radius:50px;position:relative;cursor:pointer;}
-    .toggle::after{content:'';position:absolute;width:20px;height:20px;background:#fff;border-radius:50%;top:3px;right:3px;transition:.2s;}
-    .avail-label{color:#aac8e0;font-size:.9rem;}
-    .firebase-note{background:rgba(0,198,167,.08);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;color:#7da8c4;font-size:.85rem;margin-bottom:2rem;}
-    .firebase-note strong{color:var(--mint);}
+    body{background:var(--deep);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+    /* ── BACKGROUND ── */
+    .bg-wrap{position:fixed;inset:0;z-index:0;pointer-events:none;}
+    .bg-grid{position:absolute;inset:0;
+      background-image:linear-gradient(rgba(0,198,167,.03) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,198,167,.03) 1px,transparent 1px);
+      background-size:56px 56px;}
+    .bg-orb1{position:absolute;width:700px;height:700px;border-radius:50%;
+      background:radial-gradient(circle,rgba(0,198,167,.06) 0%,transparent 65%);
+      top:-250px;right:-200px;}
+    .bg-orb2{position:absolute;width:500px;height:500px;border-radius:50%;
+      background:radial-gradient(circle,rgba(167,139,250,.05) 0%,transparent 65%);
+      bottom:-150px;left:-150px;}
+
+    /* ── LOGIN ── */
+    #loginScreen{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--deep);}
+    .login-wrap{position:relative;z-index:5;width:100%;max-width:440px;padding:2.5rem;
+      background:rgba(13,30,48,.95);border:1px solid var(--border);border-radius:28px;
+      box-shadow:0 40px 100px rgba(0,0,0,.6);backdrop-filter:blur(20px);}
+    .login-logo{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;
+      color:var(--teal);text-align:center;line-height:1;}
+    .login-logo span{color:var(--accent);}
+    .login-role{text-align:center;margin:.4rem 0 2rem;font-size:.82rem;color:var(--muted);
+      display:flex;align-items:center;justify-content:center;gap:.5rem;}
+    .role-dot{width:8px;height:8px;border-radius:50%;background:var(--teal);display:inline-block;}
+    .f-group{margin-bottom:1.1rem;}
+    .f-group label{display:block;font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;
+      color:var(--muted);margin-bottom:.45rem;font-weight:500;}
+    .f-group input{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);
+      border-radius:11px;padding:.75rem 1rem;color:var(--text);font-size:.92rem;
+      font-family:'Outfit',sans-serif;outline:none;transition:border-color .2s,box-shadow .2s;}
+    .f-group input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,198,167,.1);}
+    .btn-primary{width:100%;padding:.85rem;background:linear-gradient(135deg,var(--teal),#00a88e);
+      border:none;border-radius:12px;color:#07111F;font-weight:700;font-size:.95rem;
+      font-family:'Outfit',sans-serif;cursor:pointer;transition:transform .15s,box-shadow .2s;margin-top:.5rem;}
+    .btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(0,198,167,.35);}
+    .btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+    .login-err{background:rgba(255,107,138,.1);border:1px solid rgba(255,107,138,.3);border-radius:9px;
+      padding:.6rem .9rem;color:var(--rose);font-size:.82rem;margin-top:.9rem;display:none;text-align:center;}
+    .login-loading{text-align:center;color:var(--muted);font-size:.83rem;margin-top:.75rem;display:none;}
+    .change-pass-link{text-align:center;margin-top:1rem;font-size:.8rem;color:var(--muted);}
+    .change-pass-link a{color:var(--teal);cursor:pointer;text-decoration:none;}
+    .change-pass-link a:hover{text-decoration:underline;}
+
+    /* ── APP SHELL ── */
+    #appShell{display:none;}
+
+    /* ── NAV ── */
+    nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+      padding:1rem 2.5rem;background:rgba(7,17,31,.8);border-bottom:1px solid var(--border);
+      backdrop-filter:blur(16px);}
+    .nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:700;color:var(--teal);}
+    .nav-logo span{color:var(--accent);}
+    .nav-center{display:flex;gap:.25rem;}
+    .nav-tab{padding:.45rem 1.1rem;border-radius:50px;font-size:.83rem;cursor:pointer;
+      color:var(--muted);background:transparent;border:1px solid transparent;transition:all .2s;
+      font-family:'Outfit',sans-serif;}
+    .nav-tab:hover{color:var(--text);background:rgba(255,255,255,.05);}
+    .nav-tab.active{color:var(--teal);background:rgba(0,198,167,.1);border-color:var(--border);}
+    .nav-right{display:flex;align-items:center;gap:.75rem;}
+    .doc-chip{display:flex;align-items:center;gap:.5rem;background:rgba(0,198,167,.08);
+      border:1px solid var(--border);border-radius:50px;padding:.35rem .85rem;font-size:.78rem;color:var(--teal);}
+    .doc-chip .avatar{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--teal),#00a88e);
+      display:flex;align-items:center;justify-content:center;font-size:.7rem;color:#07111F;font-weight:700;}
+    .btn-signout{padding:.4rem 1rem;border:1px solid var(--border);border-radius:50px;
+      background:transparent;color:var(--muted);font-size:.8rem;cursor:pointer;
+      font-family:'Outfit',sans-serif;transition:all .2s;}
+    .btn-signout:hover{border-color:var(--rose);color:var(--rose);}
+
+    /* ── LAYOUT ── */
+    .main{position:relative;z-index:5;padding:2.5rem;max-width:1200px;margin:0 auto;}
+    .page{display:none;}
+    .page.active{display:block;animation:fadeUp .3s ease;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+    /* ── PAGE HEADER ── */
+    .pg-header{margin-bottom:2rem;}
+    .pg-header h2{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;color:#f0f8ff;line-height:1.1;}
+    .pg-header p{color:var(--muted);font-size:.88rem;margin-top:.3rem;}
+
+    /* ── CARDS ── */
+    .card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:1.5rem;}
+    .card-title{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:600;
+      color:#f0f8ff;margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem;}
+
+    /* ── STAT GRID ── */
+    .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;margin-bottom:2rem;}
+    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:16px;
+      padding:1.25rem 1.5rem;transition:border-color .2s,transform .2s;}
+    .stat-card:hover{border-color:rgba(0,198,167,.45);transform:translateY(-2px);}
+    .stat-num{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:700;color:var(--teal);}
+    .stat-lbl{font-size:.8rem;color:var(--muted);margin-top:.15rem;}
+    .stat-icon{font-size:1.4rem;margin-bottom:.5rem;}
+
+    /* ── APPOINTMENT CARDS ── */
+    .appt-list{display:flex;flex-direction:column;gap:.85rem;}
+    .appt-card{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:14px;
+      padding:1rem 1.25rem;display:grid;grid-template-columns:auto 1fr auto auto;
+      align-items:center;gap:1.25rem;transition:border-color .2s,background .2s;}
+    .appt-card:hover{background:rgba(0,198,167,.04);border-color:rgba(0,198,167,.3);}
+    .appt-time-block{text-align:center;background:rgba(0,198,167,.08);border:1px solid var(--border);
+      border-radius:12px;padding:.6rem .9rem;min-width:72px;}
+    .appt-time{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;color:var(--teal);}
+    .appt-date{font-size:.7rem;color:var(--muted);margin-top:.1rem;}
+    .appt-info h4{font-size:.92rem;color:#f0f8ff;font-weight:500;margin-bottom:.2rem;}
+    .appt-info .sym{font-size:.8rem;color:var(--muted);}
+    .appt-info .sym span{color:var(--accent);}
+    .appt-status{padding:.25rem .75rem;border-radius:50px;font-size:.73rem;font-weight:600;}
+    .s-confirmed{background:rgba(0,198,167,.15);color:var(--teal);}
+    .s-pending{background:rgba(244,197,66,.15);color:var(--accent);}
+    .s-cancelled{background:rgba(255,107,138,.15);color:var(--rose);}
+    .s-completed{background:rgba(167,139,250,.15);color:var(--lavender);}
+    .appt-actions{display:flex;gap:.5rem;}
+    .btn-sm{padding:.3rem .75rem;border-radius:8px;font-size:.75rem;cursor:pointer;
+      font-family:'Outfit',sans-serif;transition:all .2s;border:1px solid;}
+    .btn-complete{background:rgba(0,198,167,.1);border-color:rgba(0,198,167,.3);color:var(--teal);}
+    .btn-complete:hover{background:rgba(0,198,167,.2);}
+    .btn-cancel{background:rgba(255,107,138,.1);border-color:rgba(255,107,138,.3);color:var(--rose);}
+    .btn-cancel:hover{background:rgba(255,107,138,.2);}
+
+    /* ── PROFILE ── */
+    .profile-hero{display:flex;align-items:center;gap:2rem;padding:2rem;
+      background:linear-gradient(135deg,rgba(0,198,167,.08),rgba(167,139,250,.05));
+      border:1px solid var(--border);border-radius:20px;margin-bottom:1.5rem;}
+    .profile-avatar{width:80px;height:80px;border-radius:50%;
+      background:linear-gradient(135deg,var(--teal),#00a88e);
+      display:flex;align-items:center;justify-content:center;
+      font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;
+      color:#07111F;flex-shrink:0;border:3px solid rgba(0,198,167,.3);}
+    .profile-info h3{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:#f0f8ff;}
+    .profile-info .spec-tag{display:inline-flex;align-items:center;gap:.4rem;margin-top:.4rem;
+      background:rgba(0,198,167,.12);border:1px solid var(--border);border-radius:50px;
+      padding:.25rem .75rem;font-size:.78rem;color:var(--teal);}
+    .profile-info .dept{font-size:.83rem;color:var(--muted);margin-top:.35rem;}
+
+    /* ── SYMPTOMS GRID ── */
+    .sym-grid{display:flex;flex-wrap:wrap;gap:.5rem;}
+    .sym-pill{background:rgba(255,255,255,.05);border:1px solid rgba(0,198,167,.15);
+      border-radius:50px;padding:.3rem .8rem;font-size:.78rem;color:#aac8e0;}
+
+    /* ── AVAILABILITY ── */
+    .avail-bar{background:rgba(0,198,167,.08);border:1px solid var(--border);border-radius:14px;
+      padding:1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;
+      margin-bottom:1.5rem;}
+    .avail-time{display:flex;align-items:center;gap:.75rem;}
+    .time-pill{background:rgba(0,198,167,.12);border:1px solid var(--border);border-radius:10px;
+      padding:.5rem 1rem;font-size:.88rem;color:var(--teal);font-weight:500;}
+    .avail-label{font-size:.8rem;color:var(--muted);}
+
+    /* ── CHANGE PASSWORD FORM ── */
+    .pass-form{max-width:420px;}
+    .field{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1rem;}
+    .field label{font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:500;}
+    .field input{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:10px;
+      padding:.65rem .9rem;color:var(--text);font-size:.88rem;font-family:'Outfit',sans-serif;
+      outline:none;transition:border-color .2s;}
+    .field input:focus{border-color:var(--teal);}
+    .btn-save{padding:.65rem 1.75rem;background:linear-gradient(135deg,var(--teal),#00a88e);
+      border:none;border-radius:10px;color:#07111F;font-weight:700;font-size:.88rem;
+      font-family:'Outfit',sans-serif;cursor:pointer;transition:transform .15s;}
+    .btn-save:hover{transform:translateY(-1px);}
+    .btn-save:disabled{opacity:.5;cursor:not-allowed;transform:none;}
+
+    /* ── ALERTS ── */
+    .alert{border-radius:10px;padding:.7rem 1rem;font-size:.83rem;margin-top:.9rem;display:none;}
+    .alert-ok{background:rgba(0,198,167,.1);border:1px solid rgba(0,198,167,.3);color:var(--teal);}
+    .alert-err{background:rgba(255,107,138,.1);border:1px solid rgba(255,107,138,.3);color:var(--rose);}
+
+    /* ── EMPTY STATE ── */
+    .empty{text-align:center;padding:3rem;color:#3a5a74;font-size:.88rem;}
+    .empty .e-icon{font-size:2.5rem;margin-bottom:.75rem;opacity:.4;}
+
+    /* ── SPINNER ── */
+    .spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(0,198,167,.25);
+      border-top-color:var(--teal);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    /* ── TODAY HIGHLIGHT ── */
+    .today-strip{background:linear-gradient(135deg,rgba(0,198,167,.1),rgba(167,139,250,.07));
+      border:1px solid var(--border);border-radius:14px;padding:1rem 1.5rem;
+      margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;}
+    .today-strip .day{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:#f0f8ff;}
+    .today-strip .count{font-size:.82rem;color:var(--muted);}
+    .today-count-num{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--teal);font-weight:700;}
+
+    @media(max-width:900px){
+      .stat-grid{grid-template-columns:repeat(2,1fr);}
+      .nav-center{display:none;}
+      .appt-card{grid-template-columns:1fr;}
+    }
   </style>
 </head>
 <body>
-<div class="bg-grid"></div>
-<nav>
-  <div class="logo">Medi<span>Care+</span> <span style="font-size:.9rem;color:#7da8c4;font-family:'DM Sans',sans-serif;font-weight:400;">Doctor</span></div>
-  <a href="index.html" class="back-btn">← Back to Home</a>
-</nav>
-<div class="container">
-  <div class="doctor-header">
-    <img class="doctor-avatar" src="https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=200&q=80" alt="Doctor"/>
-    <div class="doctor-info">
-      <h1>Dr. Arjun Mehta</h1>
-      <p>General Physician · 12 years experience</p>
+<div class="bg-wrap">
+  <div class="bg-grid"></div>
+  <div class="bg-orb1"></div>
+  <div class="bg-orb2"></div>
+</div>
+
+<!-- ═══ LOGIN ═══ -->
+<div id="loginScreen">
+  <div class="bg-wrap" style="position:absolute"><div class="bg-grid"></div></div>
+  <div class="login-wrap">
+    <div class="login-logo">Medi<span>Care+</span></div>
+    <div class="login-role"><span class="role-dot"></span> Doctor Portal</div>
+    <div class="f-group">
+      <label>Your Email</label>
+      <input type="email" id="loginEmail" placeholder="dr.name@medicare" autocomplete="email"/>
     </div>
-  </div>
-  <div class="firebase-note">🔥 <strong>Firebase Integration Point:</strong> Use Firebase Auth for doctor login and Firestore to load assigned appointments via <code>db.collection('appointments').where('doctorId','==',uid)</code></div>
-  <div class="grid2">
-    <div class="card">
-      <div class="card-title">Today's Appointments</div>
-      <div class="appt-item"><div><div class="appt-name">Priya Sharma</div><div class="appt-sym">Fever & Chills</div></div><div class="appt-time">10:00 AM<br/><span class="badge-status badge-confirmed">Confirmed</span></div></div>
-      <div class="appt-item"><div><div class="appt-name">Rahul Verma</div><div class="appt-sym">Back Pain</div></div><div class="appt-time">12:00 PM<br/><span class="badge-status badge-pending">Pending</span></div></div>
-      <div class="appt-item"><div><div class="appt-name">Neha Kapoor</div><div class="appt-sym">Fatigue</div></div><div class="appt-time">3:00 PM<br/><span class="badge-status badge-confirmed">Confirmed</span></div></div>
+    <div class="f-group">
+      <label>Password</label>
+      <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password"/>
     </div>
-    <div class="card">
-      <div class="card-title">Availability Settings</div>
-      <div class="avail-toggle"><div class="toggle"></div><span class="avail-label">Available Today</span></div>
-      <p style="font-size:.85rem;color:#7da8c4;line-height:1.6;">Update your schedule or block out time. Changes sync to the booking system in real-time via Firestore.</p>
-    </div>
+    <button class="btn-primary" id="loginBtn">Sign In to Doctor Portal</button>
+    <div class="login-err" id="loginErr"></div>
+    <div class="login-loading" id="loginLoading">⏳ Verifying credentials…</div>
+    <div class="change-pass-link">First time? <a onclick="showResetHint()">Change your temporary password</a> after logging in.</div>
   </div>
 </div>
+
+<!-- ═══ APP SHELL ═══ -->
+<div id="appShell">
+  <nav>
+    <div class="nav-logo">Medi<span>Care+</span></div>
+    <div class="nav-center">
+      <button class="nav-tab active" onclick="showTab('dashboard',this)">Dashboard</button>
+      <button class="nav-tab" onclick="showTab('appointments',this)">Appointments</button>
+      <button class="nav-tab" onclick="showTab('profile',this)">My Profile</button>
+      <button class="nav-tab" onclick="showTab('settings',this)">Settings</button>
+    </div>
+    <div class="nav-right">
+      <div class="doc-chip"><div class="avatar" id="docInitial">D</div><span id="docNameNav">Doctor</span></div>
+      <button class="btn-signout" onclick="doSignOut()">Sign Out</button>
+    </div>
+  </nav>
+
+  <div class="main">
+
+    <!-- ── DASHBOARD ── -->
+    <div class="page active" id="page-dashboard">
+      <div class="pg-header">
+        <h2 id="welcomeMsg">Good morning, Doctor 👋</h2>
+        <p id="welcomeSub">Here's your overview for today.</p>
+      </div>
+      <div class="today-strip">
+        <div>
+          <div class="day" id="todayDay">—</div>
+          <div class="count">Today's appointments</div>
+        </div>
+        <div style="text-align:right">
+          <div class="today-count-num" id="todayCount">—</div>
+          <div class="count">scheduled</div>
+        </div>
+      </div>
+      <div class="stat-grid">
+        <div class="stat-card"><div class="stat-icon">📅</div><div class="stat-num" id="statTotal">—</div><div class="stat-lbl">Total Appointments</div></div>
+        <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-num" id="statCompleted">—</div><div class="stat-lbl">Completed</div></div>
+        <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-num" id="statPending">—</div><div class="stat-lbl">Pending</div></div>
+        <div class="stat-card"><div class="stat-icon">❌</div><div class="stat-num" id="statCancelled">—</div><div class="stat-lbl">Cancelled</div></div>
+      </div>
+      <div class="card">
+        <div class="card-title">📋 Today's Schedule</div>
+        <div class="appt-list" id="todayAppts">
+          <div class="empty"><div class="e-icon">📭</div>No appointments today</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── APPOINTMENTS ── -->
+    <div class="page" id="page-appointments">
+      <div class="pg-header">
+        <h2>All Appointments</h2>
+        <p>Your complete appointment history and upcoming schedule</p>
+      </div>
+      <div style="display:flex;gap:.5rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+        <button class="btn-sm btn-complete" style="border-radius:50px;padding:.4rem 1rem;" onclick="filterAppts('all',this)">All</button>
+        <button class="btn-sm" style="border-radius:50px;padding:.4rem 1rem;border:1px solid var(--border);color:var(--muted);background:transparent;" onclick="filterAppts('Confirmed',this)">Confirmed</button>
+        <button class="btn-sm" style="border-radius:50px;padding:.4rem 1rem;border:1px solid var(--border);color:var(--muted);background:transparent;" onclick="filterAppts('Pending',this)">Pending</button>
+        <button class="btn-sm" style="border-radius:50px;padding:.4rem 1rem;border:1px solid var(--border);color:var(--muted);background:transparent;" onclick="filterAppts('Completed',this)">Completed</button>
+        <button class="btn-sm" style="border-radius:50px;padding:.4rem 1rem;border:1px solid var(--border);color:var(--muted);background:transparent;" onclick="filterAppts('Cancelled',this)">Cancelled</button>
+      </div>
+      <div class="appt-list" id="allAppts">
+        <div class="empty"><div class="e-icon"><span class="spinner"></span></div>Loading appointments…</div>
+      </div>
+    </div>
+
+    <!-- ── PROFILE ── -->
+    <div class="page" id="page-profile">
+      <div class="pg-header"><h2>My Profile</h2><p>Your information registered by the admin</p></div>
+      <div class="profile-hero">
+        <div class="profile-avatar" id="profileAvatar">D</div>
+        <div class="profile-info">
+          <h3 id="profileName">—</h3>
+          <div class="spec-tag">🩺 <span id="profileSpec">—</span></div>
+          <div class="dept" id="profileDept">—</div>
+          <div style="font-size:.8rem;color:var(--muted);margin-top:.35rem;" id="profileEmail">—</div>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem;">
+        <div class="card">
+          <div class="card-title">🕐 Availability</div>
+          <div class="avail-bar" style="margin-bottom:0;">
+            <div>
+              <div class="avail-label">Working Hours</div>
+              <div class="avail-time" style="margin-top:.4rem;">
+                <span class="time-pill" id="profileFrom">—</span>
+                <span style="color:var(--muted);font-size:.85rem;">to</span>
+                <span class="time-pill" id="profileTo">—</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title">📞 Contact</div>
+          <div style="font-size:.9rem;color:var(--text);" id="profilePhone">—</div>
+          <div style="font-size:.78rem;color:var(--muted);margin-top:.4rem;">Phone number on record</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">🗂 Symptoms I Handle</div>
+        <div class="sym-grid" id="profileSymptoms">
+          <div style="color:var(--muted);font-size:.85rem;">No symptoms mapped yet.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── SETTINGS ── -->
+    <div class="page" id="page-settings">
+      <div class="pg-header"><h2>Settings</h2><p>Update your account password</p></div>
+      <div class="card" style="max-width:500px;">
+        <div class="card-title">🔐 Change Password</div>
+        <p style="font-size:.83rem;color:var(--muted);margin-bottom:1.25rem;">
+          If this is your first login, please change your temporary password immediately.
+        </p>
+        <div class="pass-form">
+          <div class="field"><label>Current Password</label><input type="password" id="currPass" placeholder="Your current password"/></div>
+          <div class="field"><label>New Password</label><input type="password" id="newPass" placeholder="At least 8 characters"/></div>
+          <div class="field"><label>Confirm New Password</label><input type="password" id="confirmPass" placeholder="Repeat new password"/></div>
+          <button class="btn-save" id="passBtn">Update Password</button>
+          <div class="alert alert-ok" id="passOk">✅ Password changed successfully!</div>
+          <div class="alert alert-err" id="passErr"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /appShell -->
+
+<!-- ═══ TAB SWITCHING (plain script, must be before module) ═══ -->
+<script>
+  function showTab(name, el){
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    const target = document.getElementById('page-' + name);
+    if(target) target.classList.add('active');
+    if(el) el.classList.add('active');
+  }
+
+  function showResetHint(){
+    alert('Please log in first, then go to Settings → Change Password.');
+  }
+
+  function doSignOut(){
+    localStorage.removeItem('mc_doctor_id');
+    document.getElementById('appShell').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('loginEmail').value = '';
+    document.getElementById('loginPassword').value = '';
+  }
+</script>
+
+<!-- ═══ FIREBASE MODULE ═══ -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import {
+    getFirestore, collection, query, where,
+    onSnapshot, doc, updateDoc, serverTimestamp,
+    getDocs, getDoc
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAUCZZXpiOfZVgjmIrNAnn_LF0SOm1WwhA",
+    authDomain: "healthcare-scheduler-5b242.firebaseapp.com",
+    projectId: "healthcare-scheduler-5b242",
+    storageBucket: "healthcare-scheduler-5b242.firebasestorage.app",
+    messagingSenderId: "28196196047",
+    appId: "1:28196196047:web:262b5a5020cd37f64b31ba"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  let currentDoctor   = null;
+  let allAppointments = [];
+  let currentFilter   = 'all';
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  function $(id){ return document.getElementById(id); }
+
+  function fmtTime(t){
+    if(!t) return '—';
+    const [h,m] = t.split(':');
+    const d = new Date(); d.setHours(+h, +m);
+    return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  }
+  function fmtDate(dateStr){
+    if(!dateStr) return '—';
+    return new Date(dateStr).toLocaleDateString('en-IN', {day:'numeric', month:'short', year:'numeric'});
+  }
+  function greeting(){
+    const h = new Date().getHours();
+    return h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  }
+  function todayStr(){
+    return new Date().toLocaleDateString('en-IN', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+  }
+  function isToday(dateStr){
+    if(!dateStr) return false;
+    return new Date().toDateString() === new Date(dateStr).toDateString();
+  }
+  function initials(name){
+    if(!name) return 'D';
+    return name.split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase();
+  }
+  function statusClass(s){
+    if(s==='Confirmed') return 's-confirmed';
+    if(s==='Pending')   return 's-pending';
+    if(s==='Cancelled') return 's-cancelled';
+    if(s==='Completed') return 's-completed';
+    return 's-pending';
+  }
+  function showAlert(id, dur=3500){
+    const el = $(id); el.style.display='block';
+    setTimeout(() => el.style.display='none', dur);
+  }
+  function showLoginError(msg){
+    const el = $('loginErr'); el.textContent = msg; el.style.display = 'block';
+  }
+  function showPassErr(msg){
+    const el = $('passErr'); el.textContent = '⚠ ' + msg; el.style.display = 'block';
+    setTimeout(() => el.style.display='none', 4500);
+  }
+
+  // ── Session ────────────────────────────────────────────────────────────────
+  function saveSession(id){ localStorage.setItem('mc_doctor_id', id); }
+  function loadSession(){ return localStorage.getItem('mc_doctor_id'); }
+
+  // ── Init: restore session or show login ────────────────────────────────────
+  (async () => {
+    const savedId = loadSession();
+    if(savedId){
+      try {
+        const snap = await getDoc(doc(db, 'doctors', savedId));
+        if(snap.exists()){
+          currentDoctor = { id: snap.id, ...snap.data() };
+          bootApp(currentDoctor);
+          return;
+        }
+      } catch(e){ /* fall through */ }
+      localStorage.removeItem('mc_doctor_id');
+    }
+    $('loginScreen').style.display = 'flex';
+    $('appShell').style.display    = 'none';
+  })();
+
+  // ── Login ──────────────────────────────────────────────────────────────────
+  async function doLoginFn(){
+    const email = $('loginEmail').value.trim().toLowerCase();
+    const pass  = $('loginPassword').value;
+    const errEl = $('loginErr'), loadEl = $('loginLoading');
+    errEl.style.display = 'none';
+
+    if(!email || !pass){
+      errEl.textContent = 'Please fill in all fields.';
+      errEl.style.display = 'block';
+      return;
+    }
+
+    loadEl.style.display = 'block';
+    $('loginBtn').disabled = true;
+
+    try {
+      const q    = query(collection(db,'doctors'), where('email','==', email));
+      const snap = await getDocs(q);
+
+      if(snap.empty){
+        showLoginError('No account found with this email.'); return;
+      }
+
+      const data = snap.docs[0].data();
+      if(data.password !== pass){
+        showLoginError('Incorrect password. Please try again.'); return;
+      }
+
+      currentDoctor = { id: snap.docs[0].id, ...data };
+      saveSession(currentDoctor.id);
+      bootApp(currentDoctor);
+
+    } catch(e){
+      showLoginError('Error: ' + e.message);
+    } finally {
+      loadEl.style.display = 'none';
+      $('loginBtn').disabled = false;
+    }
+  }
+
+  // Expose login to the button and wire up Enter key
+  $('loginBtn').addEventListener('click', doLoginFn);
+  ['loginEmail','loginPassword'].forEach(id => {
+    $(id).addEventListener('keydown', e => { if(e.key==='Enter') doLoginFn(); });
+  });
+
+  // ── Boot UI ────────────────────────────────────────────────────────────────
+  function bootApp(doctor){
+    $('loginScreen').style.display = 'none';
+    $('appShell').style.display    = 'block';
+
+    // Reset to dashboard tab on every login
+    showTab('dashboard', document.querySelector('.nav-tab'));
+
+    const name = doctor.name || doctor.email;
+    $('docNameNav').textContent    = name.split(' ')[0];
+    $('docInitial').textContent    = initials(name);
+    $('welcomeMsg').textContent    = `${greeting()}, ${name} 👋`;
+    $('welcomeSub').textContent    = `${doctor.speciality||''} · ${doctor.department||''}`;
+    $('todayDay').textContent      = todayStr();
+    $('profileAvatar').textContent = initials(name);
+    $('profileName').textContent   = name;
+    $('profileSpec').textContent   = doctor.speciality || '—';
+    $('profileDept').textContent   = doctor.department || '—';
+    $('profileEmail').textContent  = doctor.email || '—';
+    $('profileFrom').textContent   = fmtTime(doctor.availableFrom);
+    $('profileTo').textContent     = fmtTime(doctor.availableTo);
+    $('profilePhone').textContent  = doctor.phone || '—';
+
+    const symEl = $('profileSymptoms');
+    if(Array.isArray(doctor.symptoms) && doctor.symptoms.length){
+      symEl.innerHTML = doctor.symptoms.map(s => `<span class="sym-pill">${s}</span>`).join('');
+    } else {
+      symEl.innerHTML = '<div style="color:var(--muted);font-size:.85rem;">No symptoms mapped yet.</div>';
+    }
+
+    loadAppointments(doctor.name);
+  }
+
+  // ── Appointments ───────────────────────────────────────────────────────────
+  function loadAppointments(doctorName){
+    const q = query(collection(db,'appointments'), where('doctorName','==', doctorName));
+    onSnapshot(q, snap => {
+      allAppointments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderStats();
+      renderTodayAppts();
+      renderAllAppts();
+    });
+  }
+
+  function renderStats(){
+    $('statTotal').textContent     = allAppointments.length;
+    $('statCompleted').textContent = allAppointments.filter(a => a.status==='Completed').length;
+    $('statPending').textContent   = allAppointments.filter(a => a.status==='Pending'||a.status==='Confirmed').length;
+    $('statCancelled').textContent = allAppointments.filter(a => a.status==='Cancelled').length;
+    $('todayCount').textContent    = allAppointments.filter(a => isToday(a.date)).length;
+  }
+
+  function renderTodayAppts(){
+    const list = allAppointments.filter(a => isToday(a.date));
+    const el   = $('todayAppts');
+    if(!list.length){
+      el.innerHTML = '<div class="empty"><div class="e-icon">📭</div>No appointments today — enjoy your day!</div>';
+      return;
+    }
+    el.innerHTML = list
+      .sort((a,b) => (a.time||'').localeCompare(b.time||''))
+      .map(a => apptCard(a)).join('');
+  }
+
+  function renderAllAppts(){
+    const list = currentFilter==='all'
+      ? allAppointments
+      : allAppointments.filter(a => a.status===currentFilter);
+    const el = $('allAppts');
+    if(!list.length){
+      el.innerHTML = '<div class="empty"><div class="e-icon">📭</div>No appointments found.</div>';
+      return;
+    }
+    el.innerHTML = list
+      .sort((a,b) => new Date(b.date||0) - new Date(a.date||0))
+      .map(a => apptCard(a)).join('');
+  }
+
+  function apptCard(a){
+    const sc     = statusClass(a.status);
+    const canAct = a.status==='Confirmed' || a.status==='Pending';
+    return `<div class="appt-card">
+      <div class="appt-time-block">
+        <div class="appt-time">${fmtTime(a.time||a.appointmentTime)}</div>
+        <div class="appt-date">${fmtDate(a.date||a.appointmentDate)}</div>
+      </div>
+      <div class="appt-info">
+        <h4>${a.patientName||a.name||'Patient'}</h4>
+        <div class="sym">Symptom: <span>${a.symptom||a.symptoms||'—'}</span></div>
+        ${a.notes ? `<div class="sym" style="margin-top:.2rem">Notes: <span style="color:#aac8e0">${a.notes}</span></div>` : ''}
+      </div>
+      <span class="appt-status ${sc}">${a.status||'Pending'}</span>
+      <div class="appt-actions">
+        ${canAct ? `<button class="btn-sm btn-complete" onclick="updateApptStatus('${a.id}','Completed')">✓ Done</button>` : ''}
+        ${canAct ? `<button class="btn-sm btn-cancel"   onclick="updateApptStatus('${a.id}','Cancelled')">✕</button>` : ''}
+      </div>
+    </div>`;
+  }
+
+  window.updateApptStatus = async function(apptId, status){
+    try {
+      await updateDoc(doc(db,'appointments', apptId), { status, updatedAt: serverTimestamp() });
+    } catch(e){ alert('Error: ' + e.message); }
+  };
+
+  window.filterAppts = function(filter, btn){
+    currentFilter = filter;
+    document.querySelectorAll('#page-appointments .btn-sm').forEach(b => {
+      b.style.background   = 'transparent';
+      b.style.color        = 'var(--muted)';
+      b.style.borderColor  = 'var(--border)';
+    });
+    btn.style.background  = 'rgba(0,198,167,.15)';
+    btn.style.color       = 'var(--teal)';
+    btn.style.borderColor = 'rgba(0,198,167,.35)';
+    renderAllAppts();
+  };
+
+  // ── Change password ────────────────────────────────────────────────────────
+  $('passBtn').addEventListener('click', async () => {
+    const curr = $('currPass').value;
+    const nw   = $('newPass').value;
+    const conf = $('confirmPass').value;
+    const btn  = $('passBtn');
+    $('passErr').style.display = 'none';
+
+    if(!curr || !nw || !conf){ showPassErr('Please fill in all fields.'); return; }
+    if(nw.length < 8){ showPassErr('New password must be at least 8 characters.'); return; }
+    if(nw !== conf){ showPassErr('Passwords do not match.'); return; }
+    if(curr !== currentDoctor.password){ showPassErr('Current password is incorrect.'); return; }
+
+    btn.disabled = true; btn.textContent = 'Updating…';
+    try {
+      await updateDoc(doc(db,'doctors', currentDoctor.id), { password: nw });
+      currentDoctor.password = nw;
+      $('currPass').value = ''; $('newPass').value = ''; $('confirmPass').value = '';
+      showAlert('passOk');
+    } catch(e){
+      showPassErr('Failed to update: ' + e.message);
+    }
+    btn.disabled = false; btn.textContent = 'Update Password';
+  });
+
+</script>
 </body>
 </html>
