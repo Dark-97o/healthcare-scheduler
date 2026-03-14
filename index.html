@@ -1,696 +1,1223 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>MediCare+ | Smart Healthcare Platform</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <style>
-    :root {
-      --orange:   #ff6a00;
-      --orange2:  #ff8c2a;
-      --orange3:  #ffb347;
-      --black:    #060606;
-      --black2:   #0d0d0d;
-      --black3:   #131313;
-      --card:     #111111;
-      --border:   rgba(255,106,0,0.22);
-      --border2:  rgba(255,106,0,0.45);
-      --glow:     rgba(255,106,0,0.18);
-      --text:     #f5ede0;
-      --muted:    #8a7060;
-      --glass:    rgba(13,13,13,0.75);
-    }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MediCare+ | Precision Healthcare</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+:root {
+  --cream:   #f5f0e8;
+  --cream2:  #ede7d9;
+  --cream3:  #e0d8c8;
+  --ink:     #1a1a18;
+  --ink2:    #2d2d2a;
+  --forest:  #1f3d2e;
+  --forest2: #2a5240;
+  --sage:    #5a7d65;
+  --sage2:   #8aab95;
+  --gold:    #b8924a;
+  --gold2:   #d4a85c;
+  --muted:   #7a7060;
+  --border:  rgba(26,26,24,0.12);
+  --border2: rgba(31,61,46,0.25);
+}
 
-    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
 
-    html { scroll-behavior: smooth; }
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: none;
+}
 
-    body {
-      background: var(--black);
-      color: var(--text);
-      font-family: 'Outfit', sans-serif;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+/* ── CUSTOM CURSOR ── */
+.cursor-dot {
+  position: fixed;
+  width: 6px; height: 6px;
+  background: var(--forest);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transition: transform 0.1s;
+  transform: translate(-50%,-50%);
+}
+.cursor-ring {
+  position: fixed;
+  width: 36px; height: 36px;
+  border: 1px solid var(--forest);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transition: transform 0.18s cubic-bezier(0.25,0.46,0.45,0.94), width 0.2s, height 0.2s, opacity 0.2s;
+  transform: translate(-50%,-50%);
+  opacity: 0.5;
+}
+body:has(a:hover) .cursor-ring,
+body:has(button:hover) .cursor-ring {
+  width: 54px; height: 54px;
+  opacity: 0.25;
+}
 
-    /* ── NOISE TEXTURE ── */
-    body::before {
-      content:'';
-      position:fixed; inset:0; z-index:0; pointer-events:none;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
-      background-size: 200px;
-      opacity: 0.6;
-    }
+/* ── GRAIN OVERLAY ── */
+body::after {
+  content:'';
+  position:fixed; inset:0; z-index:1; pointer-events:none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  background-size: 250px;
+}
 
-    /* ── AMBIENT GLOW ORBS ── */
-    .orb {
-      position:fixed; border-radius:50%; filter:blur(120px); pointer-events:none; z-index:0;
-    }
-    .orb-1 {
-      width:700px; height:700px;
-      top:-200px; right:-200px;
-      background: radial-gradient(circle, rgba(255,106,0,0.12) 0%, transparent 70%);
-    }
-    .orb-2 {
-      width:500px; height:500px;
-      bottom:-150px; left:-100px;
-      background: radial-gradient(circle, rgba(255,106,0,0.07) 0%, transparent 70%);
-    }
+/* ── NAV ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 500;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 3rem;
+  height: 72px;
+  background: rgba(245,240,232,0.88);
+  backdrop-filter: blur(24px) saturate(1.4);
+  border-bottom: 1px solid var(--border);
+  transition: all 0.3s;
+}
+nav.scrolled {
+  height: 60px;
+  background: rgba(237,231,217,0.95);
+  box-shadow: 0 1px 0 var(--border), 0 4px 20px rgba(26,26,24,0.06);
+}
 
-    /* ── NAV ── */
-    nav {
-      position: relative; z-index:50;
-      display:flex; align-items:center; justify-content:space-between;
-      padding: 1.5rem 5rem;
-      border-bottom: 1px solid var(--border);
-      background: rgba(6,6,6,0.85);
-      backdrop-filter: blur(20px);
-    }
+.logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.logo sup {
+  font-size: 0.55em;
+  color: var(--forest);
+  font-weight: 500;
+  vertical-align: super;
+  letter-spacing: 0.06em;
+}
 
-    .logo {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.85rem;
-      font-weight: 700;
-      color: var(--text);
-      letter-spacing: 0.03em;
-    }
-    .logo span { color: var(--orange); }
+.nav-center {
+  display: flex; align-items: center; gap: 0.25rem;
+}
 
-    .nav-links {
-      display: flex; align-items:center; gap: 0.5rem;
-    }
+.nav-link {
+  font-size: 0.78rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  transition: all 0.2s;
+  position: relative;
+}
+.nav-link::after {
+  content:'';
+  position:absolute; bottom:4px; left:50%; right:50%;
+  height:1px; background:var(--forest);
+  transition: all 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+.nav-link:hover { color: var(--ink); }
+.nav-link:hover::after { left:1rem; right:1rem; }
 
-    .nav-btn {
-      padding: 0.55rem 1.4rem;
-      border-radius: 8px;
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.82rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.2s;
-      text-decoration: none;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-    }
-    .nav-btn.ghost {
-      background: transparent;
-      border: 1px solid var(--border2);
-      color: var(--muted);
-    }
-    .nav-btn.ghost:hover {
-      border-color: var(--orange);
-      color: var(--orange);
-      background: rgba(255,106,0,0.06);
-    }
-    .nav-btn.solid {
-      background: var(--orange);
-      color: #000;
-      border: 1px solid var(--orange);
-      font-weight: 600;
-    }
-    .nav-btn.solid:hover {
-      background: var(--orange2);
-      transform: translateY(-1px);
-      box-shadow: 0 0 28px rgba(255,106,0,0.45);
-    }
+.nav-right { display:flex; align-items:center; gap:0.75rem; }
 
-    /* ── HERO ── */
-    .hero {
-      position: relative; z-index:5;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      align-items: center;
-      gap: 4rem;
-      padding: 5rem 5rem 4rem;
-      min-height: 88vh;
-    }
+.btn-ghost {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--border2);
+  border-radius: 2px;
+  padding: 0.55rem 1.25rem;
+  cursor: none;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.btn-ghost:hover {
+  color: var(--forest);
+  border-color: var(--forest);
+  background: rgba(31,61,46,0.06);
+}
 
-    .hero-left { display:flex; flex-direction:column; gap:2rem; }
+.btn-primary {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--cream);
+  background: var(--forest);
+  border: 1px solid var(--forest);
+  border-radius: 2px;
+  padding: 0.55rem 1.5rem;
+  cursor: none;
+  transition: all 0.25s;
+}
+.btn-primary:hover {
+  background: var(--forest2);
+  box-shadow: 0 4px 20px rgba(31,61,46,0.3);
+  transform: translateY(-1px);
+}
 
-    .pill-badge {
-      display: inline-flex; align-items:center; gap:0.6rem;
-      background: rgba(255,106,0,0.08);
-      border: 1px solid var(--border2);
-      border-radius: 4px;
-      padding: 0.4rem 1rem;
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--orange2);
-      width: fit-content;
-    }
-    .pill-badge::before {
-      content:'';
-      width:6px; height:6px;
-      border-radius:50%;
-      background: var(--orange);
-      box-shadow: 0 0 8px var(--orange);
-      animation: blink 2s ease-in-out infinite;
-    }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+/* ── HERO ── */
+.hero {
+  position: relative; z-index: 2;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  padding-top: 72px;
+  overflow: hidden;
+}
 
-    .hero-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(3rem, 5.5vw, 5.2rem);
-      line-height: 1.05;
-      font-weight: 700;
-      color: var(--text);
-      letter-spacing: -0.01em;
-    }
-    .hero-title em {
-      font-style: italic;
-      color: var(--orange);
-      text-shadow: 0 0 60px rgba(255,106,0,0.35);
-    }
-    .hero-title .thin {
-      font-weight: 400;
-      color: var(--muted);
-    }
+/* Big typography grid */
+.hero-stage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: calc(100vh - 72px);
+}
 
-    .hero-desc {
-      font-size: 1rem;
-      color: var(--muted);
-      line-height: 1.8;
-      max-width: 440px;
-      font-weight: 300;
-    }
+.hero-left {
+  padding: 5rem 3rem 4rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-right: 1px solid var(--border);
+  position: relative;
+}
 
-    .hero-cta {
-      display:flex; gap:1rem; flex-wrap:wrap; align-items:center;
-    }
+.hero-eyebrow {
+  display: flex; align-items: center; gap: 1rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem;
+  color: var(--muted);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.eyebrow-line { width: 32px; height: 1px; background: var(--sage2); }
 
-    .cta-primary {
-      display:inline-flex; align-items:center; gap:0.6rem;
-      padding: 1rem 2.2rem;
-      background: var(--orange);
-      color: #000;
-      border: none;
-      border-radius: 8px;
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.25s;
-      text-decoration: none;
-      letter-spacing: 0.02em;
-    }
-    .cta-primary:hover {
-      background: var(--orange2);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 40px rgba(255,106,0,0.5);
-    }
+.hero-headline {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(3.5rem, 7vw, 6.5rem);
+  line-height: 1.0;
+  font-weight: 400;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 2rem 0;
+}
+.hero-headline em {
+  font-style: italic;
+  color: var(--forest);
+}
+.hero-headline .stroke-text {
+  -webkit-text-stroke: 1px var(--ink2);
+  color: transparent;
+  font-weight: 700;
+}
 
-    .cta-secondary {
-      display:inline-flex; align-items:center; gap:0.6rem;
-      padding: 1rem 2rem;
-      background: transparent;
-      color: var(--muted);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-family: 'Outfit', sans-serif;
-      font-size: 0.9rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.25s;
-      text-decoration: none;
-    }
-    .cta-secondary:hover {
-      border-color: var(--orange);
-      color: var(--orange);
-      background: rgba(255,106,0,0.05);
-    }
+.hero-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
 
-    .hero-stats {
-      display: flex; gap: 2.5rem; padding-top: 1rem;
-      border-top: 1px solid var(--border);
-    }
-    .stat-item {}
-    .stat-num {
-      font-family:'Cormorant Garamond',serif;
-      font-size:2rem; font-weight:700;
-      color: var(--orange);
-    }
-    .stat-label { font-size:0.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:0.1em; }
+.hero-desc {
+  font-size: 0.92rem;
+  color: var(--muted);
+  line-height: 1.85;
+  font-weight: 300;
+  max-width: 380px;
+}
 
-    /* ── HERO IMAGE ── */
-    .hero-right { position:relative; }
+.hero-actions {
+  display: flex; align-items: center; gap: 1.5rem;
+}
 
-    .hero-img-frame {
-      position:relative;
-      border-radius: 2px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-    }
-    .hero-img-frame::before {
-      content:'';
-      position:absolute; inset:0; z-index:2;
-      background: linear-gradient(to bottom, transparent 40%, rgba(6,6,6,0.7) 100%);
-    }
-    .hero-img-frame img {
-      width:100%; height:520px;
-      object-fit:cover; display:block;
-      filter: saturate(0.85) contrast(1.05);
-    }
+.btn-large {
+  font-size: 0.82rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--cream);
+  background: var(--forest);
+  border: none;
+  border-radius: 2px;
+  padding: 1rem 2.5rem;
+  cursor: none;
+  transition: all 0.25s;
+  display: inline-flex; align-items: center; gap: 0.75rem;
+}
+.btn-large:hover {
+  background: var(--forest2);
+  box-shadow: 0 8px 40px rgba(31,61,46,0.35);
+  transform: translateY(-2px);
+}
+.btn-large svg { transition: transform 0.2s; }
+.btn-large:hover svg { transform: translateX(4px); }
 
-    /* Decorative corner accents */
-    .corner {
-      position:absolute; width:24px; height:24px;
-      border-color: var(--orange);
-      border-style: solid;
-      z-index:3;
-    }
-    .corner-tl { top:-1px; left:-1px; border-width:2px 0 0 2px; }
-    .corner-tr { top:-1px; right:-1px; border-width:2px 2px 0 0; }
-    .corner-bl { bottom:-1px; left:-1px; border-width:0 0 2px 2px; }
-    .corner-br { bottom:-1px; right:-1px; border-width:0 2px 2px 0; }
+.link-text {
+  font-size: 0.78rem;
+  color: var(--muted);
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  display: flex; align-items: center; gap: 0.5rem;
+  transition: color 0.2s;
+  border: none; background: none; cursor: none;
+  text-transform: uppercase;
+}
+.link-text:hover { color: var(--ink); }
+.link-text::after { content: '→'; transition: transform 0.2s; }
+.link-text:hover::after { transform: translateX(4px); }
 
-    .float-tag {
-      position:absolute; z-index:4;
-      background: rgba(13,13,13,0.92);
-      border: 1px solid var(--border2);
-      border-radius: 8px;
-      padding: 0.8rem 1.1rem;
-      backdrop-filter: blur(16px);
-    }
-    .float-tag-1 { top:30px; left:-20px; animation: rise 5s ease-in-out infinite; }
-    .float-tag-2 { bottom:60px; right:-15px; animation: rise 5s ease-in-out infinite 2.5s; }
-    @keyframes rise { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-    .ft-num { font-family:'Cormorant Garamond',serif; font-size:1.6rem; font-weight:700; color:var(--orange); }
-    .ft-lbl { font-size:0.7rem; color:var(--muted); letter-spacing:0.08em; }
+/* Hero right — image + data */
+.hero-right {
+  position: relative;
+  display: grid;
+  grid-template-rows: 1fr auto;
+}
 
-    /* ── DIVIDER ── */
-    .divider {
-      position:relative; z-index:5;
-      height:1px; margin:0 5rem;
-      background: linear-gradient(to right, transparent, var(--border2), transparent);
-    }
+.hero-image-container {
+  position: relative;
+  overflow: hidden;
+}
+.hero-image-container img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: saturate(0.75) contrast(1.08);
+  transform: scale(1.03);
+  transition: transform 8s ease;
+}
+.hero-image-container:hover img { transform: scale(1); }
 
-    /* ── PORTALS SECTION ── */
-    .portals {
-      position:relative; z-index:5;
-      padding: 5rem 5rem;
-    }
-    .section-eyebrow {
-      font-size:0.72rem;
-      font-weight:600;
-      letter-spacing:0.22em;
-      text-transform:uppercase;
-      color:var(--orange);
-      margin-bottom:0.8rem;
-    }
-    .section-title {
-      font-family:'Cormorant Garamond',serif;
-      font-size:2.8rem; font-weight:700;
-      color: var(--text);
-      margin-bottom:3rem;
-      line-height:1.1;
-    }
-    .section-title span { color:var(--orange); font-style:italic; }
+/* Botanical overlay */
+.hero-image-container::before {
+  content:'';
+  position:absolute; inset:0; z-index:1;
+  background: linear-gradient(135deg, rgba(31,61,46,0.15) 0%, transparent 60%),
+              linear-gradient(to bottom, transparent 50%, rgba(245,240,232,0.4) 100%);
+}
 
-    .portals-grid {
-      display:grid;
-      grid-template-columns: repeat(3,1fr);
-      gap:1.5rem;
-    }
+.image-label {
+  position: absolute; z-index: 2;
+  bottom: 1.5rem; left: 1.5rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  color: rgba(245,240,232,0.7);
+  text-transform: uppercase;
+}
 
-    .portal-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 2rem 1.8rem;
-      cursor:pointer;
-      transition: all 0.3s;
-      text-decoration:none; color:inherit;
-      display:flex; flex-direction:column; gap:1.2rem;
-      position:relative; overflow:hidden;
-    }
-    .portal-card::after {
-      content:'';
-      position:absolute; bottom:0; left:0; right:0;
-      height:2px;
-      background: linear-gradient(to right, transparent, var(--orange), transparent);
-      opacity:0;
-      transition: opacity 0.3s;
-    }
-    .portal-card:hover {
-      border-color: var(--border2);
-      transform: translateY(-4px);
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(255,106,0,0.08);
-    }
-    .portal-card:hover::after { opacity:1; }
+.hero-data-strip {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  border-top: 1px solid var(--border);
+}
 
-    .portal-num {
-      font-family:'Cormorant Garamond',serif;
-      font-size:3rem; font-weight:700;
-      color: rgba(255,106,0,0.12);
-      line-height:1;
-      margin-bottom:-0.5rem;
-    }
-    .portal-icon {
-      font-size:1.4rem;
-    }
-    .portal-name {
-      font-family:'Cormorant Garamond',serif;
-      font-size:1.4rem; font-weight:700;
-      color: var(--text);
-    }
-    .portal-desc {
-      font-size:0.85rem; color:var(--muted); line-height:1.7; font-weight:300;
-    }
-    .portal-link {
-      margin-top:auto;
-      font-size:0.78rem;
-      font-weight:600;
-      color:var(--orange);
-      letter-spacing:0.08em;
-      text-transform:uppercase;
-    }
+.data-cell {
+  padding: 1.5rem 2rem;
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 0.3rem;
+}
+.data-cell:last-child { border-right: none; }
 
-    /* ── CHAT WIDGET ── */
-    .chat-widget {
-      position:fixed; bottom:2rem; right:2rem; z-index:200;
-      display:flex; flex-direction:column; align-items:flex-end; gap:1rem;
-    }
+.data-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 500;
+  color: var(--forest);
+  line-height: 1;
+}
+.data-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
 
-    .chat-panel {
-      display:none;
-      flex-direction:column;
-      width:360px;
-      background: var(--black2);
-      border: 1px solid var(--border2);
-      border-radius: 12px;
-      overflow:hidden;
-      box-shadow: 0 30px 80px rgba(0,0,0,0.8), 0 0 60px rgba(255,106,0,0.1);
-    }
-    .chat-panel.open { display:flex; animation: slideUp 0.3s ease; }
-    @keyframes slideUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+/* ── MARQUEE STRIP ── */
+.marquee-wrap {
+  position: relative; z-index: 2;
+  background: var(--forest);
+  overflow: hidden;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 0.9rem 0;
+}
+.marquee-track {
+  display: flex;
+  gap: 0;
+  animation: marquee 30s linear infinite;
+  width: max-content;
+}
+.marquee-item {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 0 2.5rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(245,240,232,0.55);
+  white-space: nowrap;
+}
+.marquee-dot {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: var(--gold);
+  flex-shrink: 0;
+}
+@keyframes marquee { from{transform:translateX(0)} to{transform:translateX(-50%)} }
 
-    .chat-head {
-      display:flex; align-items:center; gap:0.75rem;
-      padding: 1rem 1.25rem;
-      background: var(--black3);
-      border-bottom: 1px solid var(--border);
-    }
-    .chat-avatar {
-      width:42px; height:42px;
-      border-radius:50%; object-fit:cover;
-      border: 2px solid var(--orange);
-    }
-    .chat-name { font-weight:600; font-size:0.9rem; color:var(--text); }
-    .chat-status { font-size:0.72rem; color:var(--orange); letter-spacing:0.04em; }
-    .chat-x {
-      margin-left:auto; background:transparent; border:none;
-      color:var(--muted); cursor:pointer; font-size:1.1rem; padding:0.2rem;
-      transition:color 0.2s;
-    }
-    .chat-x:hover { color: #ff4444; }
+/* ── PORTALS SECTION ── */
+.portals-section {
+  position: relative; z-index: 2;
+  padding: 7rem 3rem;
+  background: var(--cream);
+}
 
-    .chat-msgs {
-      padding:1rem 1.1rem;
-      display:flex; flex-direction:column; gap:0.65rem;
-      max-height:300px; overflow-y:auto;
-      scrollbar-width:thin; scrollbar-color: var(--border) transparent;
-    }
+.section-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: end;
+  margin-bottom: 4rem;
+  padding-bottom: 2.5rem;
+  border-bottom: 1px solid var(--border);
+}
 
-    .msg {
-      max-width:88%; padding:0.7rem 1rem;
-      border-radius:10px; font-size:0.85rem; line-height:1.55;
-      animation: fadeSlide 0.25s ease;
-    }
-    @keyframes fadeSlide { from{opacity:0;transform:translateY(5px)} to{opacity:1;transform:translateY(0)} }
-    .msg.bot {
-      background: rgba(255,106,0,0.08);
-      border: 1px solid rgba(255,106,0,0.18);
-      color: var(--text);
-      align-self:flex-start;
-      border-bottom-left-radius:3px;
-    }
-    .msg.user {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.1);
-      color:var(--text);
-      align-self:flex-end;
-      border-bottom-right-radius:3px;
-    }
-    .typing {
-      display:flex; gap:4px; padding:0.7rem 1rem;
-      background:rgba(255,106,0,0.08); border:1px solid rgba(255,106,0,0.18);
-      border-radius:10px; border-bottom-left-radius:3px;
-      width:fit-content; align-self:flex-start;
-    }
-    .typing span {
-      width:5px; height:5px; border-radius:50%;
-      background:var(--orange); animation: dot 0.9s infinite;
-    }
-    .typing span:nth-child(2){animation-delay:.2s}
-    .typing span:nth-child(3){animation-delay:.4s}
-    @keyframes dot { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
+.section-kicker {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--sage);
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.section-kicker::before {
+  content:'';
+  width: 20px; height: 1px;
+  background: var(--sage);
+}
 
-    .chat-form {
-      padding: 0.9rem 1.1rem;
-      border-top: 1px solid var(--border);
-      display:flex; flex-direction:column; gap:0.6rem;
-    }
+.section-title-large {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.5rem, 4vw, 3.8rem);
+  font-weight: 400;
+  line-height: 1.1;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+.section-title-large em { font-style: italic; color: var(--forest); }
 
-    .c-input, .c-select {
-      width:100%;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 7px;
-      padding: 0.65rem 0.85rem;
-      color: var(--text);
-      font-family:'Outfit',sans-serif;
-      font-size:0.85rem;
-      outline:none;
-      transition: border-color 0.2s;
-    }
-    .c-input:focus, .c-select:focus { border-color:var(--orange); }
-    .c-input::placeholder { color:rgba(138,112,96,0.6); }
+.section-body {
+  font-size: 0.9rem;
+  color: var(--muted);
+  line-height: 1.85;
+  font-weight: 300;
+  max-width: 340px;
+  align-self: end;
+}
 
-    .c-select {
-      cursor:pointer; appearance:none;
-      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23ff6a00' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-      background-repeat:no-repeat; background-position:right 0.8rem center; background-size:11px;
-    }
-    .c-select option { background:#0d0d0d; color:var(--text); }
+/* Portal cards */
+.portals-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid var(--border);
+}
 
-    .c-btn {
-      background:var(--orange); color:#000;
-      border:none; border-radius:7px;
-      padding:0.7rem; width:100%;
-      font-family:'Outfit',sans-serif; font-weight:600; font-size:0.85rem;
-      cursor:pointer; transition:all 0.2s;
-    }
-    .c-btn:hover { background:var(--orange2); box-shadow:0 0 20px rgba(255,106,0,0.4); }
-    .c-btn:disabled { opacity:0.4; cursor:not-allowed; }
+.portal-card {
+  padding: 3rem 2.5rem;
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 2rem;
+  text-decoration: none; color: inherit;
+  background: var(--cream);
+  position: relative;
+  overflow: hidden;
+  transition: background 0.35s;
+  cursor: none;
+}
+.portal-card:last-child { border-right: none; }
 
-    .slot-card {
-      background:rgba(255,106,0,0.07);
-      border:1px solid rgba(255,106,0,0.2);
-      border-radius:8px; padding:0.85rem 1rem;
-      font-size:0.83rem; color:var(--text); line-height:2;
-    }
-    .slot-card strong { color:var(--orange); }
+.portal-card::before {
+  content:'';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--forest);
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+}
+.portal-card:hover::before { transform: scaleX(1); }
+.portal-card:hover { background: rgba(31,61,46,0.03); }
 
-    .no-slot {
-      background:rgba(255,68,68,0.07);
-      border:1px solid rgba(255,68,68,0.2);
-      border-radius:7px; padding:0.6rem 0.85rem;
-      font-size:0.78rem; color:#ff9999;
-    }
+.portal-index {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.16em;
+  color: var(--sage2);
+}
 
-    .success-panel {
-      text-align:center; padding:1.2rem 1rem;
-      display:flex; flex-direction:column; align-items:center; gap:0.5rem;
-    }
-    .success-icon { font-size:2.8rem; }
-    .success-title { font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:700; color:var(--orange); }
-    .success-sub { font-size:0.78rem; color:var(--muted); }
+.portal-icon-wrap {
+  width: 52px; height: 52px;
+  border: 1px solid var(--border2);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem;
+  background: rgba(31,61,46,0.04);
+  transition: all 0.3s;
+}
+.portal-card:hover .portal-icon-wrap {
+  background: var(--forest);
+  border-color: var(--forest);
+  transform: scale(1.08);
+}
 
-    .hidden { display:none !important; }
+.portal-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.55rem;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.2;
+}
 
-    /* ── CHAT TOGGLE BUTTON ── */
-    .chat-fab {
-      width:62px; height:62px; border-radius:50%;
-      background:var(--orange); border:none; cursor:pointer;
-      display:flex; align-items:center; justify-content:center;
-      box-shadow: 0 8px 32px rgba(255,106,0,0.5);
-      transition:all 0.25s;
-      overflow:hidden; padding:0;
-    }
-    .chat-fab:hover {
-      transform:scale(1.08);
-      box-shadow:0 12px 48px rgba(255,106,0,0.7);
-    }
-    .chat-fab img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.portal-desc {
+  font-size: 0.84rem;
+  color: var(--muted);
+  line-height: 1.75;
+  font-weight: 300;
+  flex: 1;
+}
 
-    /* ── FOOTER LINE ── */
-    footer {
-      position:relative; z-index:5;
-      text-align:center; padding:2rem 5rem;
-      border-top:1px solid var(--border);
-      color:var(--muted); font-size:0.78rem;
-      letter-spacing:0.06em;
-    }
+.portal-arrow {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--forest);
+  transition: gap 0.2s;
+}
+.portal-card:hover .portal-arrow { gap: 0.85rem; }
 
-    /* ── RESPONSIVE ── */
-    @media(max-width:960px){
-      nav { padding:1.2rem 1.5rem; }
-      .hero { grid-template-columns:1fr; padding:3rem 1.5rem 2rem; gap:2rem; min-height:auto; }
-      .hero-right { order:-1; }
-      .portals { padding:3rem 1.5rem; }
-      .portals-grid { grid-template-columns:1fr; }
-      .divider { margin:0 1.5rem; }
-      .chat-panel { width:calc(100vw - 2rem); }
-    }
-  </style>
+/* ── FEATURE STRIP ── */
+.feature-strip {
+  position: relative; z-index: 2;
+  background: var(--ink);
+  padding: 6rem 3rem;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 6rem;
+  align-items: center;
+}
+
+.feature-left {}
+.feature-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  color: var(--sage2);
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: 0.75rem;
+}
+.feature-label::before { content:''; width:20px; height:1px; background:var(--sage2); }
+
+.feature-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.2rem, 3.5vw, 3.2rem);
+  font-weight: 400;
+  line-height: 1.15;
+  color: var(--cream);
+  letter-spacing: -0.02em;
+  margin-bottom: 2rem;
+}
+.feature-title em { font-style: italic; color: var(--sage2); }
+
+.feature-sub {
+  font-size: 0.88rem;
+  color: rgba(245,240,232,0.5);
+  line-height: 1.85;
+  font-weight: 300;
+}
+
+.feature-right {
+  display: flex; flex-direction: column; gap: 0;
+}
+
+.feature-item {
+  padding: 2rem 0;
+  border-bottom: 1px solid rgba(245,240,232,0.06);
+  display: grid; grid-template-columns: auto 1fr;
+  gap: 1.75rem; align-items: start;
+  position: relative;
+  transition: background 0.2s;
+}
+.feature-item:first-child { border-top: 1px solid rgba(245,240,232,0.06); }
+
+.fi-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: rgba(245,240,232,0.2);
+  width: 32px;
+  padding-top: 2px;
+}
+
+.fi-content {}
+.fi-title {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--cream);
+  margin-bottom: 0.4rem;
+  letter-spacing: 0.01em;
+}
+.fi-desc {
+  font-size: 0.82rem;
+  color: rgba(245,240,232,0.45);
+  line-height: 1.7;
+  font-weight: 300;
+}
+
+/* ── TESTIMONIAL / TRUST ── */
+.trust-section {
+  position: relative; z-index: 2;
+  padding: 7rem 3rem;
+  background: var(--cream2);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6rem;
+  align-items: center;
+}
+
+.trust-left {
+  display: flex; flex-direction: column; gap: 1.5rem;
+}
+
+blockquote {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+  font-weight: 400;
+  font-style: italic;
+  line-height: 1.45;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+blockquote::before {
+  content: '\201C';
+  color: var(--forest);
+  font-size: 4rem;
+  line-height: 0;
+  display: block;
+  margin-bottom: 1rem;
+  vertical-align: -0.4em;
+}
+
+.quote-attr {
+  display: flex; align-items: center; gap: 1rem;
+}
+.attr-line { width: 24px; height: 1px; background: var(--sage2); }
+.attr-name {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.trust-right {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+}
+
+.trust-card {
+  background: var(--cream);
+  padding: 2.5rem 2rem;
+  display: flex; flex-direction: column; gap: 0.5rem;
+}
+.tc-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.8rem;
+  font-weight: 400;
+  color: var(--forest);
+  line-height: 1;
+}
+.tc-label {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-weight: 300;
+  line-height: 1.5;
+}
+
+/* ── FOOTER ── */
+footer {
+  position: relative; z-index: 2;
+  background: var(--ink);
+  padding: 4rem 3rem 2rem;
+}
+
+.footer-top {
+  display: flex; align-items: flex-start; justify-content: space-between;
+  padding-bottom: 3rem;
+  border-bottom: 1px solid rgba(245,240,232,0.08);
+  margin-bottom: 2rem;
+}
+
+.footer-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--cream);
+  letter-spacing: 0.02em;
+}
+.footer-logo sup {
+  font-size: 0.5em;
+  color: var(--sage2);
+  vertical-align: super;
+}
+
+.footer-tagline {
+  font-size: 0.78rem;
+  color: rgba(245,240,232,0.35);
+  font-weight: 300;
+  margin-top: 0.5rem;
+  max-width: 220px;
+  line-height: 1.6;
+}
+
+.footer-links {
+  display: flex; gap: 0.5rem;
+}
+.footer-link {
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(245,240,232,0.4);
+  text-decoration: none;
+  padding: 0.4rem 0.8rem;
+  transition: color 0.2s;
+}
+.footer-link:hover { color: rgba(245,240,232,0.8); }
+
+.footer-bottom {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.footer-copy {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: rgba(245,240,232,0.22);
+  text-transform: uppercase;
+}
+.footer-badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: rgba(90,125,101,0.5);
+  text-transform: uppercase;
+}
+
+/* ── CHAT WIDGET ── */
+.chat-widget {
+  position: fixed; bottom: 2rem; right: 2rem; z-index: 600;
+  display: flex; flex-direction: column; align-items: flex-end; gap: 1rem;
+}
+
+.chat-panel {
+  display: none;
+  flex-direction: column;
+  width: 380px;
+  background: var(--cream);
+  border: 1px solid var(--border2);
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: 0 40px 100px rgba(26,26,24,0.25), 0 0 0 1px rgba(31,61,46,0.1);
+}
+.chat-panel.open { display: flex; animation: chatUp 0.35s cubic-bezier(0.4,0,0.2,1); }
+@keyframes chatUp { from{opacity:0;transform:translateY(20px) scale(0.97)} to{opacity:1;transform:translateY(0) scale(1)} }
+
+.chat-head {
+  display: flex; align-items: center; gap: 0.9rem;
+  padding: 1.1rem 1.25rem;
+  background: var(--forest);
+  border-bottom: none;
+}
+.chat-avatar {
+  width: 40px; height: 40px;
+  border-radius: 50%; object-fit: cover;
+  border: 2px solid rgba(245,240,232,0.25);
+}
+.chat-name {
+  font-weight: 500; font-size: 0.88rem;
+  color: var(--cream);
+}
+.chat-status {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--sage2);
+  letter-spacing: 0.08em;
+}
+.chat-x {
+  margin-left: auto; background: transparent; border: none;
+  color: rgba(245,240,232,0.4); cursor: none; font-size: 1rem;
+  transition: color 0.2s;
+}
+.chat-x:hover { color: var(--cream); }
+
+.chat-msgs {
+  padding: 1.25rem;
+  display: flex; flex-direction: column; gap: 0.7rem;
+  max-height: 320px; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+  background: var(--cream);
+}
+
+.msg {
+  max-width: 88%; padding: 0.8rem 1rem;
+  font-size: 0.84rem; line-height: 1.6;
+  animation: msgIn 0.22s ease;
+  font-weight: 300;
+}
+@keyframes msgIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+.msg.bot {
+  background: var(--cream2);
+  border: 1px solid var(--border);
+  color: var(--ink2);
+  align-self: flex-start;
+  border-radius: 2px 12px 12px 2px;
+}
+.msg.user {
+  background: var(--forest);
+  color: var(--cream);
+  align-self: flex-end;
+  border-radius: 12px 2px 2px 12px;
+}
+.typing {
+  display: flex; gap: 5px; padding: 0.8rem 1rem;
+  background: var(--cream2); border: 1px solid var(--border);
+  border-radius: 2px 12px 12px 2px;
+  width: fit-content; align-self: flex-start;
+}
+.typing span {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--sage2);
+  animation: dot 0.9s infinite;
+}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes dot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+
+.chat-form {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 0.65rem;
+  background: var(--cream);
+}
+
+.c-input, .c-select {
+  width: 100%;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 0.7rem 0.9rem;
+  color: var(--ink);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.84rem;
+  outline: none;
+  transition: border-color 0.2s;
+  font-weight: 300;
+}
+.c-input:focus, .c-select:focus { border-color: var(--forest); }
+.c-input::placeholder { color: rgba(122,112,96,0.5); }
+.c-select { cursor: none; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%231f3d2e' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 0.9rem center;
+}
+.c-select option { background: white; color: var(--ink); }
+
+.c-btn {
+  background: var(--forest); color: var(--cream);
+  border: none; border-radius: 2px;
+  padding: 0.75rem; width: 100%;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500; font-size: 0.82rem;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  cursor: none; transition: all 0.2s;
+}
+.c-btn:hover { background: var(--forest2); }
+.c-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.slot-card {
+  background: rgba(31,61,46,0.06);
+  border: 1px solid rgba(31,61,46,0.15);
+  border-radius: 2px;
+  padding: 1rem 1.1rem;
+  font-size: 0.82rem;
+  color: var(--ink2);
+  line-height: 2;
+  font-weight: 300;
+}
+.slot-card strong { color: var(--forest); font-weight: 500; }
+
+.no-slot {
+  background: rgba(184,146,74,0.08);
+  border: 1px solid rgba(184,146,74,0.25);
+  border-radius: 2px;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.78rem;
+  color: var(--gold);
+}
+
+.success-panel {
+  text-align: center;
+  padding: 1.5rem 1.25rem;
+  display: flex; flex-direction: column; align-items: center; gap: 0.6rem;
+}
+.success-icon { font-size: 2.5rem; }
+.success-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: var(--forest);
+}
+.success-sub { font-size: 0.78rem; color: var(--muted); font-weight: 300; }
+
+.hidden { display: none !important; }
+
+/* Chat FAB */
+.chat-fab {
+  width: 58px; height: 58px;
+  border-radius: 50%;
+  background: var(--forest);
+  border: none; cursor: none;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 32px rgba(31,61,46,0.4);
+  transition: all 0.25s;
+  overflow: hidden; padding: 0;
+  position: relative;
+}
+.chat-fab::after {
+  content:'';
+  position: absolute;
+  bottom: 10px; right: 10px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: #4caf7d;
+  border: 2px solid var(--cream);
+  z-index: 1;
+}
+.chat-fab:hover { transform: scale(1.06); box-shadow: 0 12px 48px rgba(31,61,46,0.5); }
+.chat-fab img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+/* ── SCROLL ANIMATIONS ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1), transform 0.7s cubic-bezier(0.4,0,0.2,1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  nav { padding: 0 1.5rem; }
+  .nav-center { display: none; }
+  .hero-stage { grid-template-columns: 1fr; }
+  .hero-left { border-right: none; border-bottom: 1px solid var(--border); padding: 3rem 1.5rem; }
+  .hero-right { min-height: 50vw; }
+  .portals-section { padding: 4rem 1.5rem; }
+  .section-header { grid-template-columns: 1fr; gap: 1.5rem; }
+  .portals-grid { grid-template-columns: 1fr; }
+  .portal-card { border-right: none; border-bottom: 1px solid var(--border); }
+  .feature-strip { grid-template-columns: 1fr; gap: 3rem; padding: 4rem 1.5rem; }
+  .trust-section { grid-template-columns: 1fr; gap: 3rem; padding: 4rem 1.5rem; }
+  .trust-right { grid-template-columns: 1fr 1fr; }
+  .chat-panel { width: calc(100vw - 2rem); }
+  .footer-top { flex-direction: column; gap: 2rem; }
+}
+</style>
 </head>
 <body>
-<div class="orb orb-1"></div>
-<div class="orb orb-2"></div>
+
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
 
 <!-- NAV -->
-<nav>
-  <div class="logo">Medi<span>Care</span>+</div>
-  <div class="nav-links">
-    <a href="admin.html" class="nav-btn ghost">Admin</a>
-    <a href="doctor.html" class="nav-btn ghost">Doctors</a>
-    <a href="tests-portal.html" class="nav-btn ghost">Tests</a>
-    <button class="nav-btn solid" onclick="openChat()">Book Appointment</button>
+<nav id="mainNav">
+  <a href="#" class="logo">MediCare<sup>+</sup></a>
+  <div class="nav-center">
+    <a href="admin.html" class="nav-link">Admin</a>
+    <a href="doctor.html" class="nav-link">Doctors</a>
+    <a href="tests-portal.html" class="nav-link">Tests</a>
+  </div>
+  <div class="nav-right">
+    <button class="btn-primary" onclick="openChat()">Book Now</button>
   </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-left">
-    <div class="pill-badge">Smart Healthcare — Est. 2026</div>
+  <div class="hero-stage">
 
-    <h1 class="hero-title">
-      Modern Care,<br/>
-      <em>Smarter</em><br/>
-      <span class="thin">Appointments.</span>
-    </h1>
-
-    <p class="hero-desc">
-      MediCare+ connects you to the right specialist in seconds. 
-      Book appointments, describe symptoms, and receive personalized 
-      care — all from one elegant platform.
-    </p>
-
-    <div class="hero-cta">
-      <button class="cta-primary" onclick="openChat()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 12h.01M12 12h.01M16 12h.01M21 3H3a2 2 0 00-2 2v16l4-4h16a2 2 0 002-2V5a2 2 0 00-2-2z"/></svg>
-        Book Appointment
-      </button>
-      <a href="admin.html" class="cta-secondary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-        Explore Portals
-      </a>
-    </div>
-
-    <div class="hero-stats">
-      <div class="stat-item">
-        <div class="stat-num">50+</div>
-        <div class="stat-label">Specialists</div>
+    <div class="hero-left">
+      <div class="hero-eyebrow">
+        <span class="eyebrow-line"></span>
+        Precision Healthcare — Est. 2026
       </div>
-      <div class="stat-item">
-        <div class="stat-num">98%</div>
-        <div class="stat-label">Satisfaction</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">24/7</div>
-        <div class="stat-label">Availability</div>
+
+      <h1 class="hero-headline">
+        Where care<br>
+        meets <em>precision</em><br>
+        <span class="stroke-text">medicine.</span>
+      </h1>
+
+      <div class="hero-bottom">
+        <p class="hero-desc">
+          MediCare+ connects you to the right specialist, instantly. 
+          Describe your symptoms, receive a matched specialist, and 
+          book in under two minutes — from anywhere.
+        </p>
+        <div class="hero-actions">
+          <button class="btn-large" onclick="openChat()">
+            Book Appointment
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+          <a href="#portals" class="link-text">Explore portals</a>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="hero-right">
-    <div class="hero-img-frame">
-      <div class="corner corner-tl"></div>
-      <div class="corner corner-tr"></div>
-      <div class="corner corner-bl"></div>
-      <div class="corner corner-br"></div>
-      <img src="https://images.unsplash.com/photo-1631217868264-e5b90bb7e133?w=900&q=85&auto=format&fit=crop" alt="Modern Healthcare"/>
+    <div class="hero-right">
+      <div class="hero-image-container">
+        <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=900&q=85&auto=format&fit=crop" alt="Healthcare"/>
+        <div class="image-label">State-of-the-art facilities</div>
+      </div>
+      <div class="hero-data-strip">
+        <div class="data-cell">
+          <div class="data-num">50+</div>
+          <div class="data-label">Specialists</div>
+        </div>
+        <div class="data-cell">
+          <div class="data-num">98%</div>
+          <div class="data-label">Patient satisfaction</div>
+        </div>
+        <div class="data-cell">
+          <div class="data-num">1 min</div>
+          <div class="data-label">Avg. booking time</div>
+        </div>
+      </div>
     </div>
-    <div class="float-tag float-tag-1">
-      <div class="ft-num">50+</div>
-      <div class="ft-lbl">Doctors Online</div>
-    </div>
-    <div class="float-tag float-tag-2">
-      <div class="ft-num">2 min</div>
-      <div class="ft-lbl">Avg Booking Time</div>
-    </div>
+
   </div>
 </section>
 
-<div class="divider"></div>
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <!-- duplicated for seamless loop -->
+    <div class="marquee-item"><span class="marquee-dot"></span>Cardiology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Neurology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Orthopedics</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Dermatology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Oncology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Pediatrics</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Ophthalmology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Gynecology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Nephrology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Pulmonology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Endocrinology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Psychiatry</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Cardiology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Neurology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Orthopedics</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Dermatology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Oncology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Pediatrics</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Ophthalmology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Gynecology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Nephrology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Pulmonology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Endocrinology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Psychiatry</div>
+  </div>
+</div>
 
 <!-- PORTALS -->
-<section class="portals">
-  <p class="section-eyebrow">Platform Access</p>
-  <h2 class="section-title">Choose Your <span>Portal</span></h2>
+<section class="portals-section" id="portals">
+  <div class="section-header">
+    <div>
+      <div class="section-kicker reveal">Platform Access</div>
+      <h2 class="section-title-large reveal reveal-delay-1">Your <em>portal</em><br>to better care.</h2>
+    </div>
+    <p class="section-body reveal reveal-delay-2">
+      Three dedicated environments — each built for a distinct role 
+      in the care ecosystem. Secure, purpose-built, and always in sync.
+    </p>
+  </div>
 
   <div class="portals-grid">
-    <a href="admin.html" class="portal-card">
-      <div class="portal-num">01</div>
-      <div class="portal-icon">🛡️</div>
-      <div class="portal-name">Admin Panel</div>
-      <p class="portal-desc">Manage users, doctors, appointments, and system-wide settings from a central control hub.</p>
-      <div class="portal-link">Access Admin →</div>
+    <a href="admin.html" class="portal-card reveal">
+      <div class="portal-index">01 — Administration</div>
+      <div class="portal-icon-wrap">🛡️</div>
+      <div class="portal-name">Admin<br>Panel</div>
+      <p class="portal-desc">Centralised control over users, doctors, appointments, and system configuration. Full visibility, full authority.</p>
+      <div class="portal-arrow">Access portal <span>→</span></div>
     </a>
-    <a href="doctor.html" class="portal-card">
-      <div class="portal-num">02</div>
-      <div class="portal-icon">🩺</div>
-      <div class="portal-name">Doctor Panel</div>
-      <p class="portal-desc">View your schedule, manage patient appointments, and update availability in real-time.</p>
-      <div class="portal-link">Doctor Login →</div>
+    <a href="doctor.html" class="portal-card reveal reveal-delay-1">
+      <div class="portal-index">02 — Clinical</div>
+      <div class="portal-icon-wrap">🩺</div>
+      <div class="portal-name">Doctor<br>Panel</div>
+      <p class="portal-desc">Manage your schedule, review incoming appointments, and update your availability — all in real time.</p>
+      <div class="portal-arrow">Doctor login <span>→</span></div>
     </a>
-    <a href="tests-portal.html" class="portal-card">
-      <div class="portal-num">03</div>
-      <div class="portal-icon">🔬</div>
-      <div class="portal-name">Tests Portal</div>
-      <p class="portal-desc">Manage assigned tests, update test status, and record patient results in real-time.</p>
-      <div class="portal-link">Tests Login →</div>
+    <a href="tests-portal.html" class="portal-card reveal reveal-delay-2">
+      <div class="portal-index">03 — Diagnostics</div>
+      <div class="portal-icon-wrap">🔬</div>
+      <div class="portal-name">Tests<br>Portal</div>
+      <p class="portal-desc">Track assigned tests, record results, and update statuses the moment they are ready — no paperwork required.</p>
+      <div class="portal-arrow">Tests login <span>→</span></div>
     </a>
   </div>
 </section>
 
+<!-- FEATURE STRIP -->
+<section class="feature-strip">
+  <div class="feature-left reveal">
+    <div class="feature-label">How it works</div>
+    <h2 class="feature-title">Booked in minutes,<br>cared for <em>for life.</em></h2>
+    <p class="feature-sub">
+      Our intelligent matching system pairs your symptoms to the 
+      most appropriate specialist available — no guesswork, 
+      no waiting rooms, no phone calls.
+    </p>
+  </div>
+  <div class="feature-right">
+    <div class="feature-item reveal">
+      <div class="fi-num">01</div>
+      <div class="fi-content">
+        <div class="fi-title">Describe your symptoms</div>
+        <div class="fi-desc">Select from a comprehensive list of symptoms. Our system understands clinical nuance and routes accordingly.</div>
+      </div>
+    </div>
+    <div class="feature-item reveal reveal-delay-1">
+      <div class="fi-num">02</div>
+      <div class="fi-content">
+        <div class="fi-title">Get matched to a specialist</div>
+        <div class="fi-desc">Algorithms cross-reference symptom patterns against specialist expertise and real-time availability.</div>
+      </div>
+    </div>
+    <div class="feature-item reveal reveal-delay-2">
+      <div class="fi-num">03</div>
+      <div class="fi-content">
+        <div class="fi-title">Confirm your appointment</div>
+        <div class="fi-desc">One tap to confirm. A detailed confirmation is sent to your inbox with all the details you need.</div>
+      </div>
+    </div>
+    <div class="feature-item reveal reveal-delay-3">
+      <div class="fi-num">04</div>
+      <div class="fi-content">
+        <div class="fi-title">Attend and receive care</div>
+        <div class="fi-desc">Your doctor is briefed. Your slot is reserved. All that remains is showing up.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section class="trust-section">
+  <div class="trust-left reveal">
+    <blockquote>
+      The experience felt nothing like a hospital system. It felt like a concierge.
+    </blockquote>
+    <div class="quote-attr">
+      <div class="attr-line"></div>
+      <div class="attr-name">Patient, Cardiac Care · 2026</div>
+    </div>
+  </div>
+  <div class="trust-right reveal reveal-delay-1">
+    <div class="trust-card">
+      <div class="tc-num">50+</div>
+      <div class="tc-label">Board-certified specialists across 18 disciplines</div>
+    </div>
+    <div class="trust-card">
+      <div class="tc-num">98%</div>
+      <div class="tc-label">Patient satisfaction score, independently audited</div>
+    </div>
+    <div class="trust-card">
+      <div class="tc-num">24/7</div>
+      <div class="tc-label">Platform availability — book any time, any day</div>
+    </div>
+    <div class="trust-card">
+      <div class="tc-num">1 min</div>
+      <div class="tc-label">Average time from symptom to confirmed booking</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
 <footer>
-  © 2026 MediCare+ — Smart Healthcare Platform &nbsp;·&nbsp; All rights reserved
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo">MediCare<sup>+</sup></div>
+      <p class="footer-tagline">Precision healthcare for the modern patient. Trusted, transparent, always available.</p>
+    </div>
+    <div class="footer-links">
+      <a href="admin.html" class="footer-link">Admin</a>
+      <a href="doctor.html" class="footer-link">Doctors</a>
+      <a href="tests-portal.html" class="footer-link">Tests</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2026 MediCare+ — All rights reserved</div>
+    <div class="footer-badge">Est. Jaipur · 2026</div>
+  </div>
 </footer>
 
-<!-- ── CHAT WIDGET ── -->
+<!-- CHAT WIDGET -->
 <div class="chat-widget">
   <div class="chat-panel" id="chatPanel">
     <div class="chat-head">
       <img class="chat-avatar" src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=120&q=80" alt="Dr. Aria"/>
       <div>
         <div class="chat-name">Dr. Aria</div>
-        <div class="chat-status">● Online — Here to help</div>
+        <div class="chat-status">● Online — ready to assist</div>
       </div>
       <button class="chat-x" onclick="closeChat()">✕</button>
     </div>
     <div class="chat-msgs" id="chatMsgs"></div>
     <div class="chat-form" id="chatForm">
-
-      <!-- Step 1: Name -->
       <div id="stepName">
         <input class="c-input" id="inName" type="text" placeholder="Your full name…"/>
         <div style="height:.5rem"></div>
         <button class="c-btn" onclick="submitName()">Continue →</button>
       </div>
-
-      <!-- Step 2: Email -->
       <div id="stepEmail" class="hidden">
         <input class="c-input" id="inEmail" type="email" placeholder="Your email address…"/>
         <div style="height:.5rem"></div>
         <button class="c-btn" onclick="submitEmail()">Continue →</button>
       </div>
-
-      <!-- Step 3: Symptom -->
       <div id="stepSymptom" class="hidden">
         <select class="c-select" id="inSymptom">
           <option value="" disabled selected>Select your symptom…</option>
@@ -716,28 +1243,23 @@
           <option>Other</option>
         </select>
         <div style="height:.5rem"></div>
-        <button class="c-btn" id="symptomBtn" onclick="submitSymptom()">Continue →</button>
+        <button class="c-btn" id="symptomBtn" onclick="submitSymptom()">Find Specialist →</button>
       </div>
-
-      <!-- Step 4: Confirm slot -->
       <div id="stepConfirm" class="hidden">
         <div id="slotPreview" class="slot-card"></div>
         <div style="height:.5rem"></div>
-        <button class="c-btn" id="confirmBtn" onclick="submitConfirm()">✅ Confirm Appointment</button>
+        <button class="c-btn" id="confirmBtn" onclick="submitConfirm()">Confirm Appointment</button>
       </div>
-
-      <!-- Success -->
       <div id="stepSuccess" class="hidden success-panel">
-        <div class="success-icon">🎉</div>
-        <div class="success-title">Appointment Booked!</div>
+        <div class="success-icon">✓</div>
+        <div class="success-title">Appointment confirmed</div>
         <div class="success-sub">A confirmation has been sent to your email.</div>
         <button class="c-btn" style="margin-top:.6rem" onclick="resetChat()">Book Another</button>
       </div>
-
     </div>
   </div>
 
-  <button class="chat-fab" onclick="toggleChat()" title="Chat with Dr. Aria">
+  <button class="chat-fab" onclick="toggleChat()" title="Book with Dr. Aria">
     <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&q=80" alt="Dr. Aria"/>
   </button>
 </div>
@@ -758,23 +1280,34 @@
 
   const app = initializeApp(firebaseConfig);
   const db  = getFirestore(app);
-
-  // EmailJS init
   emailjs.init("nEbb9aPtYh8imCD0M");
 
   let chatOpen = false;
-  let pd = {}; // patient data
+  let pd = {};
   const msgsEl = document.getElementById('chatMsgs');
 
-  // ── Step visibility ──────────────────────────────────────────────────────
-  const steps = ['stepName','stepEmail','stepSymptom','stepConfirm','stepSuccess'];
-  function showStep(id){
-    steps.forEach(s => {
-      document.getElementById(s).classList.toggle('hidden', s !== id);
-    });
-  }
+  // ── Cursor ──────────────────────────────────────────────────────────────
+  const dot = document.getElementById('cursorDot');
+  const ring = document.getElementById('cursorRing');
+  let mx=0, my=0, rx=0, ry=0;
+  document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; dot.style.left=mx+'px'; dot.style.top=my+'px'; });
+  function animRing(){ rx+=(mx-rx)*0.12; ry+=(my-ry)*0.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(animRing); }
+  animRing();
 
-  // ── Messages ─────────────────────────────────────────────────────────────
+  // ── Nav scroll ──────────────────────────────────────────────────────────
+  const nav = document.getElementById('mainNav');
+  window.addEventListener('scroll', ()=>{ nav.classList.toggle('scrolled', window.scrollY > 60); });
+
+  // ── Reveal on scroll ────────────────────────────────────────────────────
+  const obs = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // ── Chat helpers ────────────────────────────────────────────────────────
+  const steps = ['stepName','stepEmail','stepSymptom','stepConfirm','stepSuccess'];
+  function showStep(id){ steps.forEach(s=>{ document.getElementById(s).classList.toggle('hidden',s!==id); }); }
+
   function appendMsg(text, type){
     const d = document.createElement('div');
     d.className = `msg ${type}`;
@@ -782,86 +1315,40 @@
     msgsEl.appendChild(d);
     msgsEl.scrollTop = msgsEl.scrollHeight;
   }
-
   function addMsg(text, type='bot', delay=0){
     return new Promise(resolve=>{
       setTimeout(()=>{
-        if(type==='bot' && delay>0){
-          const t = document.createElement('div');
-          t.className = 'typing';
-          t.innerHTML = '<span></span><span></span><span></span>';
-          msgsEl.appendChild(t);
-          msgsEl.scrollTop = msgsEl.scrollHeight;
-          setTimeout(()=>{ msgsEl.removeChild(t); appendMsg(text,type); resolve(); }, 750);
+        if(type==='bot'&&delay>0){
+          const t=document.createElement('div'); t.className='typing';
+          t.innerHTML='<span></span><span></span><span></span>';
+          msgsEl.appendChild(t); msgsEl.scrollTop=msgsEl.scrollHeight;
+          setTimeout(()=>{ msgsEl.removeChild(t); appendMsg(text,type); resolve(); },750);
         } else { appendMsg(text,type); resolve(); }
-      }, delay);
+      },delay);
     });
   }
 
-  // ── Date/time helpers ────────────────────────────────────────────────────
-  function dateStr(offset=0){
-    const d = new Date(); d.setDate(d.getDate()+offset);
-    const yyyy=d.getFullYear(), mm=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0'); return `${yyyy}-${mm}-${dd}`;
-  }
-  function buildSlots(from='09:00', to='17:00'){
-    const slots=[];
-    const [fh,fm]=from.split(':').map(Number);
-    const [th,tm]=to.split(':').map(Number);
-    let cur=fh*60+fm, end=th*60+tm;
-    while(cur+30<=end){ slots.push(`${String(Math.floor(cur/60)).padStart(2,'0')}:${String(cur%60).padStart(2,'0')}`); cur+=30; }
-    return slots;
-  }
-  function fmtTime(hhmm){
-    const [h,m]=hhmm.split(':'); const d=new Date(); d.setHours(+h,+m);
-    return d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});
-  }
-  function fmtDate(yyyymmdd){
-    return new Date(yyyymmdd+'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric'});
-  }
+  function dateStr(offset=0){ const d=new Date(); d.setDate(d.getDate()+offset); const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${dd}`; }
+  function buildSlots(from='09:00',to='17:00'){ const s=[],[fh,fm]=from.split(':').map(Number),[th,tm]=to.split(':').map(Number); let c=fh*60+fm,e=th*60+tm; while(c+30<=e){ s.push(`${String(Math.floor(c/60)).padStart(2,'0')}:${String(c%60).padStart(2,'0')}`); c+=30; } return s; }
+  function fmtTime(hhmm){ const [h,m]=hhmm.split(':'); const d=new Date(); d.setHours(+h,+m); return d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}); }
+  function fmtDate(yyyymmdd){ return new Date(yyyymmdd+'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric'}); }
 
-  // ── Find best slot ───────────────────────────────────────────────────────
   async function findBestSlot(symptom){
-    const docSnap = await getDocs(collection(db,'doctors'));
-    const candidates = [];
-    docSnap.forEach(d=>{
-      const data=d.data();
-      if((Array.isArray(data.symptoms)?data.symptoms:[]).includes(symptom))
-        candidates.push({id:d.id,...data});
-    });
+    const docSnap=await getDocs(collection(db,'doctors')); const candidates=[];
+    docSnap.forEach(d=>{ const data=d.data(); if((Array.isArray(data.symptoms)?data.symptoms:[]).includes(symptom)) candidates.push({id:d.id,...data}); });
     if(!candidates.length) return null;
-
-    const apptSnap = await getDocs(collection(db,'appointments'));
-    const takenMap={};
-    apptSnap.forEach(d=>{
-      const a=d.data();
-      if(!a.doctorName||!a.date||!a.time) return;
-      if(!takenMap[a.doctorName]) takenMap[a.doctorName]={};
-      if(!takenMap[a.doctorName][a.date]) takenMap[a.doctorName][a.date]=new Set();
-      takenMap[a.doctorName][a.date].add(a.time);
-    });
-
-    const nowMins=new Date().getHours()*60+new Date().getMinutes();
-    const todayStr=dateStr(0);
-    let best=null;
-
+    const apptSnap=await getDocs(collection(db,'appointments')); const takenMap={};
+    apptSnap.forEach(d=>{ const a=d.data(); if(!a.doctorName||!a.date||!a.time) return; if(!takenMap[a.doctorName]) takenMap[a.doctorName]={}; if(!takenMap[a.doctorName][a.date]) takenMap[a.doctorName][a.date]=new Set(); takenMap[a.doctorName][a.date].add(a.time); });
+    const nowMins=new Date().getHours()*60+new Date().getMinutes(), todayStr=dateStr(0); let best=null;
     for(const doc of candidates){
-      const slots=buildSlots(doc.availableFrom||'09:00', doc.availableTo||'17:00');
-      if(!slots.length) continue;
+      const slots=buildSlots(doc.availableFrom||'09:00',doc.availableTo||'17:00'); if(!slots.length) continue;
       const totalAppts=Object.values(takenMap[doc.name]||{}).reduce((s,st)=>s+st.size,0);
-
       for(let day=0;day<7;day++){
-        const chkDate=dateStr(day);
-        const taken=(takenMap[doc.name]||{})[chkDate]||new Set();
+        const chkDate=dateStr(day); const taken=(takenMap[doc.name]||{})[chkDate]||new Set();
         for(const slot of slots){
-          if(chkDate===todayStr){
-            const [sh,sm]=slot.split(':').map(Number);
-            if(sh*60+sm<=nowMins+30) continue;
-          }
+          if(chkDate===todayStr){ const[sh,sm]=slot.split(':').map(Number); if(sh*60+sm<=nowMins+30) continue; }
           if(taken.has(slot)) continue;
-          if(!best||chkDate<best.date||(chkDate===best.date&&slot<best.time)||
-            (chkDate===best.date&&slot===best.time&&totalAppts<best.appointmentCount)){
-            best={doctor:doc,date:chkDate,time:slot,appointmentCount:totalAppts};
-          }
+          if(!best||chkDate<best.date||(chkDate===best.date&&slot<best.time)||(chkDate===best.date&&slot===best.time&&totalAppts<best.appointmentCount)) best={doctor:doc,date:chkDate,time:slot,appointmentCount:totalAppts};
           break;
         }
         if(best&&best.date===chkDate&&best.doctor.id===doc.id) break;
@@ -870,142 +1357,60 @@
     return best;
   }
 
-  // ── Chat flow ────────────────────────────────────────────────────────────
   function initChat(){
-    msgsEl.innerHTML='';
-    pd={};
-    addMsg("👋 Hi! I'm Dr. Aria, your virtual assistant.",'bot',100);
-    addMsg("Let's book you an appointment. What's your full name?",'bot',800);
+    msgsEl.innerHTML=''; pd={};
+    addMsg("Hello, I'm Dr. Aria — your virtual care assistant.",'bot',100);
+    addMsg("Let's get you booked. What's your full name?",'bot',800);
     showStep('stepName');
   }
 
-  window.submitName = function(){
-    const val=document.getElementById('inName').value.trim();
-    if(!val) return;
-    pd.name=val;
-    addMsg(val,'user');
-    document.getElementById('inName').value='';
-    addMsg(`Nice to meet you, ${val}! 😊`,'bot',300);
-    addMsg("What's your email address? We'll send a confirmation there.",'bot',900);
+  window.submitName=function(){
+    const val=document.getElementById('inName').value.trim(); if(!val) return;
+    pd.name=val; addMsg(val,'user'); document.getElementById('inName').value='';
+    addMsg(`Good to meet you, ${val}.`,'bot',300);
+    addMsg("What's your email? We'll send a confirmation there.",'bot',900);
     showStep('stepEmail');
   };
-
-  window.submitEmail = function(){
-    const val=document.getElementById('inEmail').value.trim();
-    if(!val||!val.includes('@')) { document.getElementById('inEmail').style.borderColor='#ff4444'; return; }
-    document.getElementById('inEmail').style.borderColor='';
-    pd.email=val;
-    addMsg(val,'user');
-    document.getElementById('inEmail').value='';
-    addMsg(`Got it! Which symptom best describes what you're experiencing?`,'bot',500);
-    showStep('stepSymptom');
+  window.submitEmail=function(){
+    const val=document.getElementById('inEmail').value.trim(); if(!val||!val.includes('@')){ document.getElementById('inEmail').style.borderColor='#c0392b'; return; }
+    document.getElementById('inEmail').style.borderColor=''; pd.email=val; addMsg(val,'user'); document.getElementById('inEmail').value='';
+    addMsg("Which symptom best describes what you're experiencing?",'bot',500); showStep('stepSymptom');
   };
-
-  window.submitSymptom = async function(){
-    const sel=document.getElementById('inSymptom');
-    const val=sel.value;
-    if(!val) return;
-    pd.symptom=val;
-    addMsg(val,'user');
-    sel.selectedIndex=0;
+  window.submitSymptom=async function(){
+    const sel=document.getElementById('inSymptom'); const val=sel.value; if(!val) return;
+    pd.symptom=val; addMsg(val,'user'); sel.selectedIndex=0;
     document.getElementById('symptomBtn').disabled=true;
-    addMsg(`Got it — ${val}. Searching for the best available specialist…`,'bot',300);
-
+    addMsg(`Searching for the best available specialist for ${val}…`,'bot',300);
     try{
       const result=await findBestSlot(val);
       if(!result){
-        const fd=dateStr(1), ft='09:00';
-        pd.doctorName='Unassigned'; pd.speciality='—'; pd.date=fd; pd.time=ft;
-        document.getElementById('slotPreview').innerHTML=`
-          <div class="no-slot" style="margin-bottom:.6rem">⚠ No specialist found right now. We'll assign a doctor and confirm shortly.</div>
-          <strong>📅 Date:</strong> ${fmtDate(fd)}<br/>
-          <strong>🕘 Time:</strong> ${fmtTime(ft)}`;
-        showStep('stepConfirm');
-        addMsg("No specialist available right now — we've reserved a slot. Confirm below.",'bot',900);
-        return;
+        const fd=dateStr(1),ft='09:00'; pd.doctorName='Unassigned'; pd.speciality='—'; pd.date=fd; pd.time=ft;
+        document.getElementById('slotPreview').innerHTML=`<div class="no-slot" style="margin-bottom:.6rem">⚠ No specialist found right now. We'll assign one and confirm.</div><strong>Date:</strong> ${fmtDate(fd)}<br/><strong>Time:</strong> ${fmtTime(ft)}`;
+        showStep('stepConfirm'); addMsg("Reserved a slot — confirm below.",'bot',900); return;
       }
-      pd.doctorName=result.doctor.name;
-      pd.speciality=result.doctor.speciality||'—';
-      pd.date=result.date; pd.time=result.time;
-      document.getElementById('slotPreview').innerHTML=`
-        <strong>👨‍⚕️ Doctor:</strong> ${result.doctor.name}<br/>
-        <strong>🏥 Speciality:</strong> ${result.doctor.speciality||'—'}<br/>
-        <strong>📅 Date:</strong> ${fmtDate(result.date)}<br/>
-        <strong>🕐 Time:</strong> ${fmtTime(result.time)}`;
-      showStep('stepConfirm');
-      addMsg(`Found ${result.doctor.name} (${result.doctor.speciality}) for you!`,'bot',900);
-      addMsg(`Slot: ${fmtDate(result.date)} at ${fmtTime(result.time)}. Confirm below 👇`,'bot',1600);
-    } catch(e){
-      addMsg("⚠️ Couldn't search for doctors right now. Please try again.",'bot',500);
-      console.error(e);
-    } finally {
-      document.getElementById('symptomBtn').disabled=false;
-    }
+      pd.doctorName=result.doctor.name; pd.speciality=result.doctor.speciality||'—'; pd.date=result.date; pd.time=result.time;
+      document.getElementById('slotPreview').innerHTML=`<strong>Doctor:</strong> ${result.doctor.name}<br/><strong>Speciality:</strong> ${result.doctor.speciality||'—'}<br/><strong>Date:</strong> ${fmtDate(result.date)}<br/><strong>Time:</strong> ${fmtTime(result.time)}`;
+      showStep('stepConfirm'); addMsg(`Matched you with ${result.doctor.name} (${result.doctor.speciality}).`,'bot',900);
+      addMsg(`${fmtDate(result.date)} at ${fmtTime(result.time)}. Confirm below.`,'bot',1600);
+    } catch(e){ addMsg("Couldn't search right now — please try again.",'bot',500); console.error(e); }
+    finally { document.getElementById('symptomBtn').disabled=false; }
   };
-
-  window.submitConfirm = async function(){
-    const btn=document.getElementById('confirmBtn');
-    btn.disabled=true; btn.textContent='Booking…';
+  window.submitConfirm=async function(){
+    const btn=document.getElementById('confirmBtn'); btn.disabled=true; btn.textContent='Booking…';
     try{
-      await addDoc(collection(db,'appointments'),{
-        patientName: pd.name,
-        name:        pd.name,
-        email:       pd.email,
-        symptom:     pd.symptom,
-        date:        pd.date,
-        time:        pd.time,
-        status:      'Pending',
-        doctorName:  pd.doctorName,
-        speciality:  pd.speciality,
-        createdAt:   serverTimestamp()
-      });
-
-      // ── Send confirmation email via EmailJS ──
-      try {
-        await emailjs.send("default_service", "template_smasli7", {
-          to_name:      pd.name,
-          name:         pd.name,
-          patient_name: pd.name,
-          from_name:    pd.name,
-          user_name:    pd.name,
-          to_email:     pd.email,
-          email:        pd.email,
-          user_email:   pd.email,
-          reply_to:     pd.email,
-          doctor:       pd.doctorName,
-          doctor_name:  pd.doctorName,
-          speciality:   pd.speciality,
-          date:         fmtDate(pd.date),
-          time:         fmtTime(pd.time),
-          symptom:      pd.symptom
-        }, {
-          publicKey: "nEbb9aPtYh8imCD0M"
-        });
-      } catch(emailErr){
-        console.warn("EmailJS send failed:", emailErr);
-        // Don't block the booking confirmation even if email fails
-      }
-
-      showStep('stepSuccess');
-      addMsg(`✅ Booked! See you on ${fmtDate(pd.date)} at ${fmtTime(pd.time)}, ${pd.name}. Check your inbox! 📧`,'bot',300);
-    } catch(err){
-      console.error(err);
-      addMsg("⚠️ Couldn't save your appointment. Please try again.",'bot',300);
-      btn.disabled=false; btn.textContent='✅ Confirm Appointment';
-    }
+      await addDoc(collection(db,'appointments'),{ patientName:pd.name, name:pd.name, email:pd.email, symptom:pd.symptom, date:pd.date, time:pd.time, status:'Pending', doctorName:pd.doctorName, speciality:pd.speciality, createdAt:serverTimestamp() });
+      try{ await emailjs.send("default_service","template_smasli7",{ to_name:pd.name, name:pd.name, patient_name:pd.name, from_name:pd.name, user_name:pd.name, to_email:pd.email, email:pd.email, user_email:pd.email, reply_to:pd.email, doctor:pd.doctorName, doctor_name:pd.doctorName, speciality:pd.speciality, date:fmtDate(pd.date), time:fmtTime(pd.time), symptom:pd.symptom },{publicKey:"nEbb9aPtYh8imCD0M"}); } catch(emailErr){ console.warn("EmailJS:",emailErr); }
+      showStep('stepSuccess'); addMsg(`Confirmed. See you ${fmtDate(pd.date)} at ${fmtTime(pd.time)}, ${pd.name}. Check your inbox.`,'bot',300);
+    } catch(err){ console.error(err); addMsg("Couldn't save — please try again.",'bot',300); btn.disabled=false; btn.textContent='Confirm Appointment'; }
   };
-
-  window.resetChat = function(){
-    document.getElementById('inName').value='';
-    document.getElementById('inEmail').value='';
-    const btn=document.getElementById('confirmBtn');
-    if(btn){ btn.disabled=false; btn.textContent='✅ Confirm Appointment'; }
+  window.resetChat=function(){
+    document.getElementById('inName').value=''; document.getElementById('inEmail').value='';
+    const btn=document.getElementById('confirmBtn'); if(btn){btn.disabled=false;btn.textContent='Confirm Appointment';}
     initChat();
   };
-
-  window.openChat  = function(){ chatOpen=true;  document.getElementById('chatPanel').classList.add('open'); if(!msgsEl.children.length) initChat(); };
-  window.closeChat = function(){ chatOpen=false; document.getElementById('chatPanel').classList.remove('open'); };
-  window.toggleChat= function(){ chatOpen ? window.closeChat() : window.openChat(); };
+  window.openChat=function(){ chatOpen=true; document.getElementById('chatPanel').classList.add('open'); if(!msgsEl.children.length) initChat(); };
+  window.closeChat=function(){ chatOpen=false; document.getElementById('chatPanel').classList.remove('open'); };
+  window.toggleChat=function(){ chatOpen ? window.closeChat() : window.openChat(); };
 </script>
 </body>
 </html>

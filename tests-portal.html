@@ -1,375 +1,924 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Tests Portal | MediCare+</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <style>
-    :root {
-      --orange:  #ff6a00;
-      --orange2: #ff8c2a;
-      --orange3: #ffb347;
-      --black:   #060606;
-      --black2:  #0d0d0d;
-      --black3:  #131313;
-      --card:    #0f0f0f;
-      --border:  rgba(255,106,0,0.18);
-      --border2: rgba(255,106,0,0.4);
-      --text:    #f0e6d8;
-      --muted:   #7a6555;
-      --green:   #34d399;
-      --rose:    #ff5e7a;
-      --lavender:#a78bfa;
-      --amber:   #f4c542;
-    }
-    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-    html{scroll-behavior:smooth;}
-    body{background:var(--black);color:var(--text);font-family:'Outfit',sans-serif;min-height:100vh;overflow-x:hidden;}
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tests Portal | MediCare+</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+:root {
+  --bg:      #f8f9f7;
+  --bg2:     #ffffff;
+  --bg3:     #f2f5f2;
+  --panel:   #ffffff;
+  --forest:  #1f3d2e;
+  --forest2: #2a5240;
+  --forest3: #345a40;
+  --sage:    #5a7d65;
+  --sage2:   #3d6b50;
+  --sage3:   #2a5240;
+  --cream:   #1a1a18;
+  --cream2:  #2d2d2a;
+  --gold:    #8a6a2a;
+  --gold2:   #a07830;
+  --ink:     #1a1a18;
+  --muted:   #7a8f82;
+  --muted2:  #5a7060;
+  --border:  rgba(31,61,46,0.1);
+  --border2: rgba(31,61,46,0.2);
+  --border3: rgba(31,61,46,0.35);
+  --rose:    #b04050;
+  --amber:   #8a6a2a;
+  --sky:     #3a7a8a;
+  --green:   #2d7a55;
+}
 
-    body::before{
-      content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-      background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
-      background-size:200px;opacity:.5;
-    }
-    .orb{position:fixed;border-radius:50%;filter:blur(130px);pointer-events:none;z-index:0;}
-    .orb1{width:600px;height:600px;top:-200px;right:-150px;background:radial-gradient(circle,rgba(255,106,0,0.1) 0%,transparent 70%);}
-    .orb2{width:450px;height:450px;bottom:-150px;left:-100px;background:radial-gradient(circle,rgba(255,106,0,0.06) 0%,transparent 70%);}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'DM Sans',sans-serif;
+  min-height:100vh;
+  overflow-x:hidden;
+}
 
-    /* ── LOGIN ── */
-    #loginScreen{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:var(--black);}
-    .login-box{
-      position:relative;z-index:5;width:100%;max-width:420px;
-      background:var(--black2);border:1px solid var(--border2);border-radius:4px;
-      padding:2.5rem;box-shadow:0 40px 100px rgba(0,0,0,.8),0 0 60px rgba(255,106,0,0.08);
-    }
-    .login-logo{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--text);text-align:center;}
-    .login-logo span{color:var(--orange);}
-    .login-role{
-      text-align:center;margin:.5rem 0 2rem;
-      font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;
-      color:var(--muted);display:flex;align-items:center;justify-content:center;gap:.5rem;
-    }
-    .role-dot{width:6px;height:6px;border-radius:50%;background:var(--orange);box-shadow:0 0 8px var(--orange);}
-    .f-group{margin-bottom:1rem;}
-    .f-group label{display:block;font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.4rem;font-weight:500;}
-    .f-group input{
-      width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:6px;
-      padding:.7rem .9rem;color:var(--text);font-size:.9rem;font-family:'Outfit',sans-serif;outline:none;transition:border-color .2s;
-    }
-    .f-group input:focus{border-color:var(--orange);}
-    .btn-login{
-      width:100%;padding:.85rem;background:var(--orange);border:none;border-radius:6px;
-      color:#000;font-weight:700;font-size:.9rem;font-family:'Outfit',sans-serif;
-      cursor:pointer;transition:all .2s;margin-top:.5rem;
-    }
-    .btn-login:hover{background:var(--orange2);box-shadow:0 0 30px rgba(255,106,0,0.4);}
-    .btn-login:disabled{opacity:.5;cursor:not-allowed;}
-    .login-err{background:rgba(255,94,122,.08);border:1px solid rgba(255,94,122,.3);border-radius:6px;padding:.6rem .9rem;color:var(--rose);font-size:.8rem;margin-top:.75rem;display:none;text-align:center;}
-    .login-loading{text-align:center;color:var(--muted);font-size:.8rem;margin-top:.6rem;display:none;}
-    .change-link{text-align:center;margin-top:1rem;font-size:.78rem;color:var(--muted);}
-    .change-link a{color:var(--orange);cursor:pointer;}
+/* ── GRAIN ── */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.018'/%3E%3C/svg%3E");
+  background-size:220px;
+}
 
-    /* ── NAV ── */
-    #appShell{display:none;}
-    nav{
-      position:sticky;top:0;z-index:50;
-      display:flex;align-items:center;justify-content:space-between;
-      padding:1rem 3rem;background:rgba(6,6,6,0.9);
-      border-bottom:1px solid var(--border);backdrop-filter:blur(20px);
-    }
-    .nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:700;color:var(--text);}
-    .nav-logo span{color:var(--orange);}
-    .nav-tabs{display:flex;gap:.25rem;}
-    .nav-tab{
-      padding:.45rem 1.1rem;border-radius:6px;font-size:.82rem;cursor:pointer;
-      color:var(--muted);background:transparent;border:1px solid transparent;
-      transition:all .2s;font-family:'Outfit',sans-serif;
-    }
-    .nav-tab:hover{color:var(--text);background:rgba(255,255,255,.04);}
-    .nav-tab.active{color:var(--orange);background:rgba(255,106,0,.08);border-color:var(--border);}
-    .nav-right{display:flex;align-items:center;gap:.75rem;}
-    .op-chip{
-      display:flex;align-items:center;gap:.5rem;
-      background:rgba(255,106,0,.08);border:1px solid var(--border);
-      border-radius:4px;padding:.35rem .85rem;font-size:.78rem;color:var(--orange);
-    }
-    .avatar-sm{width:22px;height:22px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;font-size:.65rem;color:#000;font-weight:700;}
-    .btn-signout{
-      padding:.4rem 1rem;border:1px solid var(--border);border-radius:4px;
-      background:transparent;color:var(--muted);font-size:.78rem;cursor:pointer;
-      font-family:'Outfit',sans-serif;transition:all .2s;
-    }
-    .btn-signout:hover{border-color:var(--rose);color:var(--rose);}
+/* Ambient glow */
+body::after{
+  content:'';position:fixed;z-index:0;pointer-events:none;
+  width:700px;height:700px;top:-200px;right:-200px;border-radius:50%;
+  background:radial-gradient(circle,rgba(31,61,46,0.06) 0%,transparent 70%);
+  filter:blur(80px);
+}
 
-    /* ── MAIN ── */
-    .main{position:relative;z-index:5;padding:2.5rem 3rem;max-width:1200px;margin:0 auto;}
-    .page{display:none;}
-    .page.active{display:block;animation:fadeUp .3s ease;}
-    @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+/* ══════════════════════════════════════════════
+   LOGIN SCREEN
+════════════════════════════════════════════════ */
+#loginScreen{
+  position:fixed;inset:0;z-index:100;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--bg);
+  background-image: linear-gradient(135deg, rgba(31,61,46,0.04) 0%, transparent 60%);
+}
 
-    .pg-header{margin-bottom:2rem;}
-    .pg-header h2{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:700;color:var(--text);line-height:1.1;}
-    .pg-header p{color:var(--muted);font-size:.85rem;margin-top:.3rem;}
+.login-wrap{
+  position:relative;z-index:5;
+  width:100%;max-width:440px;
+  padding:2px;
+  background:linear-gradient(135deg,var(--border3),var(--border),transparent);
+  border-radius:3px;
+}
 
-    /* ── CARDS ── */
-    .card{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:1.5rem;}
-    .card-title{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:700;color:var(--text);margin-bottom:1.25rem;display:flex;align-items:center;gap:.5rem;}
+.login-box{
+  background:var(--bg2);
+  border-radius:2px;
+  padding:3rem;
+  box-shadow: 0 2px 40px rgba(31,61,46,0.08), 0 1px 0 rgba(31,61,46,0.06);
+}
 
-    /* ── STATS ── */
-    .stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;margin-bottom:2rem;}
-    .stat-card{background:var(--card);border:1px solid var(--border);border-radius:4px;padding:1.25rem 1.5rem;transition:border-color .2s,transform .2s;}
-    .stat-card:hover{border-color:var(--border2);transform:translateY(-2px);}
-    .stat-num{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:700;color:var(--orange);}
-    .stat-lbl{font-size:.75rem;color:var(--muted);margin-top:.15rem;text-transform:uppercase;letter-spacing:.06em;}
-    .stat-icon{font-size:1.3rem;margin-bottom:.4rem;}
+.login-header{
+  text-align:center;
+  margin-bottom:2.5rem;
+}
 
-    .today-strip{
-      background:rgba(255,106,0,.06);border:1px solid var(--border);border-radius:4px;
-      padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;justify-content:space-between;
-    }
-    .today-day{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--text);}
-    .today-cnt{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:700;color:var(--orange);}
+.login-logo{
+  font-family:'Playfair Display',serif;
+  font-size:1.6rem;font-weight:700;
+  color:var(--ink);letter-spacing:0.02em;
+}
+.login-logo sup{font-size:0.5em;color:var(--sage2);vertical-align:super;}
 
-    /* ── TEST CARDS ── */
-    .test-list{display:flex;flex-direction:column;gap:.85rem;}
-    .test-card{
-      background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:4px;
-      padding:1rem 1.25rem;transition:border-color .2s,background .2s;
-    }
-    .test-card:hover{background:rgba(255,106,0,.03);border-color:var(--border2);}
-    .test-top{display:grid;grid-template-columns:auto 1fr auto auto;align-items:center;gap:1.25rem;}
-    .test-bottom{
-      margin-top:.85rem;padding-top:.85rem;
-      border-top:1px solid rgba(255,255,255,.05);
-      display:flex;gap:.6rem;flex-wrap:wrap;align-items:center;
-    }
+.login-divider{
+  display:flex;align-items:center;gap:1rem;
+  margin:1rem 0;
+}
+.login-divider::before,.login-divider::after{
+  content:'';flex:1;height:1px;background:var(--border);
+}
+.login-role{
+  font-family:'DM Mono',monospace;
+  font-size:0.65rem;letter-spacing:0.2em;
+  text-transform:uppercase;color:var(--sage2);
+  white-space:nowrap;
+}
 
-    .time-block{
-      text-align:center;background:rgba(255,106,0,.08);border:1px solid var(--border);
-      border-radius:4px;padding:.6rem .9rem;min-width:72px;
-    }
-    .time-val{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:600;color:var(--orange);}
-    .date-val{font-size:.68rem;color:var(--muted);margin-top:.1rem;}
+.f-group{margin-bottom:1.1rem;}
+.f-group label{
+  display:block;
+  font-family:'DM Mono',monospace;
+  font-size:0.62rem;letter-spacing:0.16em;text-transform:uppercase;
+  color:var(--muted2);margin-bottom:0.45rem;
+}
+.f-group input{
+  width:100%;
+  background:#fafafa;
+  border:1px solid var(--border2);
+  border-radius:2px;
+  padding:0.75rem 1rem;
+  color:var(--ink);
+  font-family:'DM Sans',sans-serif;
+  font-size:0.88rem;
+  font-weight:300;
+  outline:none;
+  transition:border-color 0.2s,background 0.2s;
+}
+.f-group input:focus{border-color:var(--sage);background:#fff;}
+.f-group input::placeholder{color:rgba(90,112,96,0.4);}
 
-    .test-info h4{font-size:.9rem;color:var(--text);font-weight:500;margin-bottom:.2rem;}
-    .test-info .meta{font-size:.78rem;color:var(--muted);}
-    .test-info .meta span{color:var(--orange2);}
+.btn-login{
+  width:100%;margin-top:0.5rem;
+  padding:0.85rem;
+  background:var(--forest);
+  border:1px solid var(--forest2);
+  border-radius:2px;
+  color:var(--cream);
+  font-family:'DM Sans',sans-serif;
+  font-size:0.82rem;font-weight:500;
+  letter-spacing:0.08em;text-transform:uppercase;
+  cursor:pointer;transition:all 0.25s;
+}
+.btn-login:hover{background:var(--forest2);box-shadow:0 8px 32px rgba(31,61,46,0.4);}
+.btn-login:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none;}
 
-    /* STATUS */
-    .status-badge{padding:.22rem .75rem;border-radius:3px;font-size:.7rem;font-weight:600;white-space:nowrap;letter-spacing:.04em;}
-    .ts-scheduled{background:rgba(255,106,0,.12);color:var(--orange);}
-    .ts-inprogress{background:rgba(52,211,153,.1);color:var(--green);}
-    .ts-done{background:rgba(167,139,250,.12);color:var(--lavender);}
-    .ts-cancelled{background:rgba(255,94,122,.12);color:var(--rose);}
+.login-err{
+  margin-top:0.85rem;
+  background:rgba(192,99,107,0.08);
+  border:1px solid rgba(192,99,107,0.25);
+  border-radius:2px;padding:0.6rem 0.9rem;
+  font-size:0.78rem;color:var(--rose);
+  text-align:center;display:none;
+}
+.login-loading{
+  text-align:center;margin-top:0.5rem;
+  font-family:'DM Mono',monospace;
+  font-size:0.7rem;letter-spacing:0.12em;
+  color:var(--muted2);display:none;
+}
 
-    /* ACTION BUTTONS */
-    .btn-sm{padding:.3rem .75rem;border-radius:4px;font-size:.74rem;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;border:1px solid;}
-    .btn-start{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.3);color:var(--green);}
-    .btn-start:hover{background:rgba(52,211,153,.2);}
-    .btn-finish{background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.3);color:var(--lavender);}
-    .btn-finish:hover{background:rgba(167,139,250,.2);}
-    .btn-cancel{background:rgba(255,94,122,.1);border-color:rgba(255,94,122,.3);color:var(--rose);}
-    .btn-cancel:hover{background:rgba(255,94,122,.2);}
-    .btn-send-report{
-      display:inline-flex;align-items:center;gap:.4rem;
-      padding:.35rem 1rem;border-radius:4px;font-size:.76rem;
-      cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;border:1px solid;
-      white-space:nowrap;
-      background:rgba(255,106,0,.1);border-color:rgba(255,106,0,.3);color:var(--orange);
-    }
-    .btn-send-report:hover{background:rgba(255,106,0,.2);transform:translateY(-1px);}
-    .btn-send-report:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+/* ══════════════════════════════════════════════
+   APP SHELL
+════════════════════════════════════════════════ */
+#appShell{display:none;}
 
-    /* BADGES */
-    .assign-badge{display:inline-flex;align-items:center;gap:.35rem;padding:.2rem .65rem;border-radius:3px;font-size:.7rem;font-weight:500;}
-    .badge-doctor{background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.22);color:var(--green);}
-    .badge-result{background:rgba(255,106,0,.08);border:1px solid var(--border);color:var(--orange);}
+/* ── NAV ── */
+nav{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;gap:0;
+  height:60px;
+  background:rgba(255,255,255,0.92);
+  backdrop-filter:blur(20px) saturate(1.4);
+  border-bottom:1px solid var(--border2);
+  box-shadow: 0 1px 0 var(--border);
+}
 
-    /* RESULT INPUT */
-    .result-row{display:flex;gap:.5rem;width:100%;margin-top:.35rem;}
-    .result-input{
-      flex:1;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:4px;
-      padding:.4rem .75rem;color:var(--text);font-size:.82rem;font-family:'Outfit',sans-serif;outline:none;
-      transition:border-color .2s;
-    }
-    .result-input:focus{border-color:var(--orange);}
-    .result-input::placeholder{color:rgba(122,101,85,0.6);}
-    .btn-save-result{
-      padding:.4rem .9rem;background:var(--orange);border:none;border-radius:4px;
-      color:#000;font-weight:600;font-size:.78rem;cursor:pointer;white-space:nowrap;transition:all .2s;
-    }
-    .btn-save-result:hover{background:var(--orange2);}
+.nav-logo-wrap{
+  display:flex;align-items:center;
+  padding:0 2rem;
+  height:100%;
+  border-right:1px solid var(--border);
+  flex-shrink:0;
+}
+.nav-logo{
+  font-family:'Playfair Display',serif;
+  font-size:1.2rem;font-weight:700;
+  color:var(--ink);letter-spacing:0.02em;
+  white-space:nowrap;
+}
+.nav-logo sup{font-size:0.5em;color:var(--sage2);vertical-align:super;}
 
-    /* ── PROFILE ── */
-    .profile-hero{
-      display:flex;align-items:center;gap:2rem;padding:2rem;
-      background:rgba(255,106,0,.04);border:1px solid var(--border);border-radius:4px;margin-bottom:1.5rem;
-    }
-    .profile-avatar{
-      width:76px;height:76px;border-radius:50%;background:var(--orange);
-      display:flex;align-items:center;justify-content:center;
-      font-size:1.9rem;flex-shrink:0;
-    }
-    .profile-name{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:700;color:var(--text);}
-    .equip-tag{
-      display:inline-flex;align-items:center;gap:.4rem;margin-top:.4rem;
-      background:rgba(255,106,0,.08);border:1px solid var(--border);border-radius:3px;
-      padding:.22rem .7rem;font-size:.75rem;color:var(--orange);
-    }
-    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.5rem;}
-    .info-row{
-      display:flex;align-items:center;justify-content:space-between;
-      padding:.6rem .9rem;background:rgba(255,255,255,.02);border:1px solid var(--border);
-      border-radius:4px;font-size:.84rem;margin-bottom:.5rem;
-    }
-    .info-row:last-child{margin-bottom:0;}
-    .info-label{color:var(--muted);}
-    .info-val{color:var(--text);font-weight:500;}
-    .info-val.hi{color:var(--orange);}
+.nav-tabs{
+  display:flex;height:100%;
+  flex:1;
+}
+.nav-tab{
+  display:flex;align-items:center;
+  padding:0 1.5rem;
+  height:100%;
+  font-family:'DM Mono',monospace;
+  font-size:0.68rem;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--muted);
+  background:transparent;border:none;
+  border-right:1px solid var(--border);
+  cursor:pointer;transition:all 0.2s;
+  position:relative;
+  white-space:nowrap;
+}
+.nav-tab::after{
+  content:'';
+  position:absolute;bottom:0;left:0;right:0;
+  height:2px;background:var(--forest);
+  transform:scaleX(0);transition:transform 0.25s;
+}
+.nav-tab:hover{color:var(--ink);background:rgba(31,61,46,0.03);}
+.nav-tab.active{color:var(--forest);}
+.nav-tab.active::after{transform:scaleX(1);}
 
-    /* ── SETTINGS ── */
-    .field{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.9rem;}
-    .field label{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:500;}
-    .field input{
-      background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:4px;
-      padding:.65rem .9rem;color:var(--text);font-size:.87rem;font-family:'Outfit',sans-serif;outline:none;transition:border-color .2s;
-    }
-    .field input:focus{border-color:var(--orange);}
-    .btn-save{
-      padding:.65rem 1.75rem;background:var(--orange);border:none;border-radius:4px;
-      color:#000;font-weight:700;font-size:.87rem;font-family:'Outfit',sans-serif;cursor:pointer;transition:all .2s;
-    }
-    .btn-save:hover{background:var(--orange2);box-shadow:0 0 20px rgba(255,106,0,.35);}
-    .btn-save:disabled{opacity:.5;cursor:not-allowed;}
-    .alert{border-radius:4px;padding:.65rem 1rem;font-size:.8rem;margin-top:.8rem;display:none;}
-    .alert-ok{background:rgba(255,106,0,.08);border:1px solid rgba(255,106,0,.3);color:var(--orange);}
-    .alert-err{background:rgba(255,94,122,.08);border:1px solid rgba(255,94,122,.3);color:var(--rose);}
+.nav-right{
+  display:flex;align-items:center;gap:0;
+  margin-left:auto;height:100%;
+}
 
-    /* FILTER */
-    .filter-bar{display:flex;gap:.4rem;margin-bottom:1.5rem;flex-wrap:wrap;}
-    .filter-pill{
-      padding:.38rem 1rem;border-radius:3px;font-size:.76rem;font-weight:500;
-      cursor:pointer;border:1px solid var(--border);color:var(--muted);
-      background:transparent;font-family:'Outfit',sans-serif;transition:all .2s;
-    }
-    .filter-pill:hover{color:var(--text);border-color:var(--border2);}
-    .filter-pill.active{background:rgba(255,106,0,.1);color:var(--orange);border-color:var(--border2);}
+.op-chip{
+  display:flex;align-items:center;gap:0.6rem;
+  padding:0 1.5rem;
+  height:100%;
+  border-left:1px solid var(--border);
+  font-family:'DM Mono',monospace;
+  font-size:0.68rem;letter-spacing:0.1em;
+  color:var(--muted2);
+}
+.avatar-sm{
+  width:24px;height:24px;border-radius:50%;
+  background:var(--forest);
+  border:1px solid var(--border2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.62rem;color:#fff;font-weight:500;
+}
 
-    /* ── REPORT MODAL ── */
-    .overlay{
-      position:fixed;inset:0;z-index:200;
-      background:rgba(6,6,6,.88);backdrop-filter:blur(10px);
-      display:flex;align-items:center;justify-content:center;
-      opacity:0;pointer-events:none;transition:opacity .25s;
-    }
-    .overlay.open{opacity:1;pointer-events:all;}
-    .modal{
-      background:var(--black2);border:1px solid var(--border2);border-radius:4px;
-      padding:2rem;width:100%;max-width:540px;
-      box-shadow:0 40px 100px rgba(0,0,0,.8),0 0 60px rgba(255,106,0,.08);
-      transform:translateY(16px);transition:transform .25s;
-      max-height:90vh;overflow-y:auto;
-    }
-    .overlay.open .modal{transform:translateY(0);}
-    .modal-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:700;color:var(--text);margin-bottom:.25rem;}
-    .modal-sub{font-size:.8rem;color:var(--muted);margin-bottom:1.25rem;}
-    .modal-patient{
-      background:rgba(255,106,0,.06);border:1px solid var(--border);
-      border-radius:4px;padding:.75rem 1rem;margin-bottom:1.25rem;font-size:.84rem;
-    }
-    .modal-patient strong{color:var(--text);}
-    .modal-patient .sub{color:var(--muted);font-size:.76rem;margin-top:.2rem;}
+.btn-signout{
+  display:flex;align-items:center;
+  padding:0 1.5rem;height:100%;
+  border-left:1px solid var(--border);
+  background:transparent;
+  font-family:'DM Mono',monospace;
+  font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--muted2);cursor:pointer;
+  transition:all 0.2s;
+}
+.btn-signout:hover{color:var(--rose);background:rgba(192,99,107,0.05);}
 
-    .report-section{background:rgba(255,106,0,.04);border:1px solid var(--border);border-radius:4px;padding:.85rem 1rem;margin-bottom:.9rem;}
-    .report-section-title{font-size:.7rem;text-transform:uppercase;letter-spacing:.12em;color:var(--orange);font-weight:600;margin-bottom:.6rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);}
-    .report-row{display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid rgba(255,255,255,.04);}
-    .report-row:last-child{border-bottom:none;}
-    .report-key{font-size:.76rem;color:var(--muted);}
-    .report-val{font-size:.76rem;color:var(--text);font-weight:500;text-align:right;max-width:60%;}
-    .report-val.hi{color:var(--orange);}
+/* ── MAIN CONTENT ── */
+.main{
+  position:relative;z-index:5;
+  padding:2.5rem 2.5rem;
+  max-width:1280px;margin:0 auto;
+}
 
-    .r-field{display:flex;flex-direction:column;gap:.35rem;margin-bottom:.9rem;}
-    .r-field label{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:500;}
-    .r-field textarea,.r-field input{
-      background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:4px;
-      padding:.6rem .85rem;color:var(--text);font-size:.85rem;font-family:'Outfit',sans-serif;outline:none;transition:border-color .2s;
-    }
-    .r-field textarea{resize:vertical;min-height:65px;line-height:1.5;}
-    .r-field textarea:focus,.r-field input:focus{border-color:var(--orange);}
+.page{display:none;}
+.page.active{display:block;animation:fadeUp 0.3s cubic-bezier(0.4,0,0.2,1);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
-    .modal-footer{display:flex;gap:.75rem;margin-top:1.5rem;justify-content:flex-end;}
-    .btn-modal-cancel{
-      padding:.6rem 1.25rem;border:1px solid var(--border);border-radius:4px;
-      background:transparent;color:var(--muted);font-size:.83rem;cursor:pointer;
-      font-family:'Outfit',sans-serif;transition:all .2s;
-    }
-    .btn-modal-cancel:hover{border-color:var(--rose);color:var(--rose);}
-    .btn-modal-confirm{
-      padding:.6rem 1.5rem;border:none;border-radius:4px;
-      font-weight:700;font-size:.83rem;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .2s;
-      background:var(--orange);color:#000;
-    }
-    .btn-modal-confirm:hover{background:var(--orange2);box-shadow:0 0 24px rgba(255,106,0,.4);}
-    .btn-modal-confirm:disabled{opacity:.5;cursor:not-allowed;box-shadow:none;}
+/* Page header */
+.pg-header{
+  display:flex;align-items:flex-end;justify-content:space-between;
+  margin-bottom:2.5rem;
+  padding-bottom:2rem;
+  border-bottom:1px solid var(--border2);
+}
+.pg-title{
+  font-family:'Playfair Display',serif;
+  font-size:2.2rem;font-weight:400;
+  color:var(--ink);line-height:1.1;
+  letter-spacing:-0.01em;
+}
+.pg-title em{font-style:italic;color:var(--forest);}
+.pg-sub{
+  font-family:'DM Mono',monospace;
+  font-size:0.65rem;letter-spacing:0.16em;
+  text-transform:uppercase;color:var(--muted);
+  margin-top:0.4rem;
+}
+.pg-meta{
+  font-family:'DM Mono',monospace;
+  font-size:0.68rem;letter-spacing:0.12em;
+  text-transform:uppercase;color:var(--muted);
+  text-align:right;
+}
 
-    /* ── TOAST ── */
-    .toast-wrap{position:fixed;bottom:2rem;right:2rem;z-index:300;display:flex;flex-direction:column;gap:.6rem;}
-    .toast{
-      background:var(--black2);border:1px solid var(--border2);border-radius:4px;
-      padding:.85rem 1.25rem;font-size:.82rem;min-width:280px;max-width:360px;
-      display:flex;align-items:flex-start;gap:.75rem;
-      box-shadow:0 20px 60px rgba(0,0,0,.7);animation:toastIn .3s ease;
-    }
-    @keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
-    .toast.hide{animation:toastOut .3s ease forwards;}
-    @keyframes toastOut{to{opacity:0;transform:translateX(20px)}}
-    .toast-icon{font-size:1rem;flex-shrink:0;margin-top:.05rem;}
-    .toast-body strong{display:block;color:var(--text);margin-bottom:.1rem;font-size:.85rem;}
-    .toast-body span{color:var(--muted);font-size:.76rem;line-height:1.4;}
-    .toast.ok{border-color:rgba(255,106,0,.4);}
-    .toast.err{border-color:rgba(255,94,122,.4);}
-    .toast.info{border-color:rgba(167,139,250,.4);}
+/* ── STATS GRID ── */
+.stat-grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border:1px solid var(--border2);
+  margin-bottom:2rem;
+  background:white;
+  box-shadow: 0 1px 8px rgba(31,61,46,0.05);
+}
+.stat-cell{
+  padding:1.5rem 1.75rem;
+  border-right:1px solid var(--border);
+  transition:background 0.2s;
+  background:white;
+}
+.stat-cell:last-child{border-right:none;}
+.stat-cell:hover{background:rgba(31,61,46,0.02);}
+.stat-idx{
+  font-family:'DM Mono',monospace;
+  font-size:0.62rem;letter-spacing:0.18em;
+  text-transform:uppercase;color:var(--muted);
+  margin-bottom:0.6rem;
+}
+.stat-num{
+  font-family:'Playfair Display',serif;
+  font-size:2.6rem;font-weight:400;
+  color:var(--forest);line-height:1;
+}
+.stat-lbl{
+  font-size:0.78rem;color:var(--muted);
+  font-weight:300;margin-top:0.2rem;
+}
 
-    .empty{text-align:center;padding:3rem;color:var(--muted);font-size:.85rem;}
-    .empty .e-icon{font-size:2.5rem;margin-bottom:.75rem;opacity:.3;}
-    .spinner{display:inline-block;width:15px;height:15px;border:2px solid rgba(255,106,0,.2);border-top-color:var(--orange);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;}
-    @keyframes spin{to{transform:rotate(360deg)}}
+/* Today strip */
+.today-strip{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1rem 1.5rem;
+  background:var(--forest);
+  border:none;
+  border-radius:0;
+  margin-bottom:1.75rem;
+  box-shadow: 0 4px 20px rgba(31,61,46,0.2);
+}
+.today-left{display:flex;flex-direction:column;gap:0.2rem;}
+.today-day{
+  font-family:'DM Mono',monospace;
+  font-size:0.7rem;letter-spacing:0.14em;
+  text-transform:uppercase;color:rgba(255,255,255,0.5);
+}
+.today-date{
+  font-family:'Playfair Display',serif;
+  font-size:1.15rem;color:#fff;
+}
+.today-cnt{
+  font-family:'Playfair Display',serif;
+  font-size:2.5rem;font-weight:400;color:#fff;
+  line-height:1;
+}
+.today-cnt-lbl{
+  font-family:'DM Mono',monospace;
+  font-size:0.62rem;letter-spacing:0.14em;
+  text-transform:uppercase;color:rgba(255,255,255,0.45);
+  text-align:right;margin-top:0.2rem;
+}
 
-    @media(max-width:900px){
-      nav{padding:1rem 1.5rem;}
-      .main{padding:2rem 1.5rem;}
-      .stat-grid{grid-template-columns:repeat(2,1fr);}
-      .nav-tabs{display:none;}
-      .test-top{grid-template-columns:1fr;}
-      .info-grid{grid-template-columns:1fr;}
-    }
-  </style>
+/* ── SECTION CARD ── */
+.section-card{
+  background:white;
+  border:1px solid var(--border2);
+  box-shadow: 0 1px 8px rgba(31,61,46,0.05);
+}
+.section-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.25rem 1.5rem;
+  border-bottom:1px solid var(--border);
+  background:#fafafa;
+}
+.section-title{
+  font-family:'DM Mono',monospace;
+  font-size:0.68rem;letter-spacing:0.18em;
+  text-transform:uppercase;color:var(--forest);
+}
+.section-count{
+  font-family:'DM Mono',monospace;
+  font-size:0.65rem;color:var(--muted);
+  letter-spacing:0.1em;
+}
+
+/* ── TEST CARDS ── */
+.test-list{display:flex;flex-direction:column;}
+
+.test-card{
+  border-bottom:1px solid var(--border);
+  padding:1.25rem 1.5rem;
+  transition:background 0.2s;
+  position:relative;
+  background:white;
+}
+.test-card:last-child{border-bottom:none;}
+.test-card:hover{background:#f9faf9;}
+.test-card::before{
+  content:'';
+  position:absolute;left:0;top:0;bottom:0;width:2px;
+  background:var(--forest);
+  transform:scaleY(0);transform-origin:top;
+  transition:transform 0.25s;
+}
+.test-card:hover::before{transform:scaleY(1);}
+
+.test-row-top{
+  display:grid;
+  grid-template-columns:90px 1fr auto auto;
+  align-items:center;gap:1.5rem;
+}
+.test-row-bottom{
+  margin-top:1rem;
+  padding-top:0.9rem;
+  border-top:1px solid rgba(90,125,101,0.1);
+  display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;
+}
+
+/* Time block */
+.time-block{
+  text-align:center;
+  padding:0.6rem 0.5rem;
+  border:1px solid var(--border2);
+  background:rgba(31,61,46,0.04);
+}
+.time-val{
+  font-family:'DM Mono',monospace;
+  font-size:1rem;font-weight:500;
+  color:var(--forest);letter-spacing:0.04em;
+}
+.date-val{
+  font-family:'DM Mono',monospace;
+  font-size:0.6rem;letter-spacing:0.1em;
+  color:var(--muted);margin-top:0.3rem;
+}
+
+/* Test info */
+.test-name{
+  font-size:0.92rem;font-weight:500;
+  color:var(--ink);margin-bottom:0.25rem;
+}
+.test-meta{
+  font-family:'DM Mono',monospace;
+  font-size:0.65rem;letter-spacing:0.1em;
+  color:var(--muted);
+}
+.test-meta .hi{color:var(--forest);}
+
+/* Status badges */
+.status-badge{
+  font-family:'DM Mono',monospace;
+  font-size:0.62rem;letter-spacing:0.12em;
+  text-transform:uppercase;
+  padding:0.25rem 0.75rem;
+  border:1px solid;
+  border-radius:1px;
+  white-space:nowrap;
+}
+.ts-scheduled{background:rgba(138,106,42,0.07);border-color:rgba(138,106,42,0.25);color:var(--amber);}
+.ts-inprogress{background:rgba(45,122,85,0.07);border-color:rgba(45,122,85,0.25);color:var(--green);}
+.ts-done{background:rgba(31,61,46,0.07);border-color:var(--border2);color:var(--forest);}
+.ts-cancelled{background:rgba(176,64,80,0.07);border-color:rgba(176,64,80,0.2);color:var(--rose);}
+
+/* Action buttons */
+.action-group{display:flex;gap:0.4rem;flex-shrink:0;}
+.btn-sm{
+  font-family:'DM Mono',monospace;
+  font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;
+  padding:0.32rem 0.75rem;
+  border-radius:1px;border:1px solid;
+  cursor:pointer;transition:all 0.2s;white-space:nowrap;
+}
+.btn-start{background:rgba(76,175,125,0.08);border-color:rgba(76,175,125,0.3);color:var(--green);}
+.btn-start:hover{background:rgba(76,175,125,0.18);}
+.btn-finish{background:rgba(90,125,101,0.12);border-color:var(--border2);color:var(--sage2);}
+.btn-finish:hover{background:rgba(90,125,101,0.22);}
+.btn-cancel{background:rgba(192,99,107,0.08);border-color:rgba(192,99,107,0.25);color:var(--rose);}
+.btn-cancel:hover{background:rgba(192,99,107,0.16);}
+
+/* Badges in bottom row */
+.info-badge{
+  display:inline-flex;align-items:center;gap:0.35rem;
+  font-family:'DM Mono',monospace;
+  font-size:0.62rem;letter-spacing:0.08em;
+  padding:0.2rem 0.6rem;
+  border:1px solid var(--border2);
+  color:var(--muted2);
+  background:#fafafa;
+}
+.info-badge.doctor{border-color:rgba(45,122,85,0.2);color:var(--green);background:rgba(45,122,85,0.04);}
+.info-badge.result{border-color:rgba(138,106,42,0.25);color:var(--amber);background:rgba(138,106,42,0.04);}
+
+/* Send report button */
+.btn-report{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  font-family:'DM Mono',monospace;
+  font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;
+  padding:0.32rem 0.85rem;
+  border:1px solid var(--border2);
+  background:rgba(31,61,46,0.05);
+  color:var(--forest);cursor:pointer;
+  transition:all 0.2s;white-space:nowrap;
+}
+.btn-report:hover{background:var(--forest);color:white;border-color:var(--forest);}
+.btn-report:disabled{opacity:0.35;cursor:not-allowed;}
+
+.btn-remove{
+  display:inline-flex;align-items:center;gap:0.4rem;
+  font-family:'DM Mono',monospace;
+  font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;
+  padding:0.32rem 0.75rem;
+  border:1px solid rgba(176,64,80,0.15);
+  background:rgba(176,64,80,0.03);
+  color:rgba(176,64,80,0.6);cursor:pointer;
+  transition:all 0.2s;white-space:nowrap;
+}
+.btn-remove:hover{background:rgba(176,64,80,0.08);border-color:rgba(176,64,80,0.35);color:var(--rose);}
+
+/* Result input */
+.result-row{
+  display:flex;gap:0.5rem;
+  margin-top:0.65rem;
+  width:100%;
+}
+.result-input{
+  flex:1;
+  background:#fafafa;
+  border:1px solid var(--border2);
+  padding:0.45rem 0.75rem;
+  color:var(--ink);
+  font-family:'DM Mono',monospace;
+  font-size:0.78rem;
+  outline:none;transition:border-color 0.2s;
+}
+.result-input:focus{border-color:var(--forest);}
+.result-input::placeholder{color:rgba(90,112,96,0.4);}
+.btn-save-result{
+  padding:0.45rem 1rem;
+  background:var(--forest);border:1px solid var(--forest2);
+  color:white;
+  font-family:'DM Mono',monospace;font-size:0.68rem;
+  letter-spacing:0.1em;text-transform:uppercase;
+  cursor:pointer;transition:all 0.2s;white-space:nowrap;
+}
+.btn-save-result:hover{background:var(--forest2);}
+
+/* ── FILTER BAR ── */
+.filter-bar{
+  display:flex;gap:0;
+  border:1px solid var(--border2);
+  margin-bottom:1.75rem;
+  overflow:hidden;
+  background:white;
+  box-shadow: 0 1px 4px rgba(31,61,46,0.05);
+}
+.filter-pill{
+  flex:1;
+  padding:0.6rem 1rem;
+  font-family:'DM Mono',monospace;
+  font-size:0.65rem;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--muted);
+  background:transparent;
+  border:none;border-right:1px solid var(--border);
+  cursor:pointer;transition:all 0.2s;
+}
+.filter-pill:last-child{border-right:none;}
+.filter-pill:hover{color:var(--ink);background:rgba(31,61,46,0.03);}
+.filter-pill.active{color:var(--forest);background:rgba(31,61,46,0.05);font-weight:500;}
+
+/* ── PROFILE PAGE ── */
+.equip-hero{
+  display:grid;grid-template-columns:auto 1fr;gap:2rem;align-items:center;
+  padding:2rem;
+  background:white;
+  border:1px solid var(--border2);
+  margin-bottom:2rem;
+  position:relative;overflow:hidden;
+  box-shadow: 0 1px 8px rgba(31,61,46,0.06);
+}
+.equip-hero::after{
+  content:'🔬';
+  position:absolute;right:-10px;top:50%;transform:translateY(-50%);
+  font-size:8rem;opacity:0.03;pointer-events:none;
+}
+.equip-icon{
+  width:72px;height:72px;border-radius:50%;
+  background:var(--forest);
+  border:none;
+  display:flex;align-items:center;justify-content:center;
+  font-size:2rem;
+}
+.equip-name{
+  font-family:'Playfair Display',serif;
+  font-size:1.8rem;font-weight:500;color:var(--ink);
+}
+.equip-serial{
+  font-family:'DM Mono',monospace;
+  font-size:0.68rem;letter-spacing:0.16em;text-transform:uppercase;
+  color:var(--forest);margin-top:0.3rem;
+}
+.equip-email{
+  font-size:0.78rem;color:var(--muted);font-weight:300;margin-top:0.2rem;
+}
+
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+.info-panel{background:white;border:1px solid var(--border2);box-shadow:0 1px 4px rgba(31,61,46,0.04);}
+.info-panel-head{
+  padding:0.85rem 1.25rem;
+  border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;
+  font-size:0.65rem;letter-spacing:0.18em;text-transform:uppercase;
+  color:var(--forest);
+  background:#fafafa;
+}
+.info-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0.8rem 1.25rem;
+  border-bottom:1px solid var(--border);
+}
+.info-row:last-child{border-bottom:none;}
+.info-label{
+  font-family:'DM Mono',monospace;
+  font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--muted);
+}
+.info-val{font-size:0.88rem;color:var(--ink);font-weight:300;}
+.info-val.hi{color:var(--forest);font-family:'DM Mono',monospace;font-size:0.82rem;}
+
+/* ── SETTINGS PAGE ── */
+.settings-panel{
+  max-width:480px;
+  background:white;
+  border:1px solid var(--border2);
+  box-shadow:0 1px 8px rgba(31,61,46,0.05);
+}
+.settings-head{
+  padding:1.25rem 1.5rem;
+  border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;
+  font-size:0.65rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--forest);
+  background:#fafafa;
+}
+.settings-body{padding:1.5rem;}
+
+.field{margin-bottom:1rem;}
+.field label{
+  display:block;
+  font-family:'DM Mono',monospace;
+  font-size:0.62rem;letter-spacing:0.16em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:0.45rem;
+}
+.field input{
+  width:100%;
+  background:#fafafa;
+  border:1px solid var(--border2);
+  padding:0.7rem 0.9rem;
+  color:var(--ink);
+  font-family:'DM Sans',sans-serif;font-size:0.86rem;font-weight:300;
+  outline:none;transition:border-color 0.2s;
+}
+.field input:focus{border-color:var(--forest);}
+
+.btn-save{
+  padding:0.7rem 2rem;
+  background:var(--forest);border:1px solid var(--forest2);
+  color:white;
+  font-family:'DM Mono',monospace;font-size:0.72rem;
+  letter-spacing:0.1em;text-transform:uppercase;
+  cursor:pointer;transition:all 0.25s;
+}
+.btn-save:hover{background:var(--forest2);box-shadow:0 4px 20px rgba(31,61,46,0.25);}
+.btn-save:disabled{opacity:0.4;cursor:not-allowed;box-shadow:none;}
+
+.alert{
+  margin-top:0.85rem;padding:0.6rem 0.9rem;
+  border:1px solid;font-size:0.78rem;display:none;
+  font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.08em;
+}
+.alert-ok{background:rgba(31,61,46,0.05);border-color:var(--border2);color:var(--forest);}
+.alert-err{background:rgba(176,64,80,0.05);border-color:rgba(176,64,80,0.2);color:var(--rose);}
+
+/* ── MODAL / OVERLAY ── */
+.overlay{
+  position:fixed;inset:0;z-index:200;
+  background:rgba(26,26,24,0.5);backdrop-filter:blur(8px);
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;transition:opacity 0.25s;
+}
+.overlay.open{opacity:1;pointer-events:all;}
+
+.modal{
+  background:white;
+  border:1px solid var(--border2);
+  width:100%;max-width:560px;
+  max-height:90vh;overflow-y:auto;
+  transform:translateY(20px) scale(0.98);
+  transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  box-shadow:0 40px 100px rgba(26,26,24,0.2);
+}
+.overlay.open .modal{transform:translateY(0) scale(1);}
+
+.modal-head{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  padding:1.5rem;border-bottom:1px solid var(--border);
+  background:#fafafa;
+}
+.modal-title{
+  font-family:'Playfair Display',serif;
+  font-size:1.5rem;font-weight:500;color:var(--ink);
+}
+.modal-sub{
+  font-family:'DM Mono',monospace;
+  font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;
+  color:var(--muted);margin-top:0.3rem;
+}
+.modal-close{
+  background:transparent;border:none;
+  color:var(--muted);cursor:pointer;font-size:1rem;
+  transition:color 0.2s;padding:0.2rem;
+}
+.modal-close:hover{color:var(--rose);}
+
+.modal-body{padding:1.5rem;}
+
+.modal-patient-card{
+  background:rgba(31,61,46,0.04);
+  border:1px solid var(--border2);
+  padding:1rem 1.25rem;
+  margin-bottom:1.5rem;
+}
+.mpc-name{
+  font-family:'Playfair Display',serif;
+  font-size:1.1rem;color:var(--ink);margin-bottom:0.35rem;
+}
+.mpc-meta{
+  font-family:'DM Mono',monospace;
+  font-size:0.65rem;letter-spacing:0.1em;
+  color:var(--muted);line-height:2;
+}
+.mpc-meta .hi{color:var(--forest);}
+
+.report-summary{
+  border:1px solid var(--border2);
+  margin-bottom:1.5rem;
+}
+.rs-head{
+  padding:0.75rem 1rem;
+  border-bottom:1px solid var(--border);
+  font-family:'DM Mono',monospace;
+  font-size:0.62rem;letter-spacing:0.16em;text-transform:uppercase;
+  color:var(--forest);background:#f9faf9;
+}
+.rs-row{
+  display:flex;justify-content:space-between;align-items:baseline;
+  padding:0.55rem 1rem;
+  border-bottom:1px solid var(--border);
+}
+.rs-row:last-child{border-bottom:none;}
+.rs-key{
+  font-family:'DM Mono',monospace;
+  font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--muted);
+}
+.rs-val{
+  font-family:'DM Mono',monospace;
+  font-size:0.72rem;color:var(--ink);
+  text-align:right;max-width:60%;
+}
+.rs-val.hi{color:var(--forest);}
+
+.r-field{margin-bottom:1rem;}
+.r-field label{
+  display:block;
+  font-family:'DM Mono',monospace;
+  font-size:0.62rem;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:0.4rem;
+}
+.r-field textarea,.r-field input{
+  width:100%;
+  background:#fafafa;
+  border:1px solid var(--border2);
+  padding:0.65rem 0.85rem;
+  color:var(--ink);
+  font-family:'DM Sans',sans-serif;font-size:0.84rem;font-weight:300;
+  outline:none;transition:border-color 0.2s;
+  resize:vertical;min-height:70px;line-height:1.55;
+}
+.r-field textarea:focus,.r-field input:focus{border-color:var(--forest);}
+.r-field textarea::placeholder,.r-field input::placeholder{color:rgba(90,112,96,0.4);}
+
+.modal-footer{
+  display:flex;align-items:center;justify-content:flex-end;gap:0.75rem;
+  padding:1.25rem 1.5rem;
+  border-top:1px solid var(--border);
+  background:#fafafa;
+}
+.btn-modal-cancel{
+  padding:0.6rem 1.25rem;
+  background:transparent;
+  border:1px solid var(--border2);
+  color:var(--muted);
+  font-family:'DM Mono',monospace;font-size:0.68rem;
+  letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;
+  transition:all 0.2s;
+}
+.btn-modal-cancel:hover{border-color:var(--rose);color:var(--rose);}
+.btn-modal-confirm{
+  padding:0.6rem 1.5rem;
+  background:var(--forest);border:1px solid var(--forest2);
+  color:white;
+  font-family:'DM Mono',monospace;font-size:0.68rem;
+  letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;
+  transition:all 0.25s;
+}
+.btn-modal-confirm:hover{background:var(--forest2);box-shadow:0 4px 20px rgba(31,61,46,0.3);}
+.btn-modal-confirm:disabled{opacity:0.35;cursor:not-allowed;box-shadow:none;}
+
+/* ── TOASTS ── */
+.toast-wrap{
+  position:fixed;bottom:2rem;right:2rem;z-index:400;
+  display:flex;flex-direction:column;gap:0.5rem;
+}
+.toast{
+  display:flex;align-items:flex-start;gap:0.85rem;
+  padding:0.9rem 1.1rem;
+  background:white;
+  border:1px solid var(--border2);
+  min-width:280px;max-width:360px;
+  box-shadow:0 8px 32px rgba(26,26,24,0.12);
+  animation:toastIn 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.toast.hide{animation:toastOut 0.3s ease forwards;}
+@keyframes toastOut{to{opacity:0;transform:translateX(20px)}}
+.toast-icon{font-size:0.95rem;flex-shrink:0;padding-top:0.1rem;}
+.toast-body{}
+.toast-body strong{
+  display:block;font-size:0.82rem;color:var(--ink);margin-bottom:0.1rem;font-weight:500;
+}
+.toast-body span{
+  font-family:'DM Mono',monospace;font-size:0.68rem;
+  letter-spacing:0.06em;color:var(--muted);line-height:1.4;
+}
+.toast.ok{border-left:2px solid var(--forest);}
+.toast.err{border-left:2px solid var(--rose);}
+.toast.info{border-left:2px solid var(--amber);}
+
+/* ── EMPTY STATE ── */
+.empty{
+  padding:4rem 2rem;
+  text-align:center;
+  border:1px dashed var(--border2);
+  background:#fafafa;
+}
+.empty-icon{
+  font-family:'DM Mono',monospace;
+  font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:0.75rem;
+}
+.empty-msg{font-size:0.85rem;color:var(--muted);font-weight:300;}
+
+.spinner{
+  display:inline-block;width:14px;height:14px;
+  border:1.5px solid var(--border2);border-top-color:var(--sage2);
+  border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  nav{flex-wrap:wrap;height:auto;}
+  .nav-tabs{display:none;}
+  .main{padding:1.5rem;}
+  .stat-grid{grid-template-columns:repeat(2,1fr);}
+  .test-row-top{grid-template-columns:80px 1fr;gap:1rem;}
+  .action-group{grid-column:1/-1;}
+  .info-grid{grid-template-columns:1fr;}
+  .toast-wrap{right:1rem;bottom:1rem;left:1rem;}
+  .toast{min-width:0;max-width:100%;}
+}
+</style>
 </head>
 <body>
-<div class="orb orb1"></div>
-<div class="orb orb2"></div>
+
 <div class="toast-wrap" id="toastWrap"></div>
 
-<!-- ── LOGIN ── -->
+<!-- ══════════════════════════════════════════════
+     LOGIN
+════════════════════════════════════════════════ -->
 <div id="loginScreen">
-  <div class="login-box">
-    <div class="login-logo">Medi<span>Care</span>+</div>
-    <div class="login-role"><span class="role-dot"></span>Testing Operator Portal</div>
-    <div class="f-group"><label>Equipment Login Email</label><input type="email" id="loginEmail" placeholder="mri.machine@medicare" autocomplete="email"/></div>
-    <div class="f-group"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password"/></div>
-    <button class="btn-login" id="loginBtn">Sign In →</button>
-    <div class="login-err" id="loginErr"></div>
-    <div class="login-loading" id="loginLoading">Verifying credentials…</div>
-    <div class="change-link">First login? <a onclick="alert('Log in then go to Settings → Change Password.')">Change temporary password</a></div>
+  <div class="login-wrap">
+    <div class="login-box">
+      <div class="login-header">
+        <div class="login-logo">MediCare<sup>+</sup></div>
+        <div class="login-divider">
+          <span class="login-role">Testing Operator Portal</span>
+        </div>
+      </div>
+
+      <div class="f-group">
+        <label>Equipment Email</label>
+        <input type="email" id="loginEmail" placeholder="equipment@medicare.health" autocomplete="email"/>
+      </div>
+      <div class="f-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="••••••••" autocomplete="current-password"/>
+      </div>
+
+      <button class="btn-login" id="loginBtn">Sign In →</button>
+      <div class="login-err" id="loginErr"></div>
+      <div class="login-loading" id="loginLoading">Verifying credentials…</div>
+    </div>
   </div>
 </div>
 
-<!-- ── APP ── -->
+<!-- ══════════════════════════════════════════════
+     APP
+════════════════════════════════════════════════ -->
 <div id="appShell">
+
   <nav>
-    <div class="nav-logo">Medi<span>Care</span>+</div>
+    <div class="nav-logo-wrap">
+      <div class="nav-logo">MediCare<sup>+</sup></div>
+    </div>
     <div class="nav-tabs">
       <button class="nav-tab active" onclick="showTab('dashboard',this)">Dashboard</button>
       <button class="nav-tab" onclick="showTab('schedule',this)">Schedule</button>
@@ -377,7 +926,10 @@
       <button class="nav-tab" onclick="showTab('settings',this)">Settings</button>
     </div>
     <div class="nav-right">
-      <div class="op-chip"><div class="avatar-sm" id="opInitial">T</div><span id="opNameNav">Operator</span></div>
+      <div class="op-chip">
+        <div class="avatar-sm" id="opInitial">T</div>
+        <span id="opNameNav">Operator</span>
+      </div>
       <button class="btn-signout" onclick="doSignOut()">Sign Out</button>
     </div>
   </nav>
@@ -387,28 +939,70 @@
     <!-- DASHBOARD -->
     <div class="page active" id="page-dashboard">
       <div class="pg-header">
-        <h2 id="welcomeMsg">Good morning 👋</h2>
-        <p id="welcomeSub">Here's your testing overview for today.</p>
+        <div>
+          <div class="pg-title" id="welcomeMsg">Good morning</div>
+          <div class="pg-sub" id="welcomeSub">Testing equipment overview</div>
+        </div>
+        <div class="pg-meta" id="pgMetaDate"></div>
       </div>
+
       <div class="today-strip">
-        <div><div class="today-day" id="todayDay">—</div><div style="font-size:.75rem;color:var(--muted);margin-top:.2rem;">Tests today</div></div>
-        <div style="text-align:right"><div class="today-cnt" id="todayCount">—</div><div style="font-size:.75rem;color:var(--muted);">assigned</div></div>
+        <div class="today-left">
+          <div class="today-day">Today</div>
+          <div class="today-date" id="todayDay">—</div>
+        </div>
+        <div style="text-align:right">
+          <div class="today-cnt" id="todayCount">—</div>
+          <div class="today-cnt-lbl">Tests assigned</div>
+        </div>
       </div>
+
       <div class="stat-grid">
-        <div class="stat-card"><div class="stat-icon">🔬</div><div class="stat-num" id="statTotal">—</div><div class="stat-lbl">Total Tests</div></div>
-        <div class="stat-card"><div class="stat-icon">✅</div><div class="stat-num" id="statDone">—</div><div class="stat-lbl">Completed</div></div>
-        <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-num" id="statPending">—</div><div class="stat-lbl">Scheduled</div></div>
-        <div class="stat-card"><div class="stat-icon">▶️</div><div class="stat-num" id="statInProgress">—</div><div class="stat-lbl">In Progress</div></div>
+        <div class="stat-cell">
+          <div class="stat-idx">01 — Total</div>
+          <div class="stat-num" id="statTotal">—</div>
+          <div class="stat-lbl">All assigned tests</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-idx">02 — Complete</div>
+          <div class="stat-num" id="statDone">—</div>
+          <div class="stat-lbl">Tests completed</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-idx">03 — Scheduled</div>
+          <div class="stat-num" id="statPending">—</div>
+          <div class="stat-lbl">Awaiting start</div>
+        </div>
+        <div class="stat-cell">
+          <div class="stat-idx">04 — Active</div>
+          <div class="stat-num" id="statInProgress">—</div>
+          <div class="stat-lbl">In progress now</div>
+        </div>
       </div>
-      <div class="card">
-        <div class="card-title">🗓 Today's Tests</div>
-        <div class="test-list" id="todayTests"><div class="empty"><div class="e-icon">📭</div>No tests scheduled for today</div></div>
+
+      <div class="section-card">
+        <div class="section-head">
+          <div class="section-title">Today's tests</div>
+          <div class="section-count" id="todayCountLabel">— items</div>
+        </div>
+        <div class="test-list" id="todayTests">
+          <div class="empty">
+            <div class="empty-icon">No tests</div>
+            <div class="empty-msg">Nothing scheduled for today.</div>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- SCHEDULE -->
     <div class="page" id="page-schedule">
-      <div class="pg-header"><h2>My Schedule</h2><p>All assigned tests for this equipment</p></div>
+      <div class="pg-header">
+        <div>
+          <div class="pg-title">My <em>Schedule</em></div>
+          <div class="pg-sub">All assigned tests for this equipment</div>
+        </div>
+      </div>
+
       <div class="filter-bar">
         <button class="filter-pill active" onclick="filterTests('all',this)">All</button>
         <button class="filter-pill" onclick="filterTests('Scheduled',this)">Scheduled</button>
@@ -416,88 +1010,143 @@
         <button class="filter-pill" onclick="filterTests('Completed',this)">Completed</button>
         <button class="filter-pill" onclick="filterTests('Cancelled',this)">Cancelled</button>
       </div>
-      <div class="test-list" id="allTests"><div class="empty"><div class="e-icon"><span class="spinner"></span></div>Loading…</div></div>
+
+      <div class="section-card">
+        <div class="test-list" id="allTests">
+          <div class="empty">
+            <div class="empty-icon"><span class="spinner"></span></div>
+            <div class="empty-msg">Loading…</div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- PROFILE -->
     <div class="page" id="page-profile">
-      <div class="pg-header"><h2>Equipment Info</h2><p>This machine's details registered by admin</p></div>
-      <div class="profile-hero">
-        <div class="profile-avatar">🔬</div>
+      <div class="pg-header">
         <div>
-          <div class="profile-name" id="profileName">—</div>
-          <div class="equip-tag">🔖 Serial: <span id="profileSerial">—</span></div>
-          <div style="font-size:.78rem;color:var(--muted);margin-top:.35rem;" id="profileEmail">—</div>
+          <div class="pg-title">Equipment <em>Info</em></div>
+          <div class="pg-sub">Machine details registered by admin</div>
         </div>
       </div>
-      <div class="info-grid">
-        <div class="card">
-          <div class="card-title">🕐 Operating Hours</div>
-          <div class="info-row"><span class="info-label">From</span><span class="info-val hi" id="profileFrom">—</span></div>
-          <div class="info-row"><span class="info-label">To</span><span class="info-val hi" id="profileTo">—</span></div>
+
+      <div class="equip-hero">
+        <div class="equip-icon">🔬</div>
+        <div>
+          <div class="equip-name" id="profileName">—</div>
+          <div class="equip-serial">Serial: <span id="profileSerial">—</span></div>
+          <div class="equip-email" id="profileEmail">—</div>
         </div>
-        <div class="card">
-          <div class="card-title">📋 Details</div>
-          <div class="info-row"><span class="info-label">Room</span><span class="info-val" id="profileRoom">—</span></div>
-          <div class="info-row"><span class="info-label">Operator</span><span class="info-val" id="profileOperator">—</span></div>
-          <div class="info-row"><span class="info-label">Contact</span><span class="info-val" id="profileContact">—</span></div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-panel">
+          <div class="info-panel-head">Operating Hours</div>
+          <div class="info-row">
+            <span class="info-label">From</span>
+            <span class="info-val hi" id="profileFrom">—</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">To</span>
+            <span class="info-val hi" id="profileTo">—</span>
+          </div>
+        </div>
+        <div class="info-panel">
+          <div class="info-panel-head">Machine Details</div>
+          <div class="info-row">
+            <span class="info-label">Room</span>
+            <span class="info-val" id="profileRoom">—</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Operator</span>
+            <span class="info-val" id="profileOperator">—</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Contact</span>
+            <span class="info-val" id="profileContact">—</span>
+          </div>
         </div>
       </div>
     </div>
 
     <!-- SETTINGS -->
     <div class="page" id="page-settings">
-      <div class="pg-header"><h2>Settings</h2><p>Update your login password</p></div>
-      <div class="card" style="max-width:480px;">
-        <div class="card-title">🔐 Change Password</div>
-        <p style="font-size:.82rem;color:var(--muted);margin-bottom:1.25rem;">If first login, change your temporary password immediately.</p>
-        <div class="field"><label>Current Password</label><input type="password" id="currPass" placeholder="Current password"/></div>
-        <div class="field"><label>New Password</label><input type="password" id="newPass" placeholder="Min 8 characters"/></div>
-        <div class="field"><label>Confirm New Password</label><input type="password" id="confirmPass" placeholder="Repeat new password"/></div>
-        <button class="btn-save" id="passBtn">Update Password</button>
-        <div class="alert alert-ok" id="passOk">✅ Password updated successfully.</div>
-        <div class="alert alert-err" id="passErr"></div>
+      <div class="pg-header">
+        <div>
+          <div class="pg-title"><em>Settings</em></div>
+          <div class="pg-sub">Manage your account credentials</div>
+        </div>
+      </div>
+
+      <div class="settings-panel">
+        <div class="settings-head">Change Password</div>
+        <div class="settings-body">
+          <p style="font-size:0.82rem;color:var(--muted2);font-weight:300;margin-bottom:1.25rem;line-height:1.6;">
+            If this is your first login, change your temporary password immediately.
+          </p>
+          <div class="field">
+            <label>Current Password</label>
+            <input type="password" id="currPass" placeholder="Your current password"/>
+          </div>
+          <div class="field">
+            <label>New Password</label>
+            <input type="password" id="newPass" placeholder="Minimum 8 characters"/>
+          </div>
+          <div class="field">
+            <label>Confirm New Password</label>
+            <input type="password" id="confirmPass" placeholder="Repeat new password"/>
+          </div>
+          <button class="btn-save" id="passBtn">Update Password</button>
+          <div class="alert alert-ok" id="passOk">Password updated successfully.</div>
+          <div class="alert alert-err" id="passErr"></div>
+        </div>
       </div>
     </div>
 
-  </div>
-</div>
+  </div><!-- /main -->
+</div><!-- /appShell -->
 
-<!-- ── TEST REPORT MODAL ── -->
+<!-- ══════════════════════════════════════════════
+     REPORT MODAL
+════════════════════════════════════════════════ -->
 <div class="overlay" id="reportModal">
   <div class="modal">
-    <div class="modal-title">📋 Send Test Report</div>
-    <div class="modal-sub">Complete the report — it will be emailed to the patient immediately</div>
-    <div class="modal-patient" id="reportPatientInfo"></div>
+    <div class="modal-head">
+      <div>
+        <div class="modal-title">Send Test Report</div>
+        <div class="modal-sub">Complete and send to patient via email</div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-patient-card" id="reportPatientInfo"></div>
+      <div class="report-summary" id="reportAutoSection"></div>
 
-    <!-- Auto-filled summary -->
-    <div class="report-section" id="reportAutoSection"></div>
-
-    <!-- Operator fills in -->
-    <div class="r-field">
-      <label>Test Findings / Results</label>
-      <textarea id="rFindings" placeholder="Describe the test findings, measurements, and observations…" rows="3"></textarea>
+      <div class="r-field">
+        <label>Test Findings / Results</label>
+        <textarea id="rFindings" placeholder="Describe findings, measurements, and observations…"></textarea>
+      </div>
+      <div class="r-field">
+        <label>Interpretation</label>
+        <textarea id="rInterpretation" placeholder="Normal / Abnormal — what do the results indicate…" style="min-height:55px;"></textarea>
+      </div>
+      <div class="r-field">
+        <label>Recommendations</label>
+        <textarea id="rRecommendations" placeholder="Follow-up tests or actions recommended…" style="min-height:55px;"></textarea>
+      </div>
+      <div class="r-field">
+        <label>Operator Notes <span style="color:var(--muted);font-size:0.9em;">(optional)</span></label>
+        <textarea id="rNotes" placeholder="Additional technical notes…" style="min-height:55px;"></textarea>
+      </div>
     </div>
-    <div class="r-field">
-      <label>Interpretation</label>
-      <textarea id="rInterpretation" placeholder="Normal / Abnormal — describe what the results indicate…" rows="2"></textarea>
-    </div>
-    <div class="r-field">
-      <label>Recommendations</label>
-      <textarea id="rRecommendations" placeholder="Any follow-up tests or actions recommended…" rows="2"></textarea>
-    </div>
-    <div class="r-field">
-      <label>Operator Notes (optional)</label>
-      <textarea id="rNotes" placeholder="Any additional technical notes…" rows="2"></textarea>
-    </div>
-
     <div class="modal-footer">
       <button class="btn-modal-cancel" onclick="closeModal()">Cancel</button>
-      <button class="btn-modal-confirm" id="reportSendBtn" onclick="sendTestReport()">📧 Send Report →</button>
+      <button class="btn-modal-confirm" id="reportSendBtn" onclick="sendTestReport()">Send Report →</button>
     </div>
   </div>
 </div>
 
+<!-- ══ SCRIPTS ══ -->
 <script>
   function showTab(name,el){
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -517,7 +1166,7 @@
     document.getElementById('reportModal').classList.remove('open');
   }
   function showToast(title,body,type='ok',dur=4500){
-    const icons={ok:'✅',err:'❌',info:'ℹ️'};
+    const icons={ok:'✓',err:'✕',info:'ℹ'};
     const wrap=document.getElementById('toastWrap');
     const t=document.createElement('div');
     t.className=`toast ${type}`;
@@ -532,7 +1181,7 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import {
     getFirestore,collection,query,where,
-    onSnapshot,doc,updateDoc,serverTimestamp,
+    onSnapshot,doc,updateDoc,deleteDoc,serverTimestamp,
     getDocs,getDoc,addDoc
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
@@ -546,25 +1195,29 @@
   };
 
   const app=initializeApp(firebaseConfig);
-  const db =getFirestore(app);
+  const db=getFirestore(app);
   emailjs.init("nEbb9aPtYh8imCD0M");
 
-  let currentEquip=null, allAssignments=[], currentFilter='all';
+  let currentEquip=null,allAssignments=[],currentFilter='all';
   let activeAssignment=null;
 
-  // ── helpers ────────────────────────────────────────────────────────────
+  // ── Helpers ────────────────────────────────────────────────────────────
   function fmtTime(t){
     if(!t) return '—';
-    const [h,m]=t.split(':'); const d=new Date(); d.setHours(+h,+m);
+    const[h,m]=t.split(':'); const d=new Date(); d.setHours(+h,+m);
     return d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
   }
   function fmtDate(ds){
     if(!ds) return '—';
-    return new Date(ds+'T00:00:00').toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+    return new Date(ds+'T00:00:00').toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+  }
+  function fmtDateShort(ds){
+    if(!ds) return '—';
+    return new Date(ds+'T00:00:00').toLocaleDateString('en-IN',{day:'2-digit',month:'short'});
   }
   function isToday(ds){ if(!ds) return false; return new Date().toDateString()===new Date(ds+'T00:00:00').toDateString(); }
   function greeting(){ const h=new Date().getHours(); return h<12?'Good morning':h<17?'Good afternoon':'Good evening'; }
-  function todayStr(){ return new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); }
+  function todayFull(){ return new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); }
   function initials(n){ if(!n) return 'T'; return n.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
   function statusClass(s){
     const m={scheduled:'ts-scheduled','in progress':'ts-inprogress',completed:'ts-done',cancelled:'ts-cancelled'};
@@ -589,14 +1242,14 @@
   async function doLogin(){
     const email=$('loginEmail').value.trim().toLowerCase();
     const pass=$('loginPassword').value;
-    const err=$('loginErr'), load=$('loginLoading');
+    const err=$('loginErr'),load=$('loginLoading');
     err.style.display='none';
     if(!email||!pass){ err.textContent='Please fill all fields.'; err.style.display='block'; return; }
     load.style.display='block'; $('loginBtn').disabled=true;
     try{
       const q=query(collection(db,'equipment'),where('email','==',email));
       const snap=await getDocs(q);
-      if(snap.empty){ err.textContent='No account found.'; err.style.display='block'; return; }
+      if(snap.empty){ err.textContent='No account found with this email.'; err.style.display='block'; return; }
       const data=snap.docs[0].data();
       if(data.password!==pass){ err.textContent='Incorrect password.'; err.style.display='block'; return; }
       currentEquip={id:snap.docs[0].id,...data};
@@ -613,24 +1266,26 @@
     $('loginScreen').style.display='none';
     $('appShell').style.display='block';
     showTab('dashboard',document.querySelector('.nav-tab'));
+
     const name=equip.name||equip.email||'Equipment';
-    $('opNameNav').textContent   = name.split(' ').slice(0,2).join(' ');
-    $('opInitial').textContent   = initials(name);
-    $('welcomeMsg').textContent  = `${greeting()}, ${name} 👋`;
-    $('welcomeSub').textContent  = `${equip.operator?'Operated by '+equip.operator:''} ${equip.room?'· Room '+equip.room:''}`;
-    $('todayDay').textContent    = todayStr();
-    $('profileName').textContent    = name;
-    $('profileSerial').textContent  = equip.serial||'—';
-    $('profileEmail').textContent   = equip.email||'—';
-    $('profileFrom').textContent    = fmtTime(equip.workingFrom);
-    $('profileTo').textContent      = fmtTime(equip.workingTo);
-    $('profileRoom').textContent    = equip.room||'—';
+    $('opNameNav').textContent     = name.split(' ').slice(0,2).join(' ');
+    $('opInitial').textContent     = initials(name);
+    $('welcomeMsg').textContent    = `${greeting()}, ${name.split(' ')[0]}`;
+    $('welcomeSub').textContent    = [equip.operator&&'Operated by '+equip.operator, equip.room&&'Room '+equip.room].filter(Boolean).join(' · ') || 'Testing equipment dashboard';
+    $('pgMetaDate').textContent    = todayFull();
+    $('todayDay').textContent      = todayFull();
+    $('profileName').textContent   = name;
+    $('profileSerial').textContent = equip.serial||'—';
+    $('profileEmail').textContent  = equip.email||'—';
+    $('profileFrom').textContent   = fmtTime(equip.workingFrom);
+    $('profileTo').textContent     = fmtTime(equip.workingTo);
+    $('profileRoom').textContent   = equip.room||'—';
     $('profileOperator').textContent= equip.operator||'—';
-    $('profileContact').textContent = equip.contact||'—';
+    $('profileContact').textContent= equip.contact||'—';
     loadAssignments(equip.id);
   }
 
-  // ── Load assignments ───────────────────────────────────────────────────
+  // ── Assignments ────────────────────────────────────────────────────────
   function loadAssignments(equipId){
     const q=query(collection(db,'equipmentAssignments'),where('equipmentId','==',equipId));
     onSnapshot(q,snap=>{
@@ -640,24 +1295,37 @@
   }
 
   function renderStats(){
-    $('statTotal').textContent      = allAssignments.length;
-    $('statDone').textContent       = allAssignments.filter(a=>a.testStatus==='Completed').length;
-    $('statPending').textContent    = allAssignments.filter(a=>!a.testStatus||a.testStatus==='Scheduled').length;
-    $('statInProgress').textContent = allAssignments.filter(a=>a.testStatus==='In Progress').length;
-    $('todayCount').textContent     = allAssignments.filter(a=>isToday(a.date)).length;
+    const total=allAssignments.length;
+    const done=allAssignments.filter(a=>a.testStatus==='Completed').length;
+    const pend=allAssignments.filter(a=>!a.testStatus||a.testStatus==='Scheduled').length;
+    const prog=allAssignments.filter(a=>a.testStatus==='In Progress').length;
+    const today=allAssignments.filter(a=>isToday(a.date)).length;
+    $('statTotal').textContent=$('statTotal').textContent=total||'0';
+    $('statDone').textContent=done||'0';
+    $('statPending').textContent=pend||'0';
+    $('statInProgress').textContent=prog||'0';
+    $('todayCount').textContent=today||'0';
+    $('todayCountLabel').textContent=`${today} item${today!==1?'s':''}`;
   }
 
   function renderTodayTests(){
     const list=allAssignments.filter(a=>isToday(a.date));
     const el=$('todayTests');
-    if(!list.length){ el.innerHTML='<div class="empty"><div class="e-icon">📭</div>No tests scheduled for today</div>'; return; }
+    if(!list.length){
+      el.innerHTML=`<div class="empty"><div class="empty-icon">— today —</div><div class="empty-msg">No tests scheduled for today.</div></div>`;
+      return;
+    }
     el.innerHTML=list.sort((a,b)=>(a.slot||'').localeCompare(b.slot||'')).map(testCard).join('');
   }
+
   function renderAllTests(){
     const list=currentFilter==='all'?allAssignments:allAssignments.filter(a=>(a.testStatus||'Scheduled')===currentFilter);
     const el=$('allTests');
-    if(!list.length){ el.innerHTML='<div class="empty"><div class="e-icon">📭</div>No tests found.</div>'; return; }
-    el.innerHTML=list.sort((a,b)=>{ const dc=(b.date||'').localeCompare(a.date||''); return dc||((a.slot||'').localeCompare(b.slot||'')); }).map(testCard).join('');
+    if(!list.length){
+      el.innerHTML=`<div class="empty"><div class="empty-icon">— no results —</div><div class="empty-msg">No tests match this filter.</div></div>`;
+      return;
+    }
+    el.innerHTML=list.sort((a,b)=>{const dc=(b.date||'').localeCompare(a.date||'');return dc||((a.slot||'').localeCompare(b.slot||''));}).map(testCard).join('');
   }
 
   function testCard(a){
@@ -666,42 +1334,39 @@
     const canStart=status==='Scheduled';
     const canDone=status==='In Progress';
     const canCancel=status==='Scheduled'||status==='In Progress';
-    const isDone=status==='Completed';
 
-    const doctorBadge=a.doctorName?`<span class="assign-badge badge-doctor">👨‍⚕️ ${a.doctorName}</span>`:'';
-    const resultBadge=a.testResult?`<span class="assign-badge badge-result">📋 ${a.testResult}</span>`:'';
+    const doctorBadge=a.doctorName?`<span class="info-badge doctor">Dr. ${a.doctorName}</span>`:'';
+    const resultBadge=a.testResult?`<span class="info-badge result">Result saved</span>`:'';
 
     const resultInput=canDone?`
-      <div class="result-row">
-        <input class="result-input" id="ri-${a.id}" placeholder="Enter test result / findings…" value="${a.testResult||''}"/>
+      <div class="result-row" style="margin-left:auto;">
+        <input class="result-input" id="ri-${a.id}" placeholder="Enter findings…" value="${a.testResult||''}"/>
         <button class="btn-save-result" onclick="saveResult('${a.id}')">Save</button>
-      </div>`:'';
+      </div>`:
+      (status==='Completed'&&a.testResult?`<div class="result-row" style="margin-left:auto;"><input class="result-input" value="${a.testResult}" readonly style="opacity:0.5;"/></div>`:'');
 
-    // Fetch patient email from appointment for report sending
     return `<div class="test-card">
-      <div class="test-top">
+      <div class="test-row-top">
         <div class="time-block">
           <div class="time-val">${fmtTime(a.slot)}</div>
-          <div class="date-val">${fmtDate(a.date)}</div>
+          <div class="date-val">${fmtDateShort(a.date)}</div>
         </div>
-        <div class="test-info">
-          <h4>${a.patientName||'Patient'}</h4>
-          <div class="meta">Referred by: <span>${a.doctorName||'—'}</span></div>
-          ${a.testResult?`<div class="meta" style="margin-top:.15rem">Result: <span style="color:#c8a87a">${a.testResult}</span></div>`:''}
+        <div>
+          <div class="test-name">${a.patientName||'Patient'}</div>
+          <div class="test-meta">Referred by: <span class="hi">${a.doctorName||'—'}</span></div>
         </div>
         <span class="status-badge ${sc}">${status}</span>
-        <div style="display:flex;gap:.4rem;">
+        <div class="action-group">
           ${canStart?`<button class="btn-sm btn-start" onclick="updateTestStatus('${a.id}','In Progress')">▶ Start</button>`:''}
-          ${canDone ?`<button class="btn-sm btn-finish" onclick="markDone('${a.id}')">✓ Done</button>`:''}
+          ${canDone?`<button class="btn-sm btn-finish" onclick="markDone('${a.id}')">✓ Done</button>`:''}
           ${canCancel?`<button class="btn-sm btn-cancel" onclick="updateTestStatus('${a.id}','Cancelled')">✕</button>`:''}
         </div>
       </div>
-      <div class="test-bottom">
+      <div class="test-row-bottom">
         ${doctorBadge}${resultBadge}
-        <div style="margin-left:auto;">
-          <button class="btn-send-report" onclick="openReportModal('${a.id}')">
-            📧 Send Test Report
-          </button>
+        <div style="margin-left:auto;display:flex;gap:0.4rem;">
+          <button class="btn-report" onclick="openReportModal('${a.id}')">Send Report →</button>
+          <button class="btn-remove" onclick="removeTestAssignment('${a.id}')">Remove</button>
         </div>
         ${resultInput}
       </div>
@@ -714,7 +1379,7 @@
       await updateDoc(doc(db,'equipmentAssignments',assignId),{testStatus:status,updatedAt:serverTimestamp()});
       const a=allAssignments.find(x=>x.id===assignId);
       if(a?.appointmentId) await updateDoc(doc(db,'appointments',a.appointmentId),{equipmentTestStatus:status,updatedAt:serverTimestamp()});
-      showToast('Updated',`Test marked as ${status}`,'ok');
+      showToast('Status Updated',`Test marked as ${status}`,'ok');
     }catch(e){ showToast('Error',e.message,'err'); }
   };
 
@@ -726,7 +1391,7 @@
       await updateDoc(doc(db,'equipmentAssignments',assignId),{testResult:result,updatedAt:serverTimestamp()});
       const a=allAssignments.find(x=>x.id===assignId);
       if(a?.appointmentId) await updateDoc(doc(db,'appointments',a.appointmentId),{equipmentTestResult:result,updatedAt:serverTimestamp()});
-      showToast('Result Saved','Findings saved and visible to referring doctor.','info');
+      showToast('Saved','Findings saved and visible to referring doctor.','info');
     }catch(e){ showToast('Error',e.message,'err'); }
   };
 
@@ -743,7 +1408,7 @@
         if(result) au.equipmentTestResult=result;
         await updateDoc(doc(db,'appointments',a.appointmentId),au);
       }
-      showToast('Test Completed','Marked done. Result sent to referring doctor.','ok');
+      showToast('Test Complete','Marked as done. Result synced to doctor.','ok');
     }catch(e){ showToast('Error',e.message,'err'); }
   };
 
@@ -754,56 +1419,48 @@
     renderAllTests();
   };
 
-  // ══════════════════════════════════════════════════════════════════════
-  // REPORT MODAL
-  // ══════════════════════════════════════════════════════════════════════
+  // ── Report Modal ───────────────────────────────────────────────────────
   window.openReportModal=async function(assignId){
     activeAssignment=allAssignments.find(a=>a.id===assignId);
     if(!activeAssignment) return;
-
-    // Clear fields
     ['rFindings','rInterpretation','rRecommendations','rNotes'].forEach(id=>{ $(id).value=''; });
-    // Pre-fill findings if already saved
     if(activeAssignment.testResult) $('rFindings').value=activeAssignment.testResult;
     $('reportSendBtn').disabled=false;
-    $('reportSendBtn').textContent='📧 Send Report →';
+    $('reportSendBtn').textContent='Send Report →';
 
     const a=activeAssignment;
-
-    // We need patient email — look it up from the linked appointment
-    let patientEmail='';
-    let appointmentData=null;
+    let patientEmail='',appointmentData=null;
     if(a.appointmentId){
       try{
         const apptSnap=await getDoc(doc(db,'appointments',a.appointmentId));
-        if(apptSnap.exists()){
-          appointmentData=apptSnap.data();
-          patientEmail=appointmentData.email||appointmentData.patientEmail||'';
-        }
+        if(apptSnap.exists()){ appointmentData=apptSnap.data(); patientEmail=appointmentData.email||appointmentData.patientEmail||''; }
       }catch(e){}
     }
 
     $('reportPatientInfo').innerHTML=`
-      <strong>${a.patientName||'Patient'}</strong>
-      <div class="sub">Referred by: ${a.doctorName||'—'} &nbsp;·&nbsp; ${fmtDate(a.date)} at ${fmtTime(a.slot)}</div>
-      ${patientEmail
-        ?`<div class="sub" style="margin-top:.2rem">📧 Report will be sent to: <span style="color:var(--orange)">${patientEmail}</span></div>`
-        :'<div class="sub" style="color:var(--rose);margin-top:.2rem">⚠ No patient email found — report will not be emailed.</div>'}`;
+      <div class="mpc-name">${a.patientName||'Patient'}</div>
+      <div class="mpc-meta">
+        Referred by: <span class="hi">${a.doctorName||'—'}</span> &nbsp;·&nbsp; 
+        ${fmtDate(a.date)} at ${fmtTime(a.slot)}<br>
+        ${patientEmail
+          ?`Report destination: <span class="hi">${patientEmail}</span>`
+          :'<span style="color:var(--rose)">No patient email — report will not be emailed</span>'}
+      </div>`;
 
-    // Build auto summary
     let autoRows='';
-    autoRows+=`<div class="report-row"><span class="report-key">Equipment</span><span class="report-val">${currentEquip.name||'—'}</span></div>`;
-    autoRows+=`<div class="report-row"><span class="report-key">Operator</span><span class="report-val">${currentEquip.operator||'—'}</span></div>`;
-    autoRows+=`<div class="report-row"><span class="report-key">Room</span><span class="report-val">${currentEquip.room||'—'}</span></div>`;
-    autoRows+=`<div class="report-row"><span class="report-key">Test Date</span><span class="report-val hi">${fmtDate(a.date)}</span></div>`;
-    autoRows+=`<div class="report-row"><span class="report-key">Test Time</span><span class="report-val hi">${fmtTime(a.slot)}</span></div>`;
-    autoRows+=`<div class="report-row"><span class="report-key">Referred By</span><span class="report-val">${a.doctorName||'—'}</span></div>`;
-    autoRows+=`<div class="report-row"><span class="report-key">Status</span><span class="report-val">${a.testStatus||'Scheduled'}</span></div>`;
-    if(appointmentData?.symptom) autoRows+=`<div class="report-row"><span class="report-key">Patient Symptom</span><span class="report-val">${appointmentData.symptom}</span></div>`;
+    const rows=[
+      ['Equipment',currentEquip.name||'—'],
+      ['Operator',currentEquip.operator||'—'],
+      ['Room',currentEquip.room||'—'],
+      ['Test Date',fmtDate(a.date),'hi'],
+      ['Test Time',fmtTime(a.slot),'hi'],
+      ['Referred By',a.doctorName||'—'],
+      ['Status',a.testStatus||'Scheduled'],
+    ];
+    if(appointmentData?.symptom) rows.push(['Patient Symptom',appointmentData.symptom]);
+    autoRows=rows.map(([k,v,cls])=>`<div class="rs-row"><span class="rs-key">${k}</span><span class="rs-val ${cls||''}">${v}</span></div>`).join('');
+    $('reportAutoSection').innerHTML=`<div class="rs-head">Test Summary</div>${autoRows}`;
 
-    $('reportAutoSection').innerHTML=`<div class="report-section-title">Test Summary</div>${autoRows}`;
-
-    // Store email for use in sendTestReport
     $('reportModal').dataset.patientEmail=patientEmail;
     $('reportModal').dataset.appointmentSymptom=appointmentData?.symptom||'—';
     $('reportModal').classList.add('open');
@@ -823,107 +1480,82 @@
     btn.disabled=true; btn.textContent='Sending…';
 
     try{
-      // Save to Firestore
       await addDoc(collection(db,'testReports'),{
-        assignmentId:    a.id,
-        appointmentId:   a.appointmentId||'',
-        patientName:     a.patientName||'—',
-        patientEmail,
-        doctorName:      a.doctorName||'—',
-        equipmentName:   currentEquip.name||'—',
-        equipmentId:     currentEquip.id,
-        operator:        currentEquip.operator||'—',
-        room:            currentEquip.room||'—',
-        testDate:        a.date,
-        testSlot:        a.slot,
-        symptom,
-        findings,
-        interpretation:  interpretation||'—',
-        recommendations: recommendations||'—',
-        notes:           notes||'—',
-        createdAt:       serverTimestamp()
+        assignmentId:a.id, appointmentId:a.appointmentId||'',
+        patientName:a.patientName||'—', patientEmail,
+        doctorName:a.doctorName||'—',
+        equipmentName:currentEquip.name||'—', equipmentId:currentEquip.id,
+        operator:currentEquip.operator||'—', room:currentEquip.room||'—',
+        testDate:a.date, testSlot:a.slot, symptom, findings,
+        interpretation:interpretation||'—', recommendations:recommendations||'—', notes:notes||'—',
+        createdAt:serverTimestamp()
       });
+      await updateDoc(doc(db,'equipmentAssignments',a.id),{testResult:findings,reportSent:true,updatedAt:serverTimestamp()});
+      if(a.appointmentId) await updateDoc(doc(db,'appointments',a.appointmentId),{equipmentTestResult:findings,testReportSent:true,updatedAt:serverTimestamp()});
 
-      // Also update result on the assignment
-      await updateDoc(doc(db,'equipmentAssignments',a.id),{
-        testResult: findings,
-        reportSent: true,
-        updatedAt:  serverTimestamp()
-      });
-      if(a.appointmentId){
-        await updateDoc(doc(db,'appointments',a.appointmentId),{
-          equipmentTestResult: findings,
-          testReportSent: true,
-          updatedAt: serverTimestamp()
-        });
-      }
-
-      // Email via EmailJS if patient email exists
       if(patientEmail){
         try{
           await emailjs.send("service_wgminnp","template_sbvt3ze",{
-            to_name:         a.patientName||'Patient',
-            name:            a.patientName||'Patient',
-            patient_name:    a.patientName||'Patient',
-            to_email:        patientEmail,
-            email:           patientEmail,
-            user_email:      patientEmail,
-            reply_to:        patientEmail,
-            equipment:       currentEquip.name||'—',
-            equipment_name:  currentEquip.name||'—',
-            operator:        currentEquip.operator||'—',
-            room:            currentEquip.room||'—',
-            test_date:       fmtDate(a.date),
-            date:            fmtDate(a.date),
-            test_time:       fmtTime(a.slot),
-            time:            fmtTime(a.slot),
-            doctor:          a.doctorName||'—',
-            doctor_name:     a.doctorName||'—',
-            speciality:      '—',
-            symptom,
-            findings,
-            test_findings:   findings,
-            interpretation:  interpretation||'—',
-            recommendations: recommendations||'—',
-            notes:           notes||'—',
-            report_type:     'Diagnostic Test Report'
+            to_name:a.patientName||'Patient', name:a.patientName||'Patient', patient_name:a.patientName||'Patient',
+            to_email:patientEmail, email:patientEmail, user_email:patientEmail, reply_to:patientEmail,
+            equipment:currentEquip.name||'—', equipment_name:currentEquip.name||'—',
+            operator:currentEquip.operator||'—', room:currentEquip.room||'—',
+            test_date:fmtDate(a.date), date:fmtDate(a.date),
+            test_time:fmtTime(a.slot), time:fmtTime(a.slot),
+            doctor:a.doctorName||'—', doctor_name:a.doctorName||'—',
+            speciality:'—', symptom, findings, test_findings:findings,
+            interpretation:interpretation||'—', recommendations:recommendations||'—',
+            notes:notes||'—', report_type:'Diagnostic Test Report'
           });
-          showToast('Report Sent',`Test report emailed to ${patientEmail}`,'ok',6000);
+          showToast('Report Sent',`Emailed to ${patientEmail}`,'ok',6000);
         }catch(emailErr){
-          console.error('EmailJS error:',emailErr);
-          const msg = emailErr?.text || emailErr?.message || JSON.stringify(emailErr);
+          const msg=emailErr?.text||emailErr?.message||JSON.stringify(emailErr);
           showToast('Email Failed',`EmailJS: ${msg}`,'err',10000);
         }
       } else {
-        showToast('Report Saved','No patient email on record. Saved to database.','info');
+        showToast('Report Saved','Saved to database. No patient email on record.','info');
       }
       closeModal();
     }catch(e){
       showToast('Failed',e.message,'err');
-      btn.disabled=false; btn.textContent='📧 Send Report →';
+      btn.disabled=false; btn.textContent='Send Report →';
     }
+  };
+
+  window.removeTestAssignment=async function(assignId){
+    const a=allAssignments.find(x=>x.id===assignId);
+    if(!confirm(`Remove test for "${a?.patientName||'this patient'}"? This will also clear the equipment from their appointment.`)) return;
+    try{
+      await deleteDoc(doc(db,'equipmentAssignments',assignId));
+      if(a?.appointmentId){
+        await updateDoc(doc(db,'appointments',a.appointmentId),{
+          equipmentAssigned:null, equipmentSlot:null, equipmentId:null,
+          equipmentTestStatus:null, equipmentTestResult:null, updatedAt:serverTimestamp()
+        });
+      }
+      showToast('Removed','Test assignment removed.','ok');
+    }catch(e){ showToast('Error',e.message,'err'); }
   };
 
   // ── Change Password ────────────────────────────────────────────────────
   $('passBtn').addEventListener('click',async()=>{
-    const curr=$('currPass').value, nw=$('newPass').value, conf=$('confirmPass').value;
+    const curr=$('currPass').value,nw=$('newPass').value,conf=$('confirmPass').value;
     const errEl=$('passErr');
     errEl.style.display='none';
-    if(!curr||!nw||!conf){ errEl.textContent='⚠ Fill all fields.'; errEl.style.display='block'; return; }
-    if(nw.length<8){ errEl.textContent='⚠ Min 8 characters.'; errEl.style.display='block'; return; }
-    if(nw!==conf){ errEl.textContent='⚠ Passwords do not match.'; errEl.style.display='block'; return; }
-    if(curr!==currentEquip.password){ errEl.textContent='⚠ Current password incorrect.'; errEl.style.display='block'; return; }
+    if(!curr||!nw||!conf){ errEl.textContent='Please fill all fields.'; errEl.style.display='block'; return; }
+    if(nw.length<8){ errEl.textContent='Password must be at least 8 characters.'; errEl.style.display='block'; return; }
+    if(nw!==conf){ errEl.textContent='Passwords do not match.'; errEl.style.display='block'; return; }
+    if(curr!==currentEquip.password){ errEl.textContent='Current password is incorrect.'; errEl.style.display='block'; return; }
     $('passBtn').disabled=true; $('passBtn').textContent='Updating…';
     try{
       await updateDoc(doc(db,'equipment',currentEquip.id),{password:nw});
       currentEquip.password=nw;
       ['currPass','newPass','confirmPass'].forEach(id=>$(id).value='');
       $('passOk').style.display='block'; setTimeout(()=>$('passOk').style.display='none',3500);
-    }catch(e){ errEl.textContent='⚠ '+e.message; errEl.style.display='block'; }
+    }catch(e){ errEl.textContent=e.message; errEl.style.display='block'; }
     $('passBtn').disabled=false; $('passBtn').textContent='Update Password';
   });
 
-  // Close on backdrop click
   $('reportModal').addEventListener('click',e=>{ if(e.target===$('reportModal')) closeModal(); });
 </script>
 </body>
