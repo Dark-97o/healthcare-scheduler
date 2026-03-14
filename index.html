@@ -801,7 +801,7 @@
   // ── Date/time helpers ────────────────────────────────────────────────────
   function dateStr(offset=0){
     const d = new Date(); d.setDate(d.getDate()+offset);
-    return d.toISOString().split('T')[0];
+    const yyyy=d.getFullYear(), mm=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0'); return `${yyyy}-${mm}-${dd}`;
   }
   function buildSlots(from='09:00', to='17:00'){
     const slots=[];
@@ -971,12 +971,15 @@
           to_email:     pd.email,
           email:        pd.email,
           user_email:   pd.email,
+          reply_to:     pd.email,
           doctor:       pd.doctorName,
           doctor_name:  pd.doctorName,
           speciality:   pd.speciality,
           date:         fmtDate(pd.date),
           time:         fmtTime(pd.time),
           symptom:      pd.symptom
+        }, {
+          publicKey: "nEbb9aPtYh8imCD0M"
         });
       } catch(emailErr){
         console.warn("EmailJS send failed:", emailErr);

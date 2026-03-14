@@ -861,8 +861,7 @@
       // Email via EmailJS if patient email exists
       if(patientEmail){
         try{
-          await emailjs.send("default_service","template_sbvt3ze",{
-            // Recipient
+          await emailjs.send("service_wgminnp","template_sbvt3ze",{
             to_name:         a.patientName||'Patient',
             name:            a.patientName||'Patient',
             patient_name:    a.patientName||'Patient',
@@ -870,7 +869,6 @@
             email:           patientEmail,
             user_email:      patientEmail,
             reply_to:        patientEmail,
-            // Test details
             equipment:       currentEquip.name||'—',
             equipment_name:  currentEquip.name||'—',
             operator:        currentEquip.operator||'—',
@@ -879,11 +877,9 @@
             date:            fmtDate(a.date),
             test_time:       fmtTime(a.slot),
             time:            fmtTime(a.slot),
-            // Referring doctor
             doctor:          a.doctorName||'—',
             doctor_name:     a.doctorName||'—',
             speciality:      '—',
-            // Report content
             symptom,
             findings,
             test_findings:   findings,
@@ -891,11 +887,12 @@
             recommendations: recommendations||'—',
             notes:           notes||'—',
             report_type:     'Diagnostic Test Report'
-          },{publicKey:"nEbb9aPtYh8imCD0M"});
+          });
           showToast('Report Sent',`Test report emailed to ${patientEmail}`,'ok',6000);
         }catch(emailErr){
-          console.warn('EmailJS error:',emailErr);
-          showToast('Report Saved','Saved to records — email delivery failed.','info');
+          console.error('EmailJS error:',emailErr);
+          const msg = emailErr?.text || emailErr?.message || JSON.stringify(emailErr);
+          showToast('Email Failed',`EmailJS: ${msg}`,'err',10000);
         }
       } else {
         showToast('Report Saved','No patient email on record. Saved to database.','info');
