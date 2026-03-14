@@ -181,7 +181,6 @@ nav.scrolled {
   overflow: hidden;
 }
 
-/* Big typography grid */
 .hero-stage {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -284,7 +283,6 @@ nav.scrolled {
 .link-text::after { content: '→'; transition: transform 0.2s; }
 .link-text:hover::after { transform: translateX(4px); }
 
-/* Hero right — image + data */
 .hero-right {
   position: relative;
   display: grid;
@@ -305,7 +303,6 @@ nav.scrolled {
 }
 .hero-image-container:hover img { transform: scale(1); }
 
-/* Botanical overlay */
 .hero-image-container::before {
   content:'';
   position:absolute; inset:0; z-index:1;
@@ -434,7 +431,6 @@ nav.scrolled {
   align-self: end;
 }
 
-/* Portal cards */
 .portals-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -864,6 +860,40 @@ footer {
 .c-btn:hover { background: var(--forest2); }
 .c-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
+/* AI thinking indicator */
+.ai-thinking {
+  display: flex; align-items: center; gap: 0.5rem;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  color: var(--sage);
+  text-transform: uppercase;
+  padding: 0.4rem 0;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.ai-thinking.visible { opacity: 1; }
+.ai-thinking-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--sage2);
+  animation: dot 1s infinite;
+}
+.ai-thinking-dot:nth-child(2){animation-delay:.2s}
+.ai-thinking-dot:nth-child(3){animation-delay:.4s}
+
+/* Correction notice */
+.correction-notice {
+  background: rgba(184,146,74,0.08);
+  border: 1px solid rgba(184,146,74,0.3);
+  border-radius: 2px;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.75rem;
+  color: var(--gold);
+  line-height: 1.5;
+  display: flex; align-items: flex-start; gap: 0.5rem;
+}
+.correction-notice strong { font-weight: 500; color: var(--gold2); }
+
 .slot-card {
   background: rgba(31,61,46,0.06);
   border: 1px solid rgba(31,61,46,0.15);
@@ -1036,7 +1066,6 @@ footer {
 <!-- MARQUEE -->
 <div class="marquee-wrap">
   <div class="marquee-track">
-    <!-- duplicated for seamless loop -->
     <div class="marquee-item"><span class="marquee-dot"></span>Cardiology</div>
     <div class="marquee-item"><span class="marquee-dot"></span>Neurology</div>
     <div class="marquee-item"><span class="marquee-dot"></span>Orthopedics</div>
@@ -1201,7 +1230,7 @@ footer {
     <div class="chat-head">
       <img class="chat-avatar" src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=120&q=80" alt="Dr. Aria"/>
       <div>
-        <div class="chat-name">Dr. Aria</div>
+        <div class="chat-name">Dr. Aria <span style="font-family:'DM Mono',monospace;font-size:0.55rem;color:var(--sage2);letter-spacing:0.1em;margin-left:0.3rem;">AI</span></div>
         <div class="chat-status">● Online — ready to assist</div>
       </div>
       <button class="chat-x" onclick="closeChat()">✕</button>
@@ -1209,14 +1238,26 @@ footer {
     <div class="chat-msgs" id="chatMsgs"></div>
     <div class="chat-form" id="chatForm">
       <div id="stepName">
-        <input class="c-input" id="inName" type="text" placeholder="Your full name…"/>
-        <div style="height:.5rem"></div>
-        <button class="c-btn" onclick="submitName()">Continue →</button>
+        <input class="c-input" id="inName" type="text" placeholder="e.g. "My name is Sarah Johnson"…"
+          onkeydown="if(event.key==='Enter') submitName()"/>
+        <div id="nameThinking" class="ai-thinking">
+          <div class="ai-thinking-dot"></div>
+          <div class="ai-thinking-dot"></div>
+          <div class="ai-thinking-dot"></div>
+          <span>AI extracting name…</span>
+        </div>
+        <button class="c-btn" id="nameBtnEl" onclick="submitName()">Continue →</button>
       </div>
       <div id="stepEmail" class="hidden">
-        <input class="c-input" id="inEmail" type="email" placeholder="Your email address…"/>
-        <div style="height:.5rem"></div>
-        <button class="c-btn" onclick="submitEmail()">Continue →</button>
+        <input class="c-input" id="inEmail" type="text" placeholder="e.g. john.doe@gmial.com…"
+          onkeydown="if(event.key==='Enter') submitEmail()"/>
+        <div id="emailThinking" class="ai-thinking">
+          <div class="ai-thinking-dot"></div>
+          <div class="ai-thinking-dot"></div>
+          <div class="ai-thinking-dot"></div>
+          <span>AI validating email…</span>
+        </div>
+        <button class="c-btn" id="emailBtnEl" onclick="submitEmail()">Continue →</button>
       </div>
       <div id="stepSymptom" class="hidden">
         <select class="c-select" id="inSymptom">
@@ -1304,6 +1345,124 @@ footer {
   }, { threshold: 0.12 });
   document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
+  // ── Cloudflare Worker proxy ──────────────────────────────────────────────
+  const WORKER_URL = "https://gemini-proxy.subhranilbaul2017.workers.dev";
+
+  async function geminiAsk(prompt) {
+    try {
+      const res = await fetch(WORKER_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: prompt })
+      });
+      const data = await res.json();
+      return data.text ? data.text : null;
+    } catch (err) {
+      console.error("Worker error:", err);
+      return null;
+    }
+  }
+
+  // ── Name extraction ──────────────────────────────────────────────────────
+  async function aiExtractName(input) {
+    try {
+      const result = await geminiAsk(
+        "Extract the person's name from this input: \"" + input + "\"\n" +
+        "Rules:\n" +
+        "1. Return ONLY the name in Title Case. Nothing else.\n" +
+        "2. No explanations, no code, no punctuation, no quotes.\n" +
+        "3. If input is 'my name is John' return: John\n" +
+        "4. If input is 'hi I am Sarah Jones' return: Sarah Jones\n" +
+        "5. If input is just 'John Smith' return: John Smith\n" +
+        "6. If no name found return: INVALID\n" +
+        "Your entire response must be a single name only. Example: John Smith"
+      );
+
+      if (!result) {
+        const prefixes = /^(?:hi|hello|hey|my name is|i am|i'm|call me|name is)\s*/i;
+        const cleaned = input.trim().replace(prefixes, '').trim();
+        const words = cleaned.split(/\s+/).filter(w => /^[a-zA-Z'-]{2,}$/.test(w));
+        if (!words.length || words.length > 4) return null;
+        return words.map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+      }
+
+      const cleaned = result
+        .replace(/^["']|["']$/g, '')
+        .replace(/\n.*/s, '')        // cut off anything after first line
+        .replace(/[^a-zA-ZÀ-ÖØ-öø-ÿ\s'-]/g, '') // strip non-name characters
+        .trim();
+
+      if (cleaned.toUpperCase() === 'INVALID' || cleaned.length < 2 || cleaned.length > 50) return null;
+
+      return cleaned.split(/\s+/)
+        .filter(w => w.length > 0)
+        .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+        .join(' ');
+
+    } catch (e) {
+      console.error("aiExtractName error:", e);
+      return null;
+    }
+  }
+
+  // ── Email validation ─────────────────────────────────────────────────────
+  async function aiValidateEmail(input) {
+    try {
+      const result = await geminiAsk(
+        "Extract and fix the email address from this input: \"" + input + "\"\n" +
+        "Rules:\n" +
+        "1. Return ONLY the corrected email address. Nothing else.\n" +
+        "2. No explanations, no code, no punctuation, no quotes.\n" +
+        "3. Fix typos: gmial→gmail, gmaill→gmail, yaho→yahoo, hotnail→hotmail, hotmial→hotmail, outlok→outlook\n" +
+        "4. If input is 'john at gmail dot com' return: john@gmail.com\n" +
+        "5. If no valid email found return: INVALID\n" +
+        "Your entire response must be a single email address only. Example: john@gmail.com"
+      );
+
+      if (!result) {
+        const typos = {
+          'gmial': 'gmail', 'gmaill': 'gmail', 'gmal': 'gmail',
+          'yaho': 'yahoo', 'yahooo': 'yahoo',
+          'hotnail': 'hotmail', 'hotmial': 'hotmail',
+          'outlok': 'outlook'
+        };
+        let s = input.trim().toLowerCase()
+          .replace(/\s+at\s+/g, '@')
+          .replace(/\s+dot\s+/g, '.')
+          .replace(/\s/g, '');
+        const m = s.match(/^(.+)@([^@]+)$/);
+        if (m) {
+          const base = m[2].split('.')[0];
+          if (typos[base]) s = m[1] + '@' + m[2].replace(base, typos[base]);
+        }
+        return /^[^\s@]+@[^\s@]{2,}\.[^\s@]{2,}$/.test(s) ? s : null;
+      }
+
+      // Take only the first line, strip everything else
+      const firstLine = result.split('\n')[0];
+
+      const cleaned = firstLine
+        .replace(/^["']|["']$/g, '')  // remove surrounding quotes
+        .replace(/[`*]/g, '')          // remove markdown backticks/asterisks
+        .replace(/\s/g, '')            // remove all spaces
+        .trim()
+        .toLowerCase();
+
+      console.log("Email cleaned:", cleaned);
+
+      if (cleaned === 'invalid' || !cleaned.includes('@') || !cleaned.includes('.')) return null;
+
+      // Final check — must look like a real email
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(cleaned)) return null;
+
+      return cleaned;
+
+    } catch (e) {
+      console.error("aiValidateEmail error:", e);
+      return null;
+    }
+  }
+
   // ── Chat helpers ────────────────────────────────────────────────────────
   const steps = ['stepName','stepEmail','stepSymptom','stepConfirm','stepSuccess'];
   function showStep(id){ steps.forEach(s=>{ document.getElementById(s).classList.toggle('hidden',s!==id); }); }
@@ -1326,6 +1485,21 @@ footer {
         } else { appendMsg(text,type); resolve(); }
       },delay);
     });
+  }
+
+  function showCorrectionNotice(container, original, corrected) {
+    const existing = container.querySelector('.correction-notice');
+    if (existing) existing.remove();
+    const notice = document.createElement('div');
+    notice.className = 'correction-notice';
+    notice.innerHTML = `✦ <span>Auto-corrected <strong>"${original}"</strong> → <strong>"${corrected}"</strong></span>`;
+    container.insertBefore(notice, container.lastElementChild);
+    setTimeout(() => notice.remove(), 5000);
+  }
+
+  function setThinking(id, visible) {
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('visible', visible);
   }
 
   function dateStr(offset=0){ const d=new Date(); d.setDate(d.getDate()+offset); const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0'); return `${y}-${m}-${dd}`; }
@@ -1359,23 +1533,98 @@ footer {
 
   function initChat(){
     msgsEl.innerHTML=''; pd={};
-    addMsg("Hello, I'm Dr. Aria — your virtual care assistant.",'bot',100);
-    addMsg("Let's get you booked. What's your full name?",'bot',800);
+    addMsg("Hello, I'm Dr. Aria — your AI-powered care assistant.",'bot',100);
+    addMsg("Let's get you booked. What's your full name? You can write naturally — I'll figure it out.",'bot',800);
     showStep('stepName');
   }
 
-  window.submitName=function(){
-    const val=document.getElementById('inName').value.trim(); if(!val) return;
-    pd.name=val; addMsg(val,'user'); document.getElementById('inName').value='';
-    addMsg(`Good to meet you, ${val}.`,'bot',300);
-    addMsg("What's your email? We'll send a confirmation there.",'bot',900);
-    showStep('stepEmail');
+  // ── Step: Name ──────────────────────────────────────────────────────────
+  window.submitName = async function() {
+    const input = document.getElementById('inName');
+    const val = input.value.trim();
+    if (!val) return;
+
+    const btn = document.getElementById('nameBtnEl');
+    btn.disabled = true;
+    btn.textContent = 'Checking…';
+    setThinking('nameThinking', true);
+    addMsg(val, 'user');
+    input.value = '';
+    input.style.borderColor = '';
+
+    try {
+      const extracted = await aiExtractName(val);
+      if (!extracted) {
+        setThinking('nameThinking', false);
+        btn.disabled = false;
+        btn.textContent = 'Continue →';
+        addMsg("I couldn't find a name in that — could you type just your full name?", 'bot', 300);
+        input.style.borderColor = '#c0392b';
+        return;
+      }
+      setThinking('nameThinking', false);
+      pd.name = extracted;
+      const inputClean = val.replace(/^(hi|hello|hey|i'm|i am|my name is|call me|it's|its)\s*/i, '').trim();
+      if (extracted.toLowerCase() !== inputClean.toLowerCase()) {
+        showCorrectionNotice(document.getElementById('stepName'), val, extracted);
+        await addMsg(`I'll use "${extracted}" — nice to meet you.`, 'bot', 300);
+      } else {
+        await addMsg(`Good to meet you, ${extracted}.`, 'bot', 300);
+      }
+      addMsg("What's your email? I can fix minor typos, so don't worry if you mistype.", 'bot', 900);
+      showStep('stepEmail');
+    } catch (e) {
+      setThinking('nameThinking', false);
+      addMsg("Something went wrong — please try again.", 'bot', 300);
+      btn.disabled = false;
+      btn.textContent = 'Continue →';
+    }
   };
-  window.submitEmail=function(){
-    const val=document.getElementById('inEmail').value.trim(); if(!val||!val.includes('@')){ document.getElementById('inEmail').style.borderColor='#c0392b'; return; }
-    document.getElementById('inEmail').style.borderColor=''; pd.email=val; addMsg(val,'user'); document.getElementById('inEmail').value='';
-    addMsg("Which symptom best describes what you're experiencing?",'bot',500); showStep('stepSymptom');
+
+  // ── Step: Email ─────────────────────────────────────────────────────────
+  window.submitEmail = async function() {
+    const input = document.getElementById('inEmail');
+    const val = input.value.trim();
+    if (!val) return;
+
+    const btn = document.getElementById('emailBtnEl');
+    btn.disabled = true;
+    btn.textContent = 'Checking…';
+    setThinking('emailThinking', true);
+    addMsg(val, 'user');
+    input.value = '';
+    input.style.borderColor = '';
+
+    try {
+      const validated = await aiValidateEmail(val);
+      if (!validated) {
+        setThinking('emailThinking', false);
+        btn.disabled = false;
+        btn.textContent = 'Continue →';
+        addMsg("That doesn't look like a valid email — could you double-check it?", 'bot', 300);
+        input.style.borderColor = '#c0392b';
+        return;
+      }
+      setThinking('emailThinking', false);
+      pd.email = validated;
+      const normalised = val.toLowerCase().replace(/\s/g, '');
+      if (validated !== normalised) {
+        showCorrectionNotice(document.getElementById('stepEmail'), val, validated);
+        await addMsg(`I've corrected your email to "${validated}".`, 'bot', 300);
+      } else {
+        await addMsg("Got it, thank you.", 'bot', 300);
+      }
+      addMsg("Which symptom best describes what you're experiencing?", 'bot', 800);
+      showStep('stepSymptom');
+    } catch (e) {
+      setThinking('emailThinking', false);
+      addMsg("Something went wrong — please try again.", 'bot', 300);
+      btn.disabled = false;
+      btn.textContent = 'Continue →';
+    }
   };
+
+  // ── Step: Symptom ───────────────────────────────────────────────────────
   window.submitSymptom=async function(){
     const sel=document.getElementById('inSymptom'); const val=sel.value; if(!val) return;
     pd.symptom=val; addMsg(val,'user'); sel.selectedIndex=0;
@@ -1395,6 +1644,8 @@ footer {
     } catch(e){ addMsg("Couldn't search right now — please try again.",'bot',500); console.error(e); }
     finally { document.getElementById('symptomBtn').disabled=false; }
   };
+
+  // ── Step: Confirm ───────────────────────────────────────────────────────
   window.submitConfirm=async function(){
     const btn=document.getElementById('confirmBtn'); btn.disabled=true; btn.textContent='Booking…';
     try{
@@ -1403,6 +1654,8 @@ footer {
       showStep('stepSuccess'); addMsg(`Confirmed. See you ${fmtDate(pd.date)} at ${fmtTime(pd.time)}, ${pd.name}. Check your inbox.`,'bot',300);
     } catch(err){ console.error(err); addMsg("Couldn't save — please try again.",'bot',300); btn.disabled=false; btn.textContent='Confirm Appointment'; }
   };
+
+  // ── Reset & open/close ──────────────────────────────────────────────────
   window.resetChat=function(){
     document.getElementById('inName').value=''; document.getElementById('inEmail').value='';
     const btn=document.getElementById('confirmBtn'); if(btn){btn.disabled=false;btn.textContent='Confirm Appointment';}
