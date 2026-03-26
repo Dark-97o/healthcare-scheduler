@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MediCare+ | Precision Healthcare</title>
+<link rel="icon" href="https://lh3.googleusercontent.com/pw/AP1GczN5NKp-gdC4g_ZU5tF_XD2rYIjna4kGRsxJjHpZ3puZ7t3UCNrDHc96-gcHWtdEfXqfdenTXg25JZbTt910OceNs6tR_hR7qIcZoySqHWhYs9e5YtuzCrwCTwaQOLR4syZWu2LgCA9TeiccyJDx5NVr=w407-h407-s-no-gm?authuser=0" type="image/svg+xml"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;1,400;1,500&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+:root {
+  --cream:#f5f0e8;--cream2:#ede7d9;--cream3:#e0d8c8;
+  --ink:#1a1a18;--ink2:#2d2d2a;
+  --forest:#1f3d2e;--forest2:#2a5240;
+  --sage:#5a7d65;--sage2:#8aab95;
+  --gold:#b8924a;--gold2:#d4a85c;
+  --muted:#7a7060;
+  --border:rgba(26,26,24,0.12);--border2:rgba(31,61,46,0.25);
+  --red:#c0392b;--green:#27ae60;
+  --amber:#d97706;--amber-bg:rgba(217,119,6,0.08);--amber-border:rgba(217,119,6,0.2);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;cursor:none;}
+
+/* CURSOR */
+.cursor-dot{position:fixed;width:6px;height:6px;background:var(--forest);border-radius:50%;pointer-events:none;z-index:9999;transition:transform 0.1s;transform:translate(-50%,-50%);}
+.cursor-ring{position:fixed;width:36px;height:36px;border:1px solid var(--forest);border-radius:50%;pointer-events:none;z-index:9998;transition:transform 0.18s cubic-bezier(0.25,0.46,0.45,0.94),width 0.2s,height 0.2s,opacity 0.2s;transform:translate(-50%,-50%);opacity:0.5;}
+body:has(a:hover) .cursor-ring,body:has(button:hover) .cursor-ring{width:54px;height:54px;opacity:0.25;}
+body::after{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");background-size:250px;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:500;display:flex;align-items:center;justify-content:space-between;padding:0 3rem;height:72px;background:rgba(245,240,232,0.88);backdrop-filter:blur(24px) saturate(1.4);border-bottom:1px solid var(--border);transition:all 0.3s;}
+nav.scrolled{height:60px;background:rgba(237,231,217,0.95);box-shadow:0 1px 0 var(--border),0 4px 20px rgba(26,26,24,0.06);}
+.logo{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;letter-spacing:0.02em;color:var(--ink);text-decoration:none;}
+.logo sup{font-size:0.55em;color:var(--forest);font-weight:500;vertical-align:super;letter-spacing:0.06em;}
+.nav-center{display:flex;align-items:center;gap:0.25rem;}
+.nav-link{font-size:0.78rem;font-weight:400;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:0.5rem 1rem;border-radius:4px;transition:all 0.2s;position:relative;}
+.nav-link::after{content:'';position:absolute;bottom:4px;left:50%;right:50%;height:1px;background:var(--forest);transition:all 0.25s cubic-bezier(0.4,0,0.2,1);}
+.nav-link:hover{color:var(--ink);}
+.nav-link:hover::after{left:1rem;right:1rem;}
+.nav-right{display:flex;align-items:center;gap:0.75rem;}
+.btn-primary{font-size:0.78rem;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--cream);background:var(--forest);border:1px solid var(--forest);border-radius:2px;padding:0.55rem 1.5rem;cursor:none;transition:all 0.25s;}
+.btn-primary:hover{background:var(--forest2);box-shadow:0 4px 20px rgba(31,61,46,0.3);transform:translateY(-1px);}
+.btn-ghost{font-size:0.78rem;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;color:var(--muted);background:transparent;border:1px solid var(--border2);border-radius:2px;padding:0.55rem 1.25rem;cursor:none;text-decoration:none;transition:all 0.2s;}
+.btn-ghost:hover{color:var(--forest);border-color:var(--forest);background:rgba(31,61,46,0.06);}
+
+/* HERO */
+.hero{position:relative;z-index:2;min-height:100vh;display:grid;grid-template-rows:1fr auto;padding-top:72px;overflow:hidden;}
+.hero-stage{display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 72px);}
+.hero-left{padding:5rem 3rem 4rem 3rem;display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid var(--border);position:relative;}
+.hero-eyebrow{display:flex;align-items:center;gap:1rem;font-family:'DM Mono',monospace;font-size:0.68rem;color:var(--muted);letter-spacing:0.18em;text-transform:uppercase;}
+.eyebrow-line{width:32px;height:1px;background:var(--sage2);}
+.hero-headline{font-family:'Playfair Display',serif;font-size:clamp(3.5rem,7vw,6.5rem);line-height:1.0;font-weight:400;color:var(--ink);letter-spacing:-0.02em;flex:1;display:flex;flex-direction:column;justify-content:center;padding:2rem 0;}
+.hero-headline em{font-style:italic;color:var(--forest);}
+.hero-headline .stroke-text{-webkit-text-stroke:1px var(--ink2);color:transparent;font-weight:700;}
+.hero-bottom{display:flex;flex-direction:column;gap:2rem;}
+.hero-desc{font-size:0.92rem;color:var(--muted);line-height:1.85;font-weight:300;max-width:380px;}
+.hero-actions{display:flex;align-items:center;gap:1.5rem;}
+.btn-large{font-size:0.82rem;font-weight:500;letter-spacing:0.08em;text-transform:uppercase;color:var(--cream);background:var(--forest);border:none;border-radius:2px;padding:1rem 2.5rem;cursor:none;transition:all 0.25s;display:inline-flex;align-items:center;gap:0.75rem;}
+.btn-large:hover{background:var(--forest2);box-shadow:0 8px 40px rgba(31,61,46,0.35);transform:translateY(-2px);}
+.btn-large svg{transition:transform 0.2s;}
+.btn-large:hover svg{transform:translateX(4px);}
+.link-text{font-size:0.78rem;color:var(--muted);letter-spacing:0.06em;text-decoration:none;display:flex;align-items:center;gap:0.5rem;transition:color 0.2s;border:none;background:none;cursor:none;text-transform:uppercase;}
+.link-text:hover{color:var(--ink);}
+.link-text::after{content:'→';transition:transform 0.2s;}
+.link-text:hover::after{transform:translateX(4px);}
+.hero-right{position:relative;display:grid;grid-template-rows:1fr auto;}
+.hero-image-container{position:relative;overflow:hidden;}
+.hero-image-container img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(0.75) contrast(1.08);transform:scale(1.03);transition:transform 8s ease;}
+.hero-image-container:hover img{transform:scale(1);}
+.hero-image-container::before{content:'';position:absolute;inset:0;z-index:1;background:linear-gradient(135deg,rgba(31,61,46,0.15) 0%,transparent 60%),linear-gradient(to bottom,transparent 50%,rgba(245,240,232,0.4) 100%);}
+.image-label{position:absolute;z-index:2;bottom:1.5rem;left:1.5rem;font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.14em;color:rgba(245,240,232,0.7);text-transform:uppercase;}
+.hero-data-strip{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--border);}
+.data-cell{padding:1.5rem 2rem;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:0.3rem;}
+.data-cell:last-child{border-right:none;}
+.data-num{font-family:'Playfair Display',serif;font-size:2rem;font-weight:500;color:var(--forest);line-height:1;}
+.data-label{font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.14em;color:var(--muted);text-transform:uppercase;}
+
+/* MARQUEE */
+.marquee-wrap{position:relative;z-index:2;background:var(--forest);overflow:hidden;border-top:1px solid rgba(255,255,255,0.08);border-bottom:1px solid rgba(255,255,255,0.08);padding:0.9rem 0;}
+.marquee-track{display:flex;gap:0;animation:marquee 30s linear infinite;width:max-content;}
+.marquee-item{display:flex;align-items:center;gap:1rem;padding:0 2.5rem;font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.16em;text-transform:uppercase;color:rgba(245,240,232,0.55);white-space:nowrap;}
+.marquee-dot{width:4px;height:4px;border-radius:50%;background:var(--gold);flex-shrink:0;}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* PORTALS */
+.portals-section{position:relative;z-index:2;padding:7rem 3rem;background:var(--cream);}
+.section-header{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:end;margin-bottom:4rem;padding-bottom:2.5rem;border-bottom:1px solid var(--border);}
+.section-kicker{font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.2em;color:var(--sage);text-transform:uppercase;margin-bottom:1rem;display:flex;align-items:center;gap:0.75rem;}
+.section-kicker::before{content:'';width:20px;height:1px;background:var(--sage);}
+.section-title-large{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,4vw,3.8rem);font-weight:400;line-height:1.1;color:var(--ink);letter-spacing:-0.02em;}
+.section-title-large em{font-style:italic;color:var(--forest);}
+.section-body{font-size:0.9rem;color:var(--muted);line-height:1.85;font-weight:300;max-width:340px;align-self:end;}
+.portals-grid{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--border);}
+.portal-card{padding:3rem 2.5rem;border-right:1px solid var(--border);display:flex;flex-direction:column;gap:2rem;text-decoration:none;color:inherit;background:var(--cream);position:relative;overflow:hidden;transition:background 0.35s;cursor:none;}
+.portal-card:last-child{border-right:none;}
+.portal-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--forest);transform:scaleX(0);transform-origin:left;transition:transform 0.4s cubic-bezier(0.4,0,0.2,1);}
+.portal-card:hover::before{transform:scaleX(1);}
+.portal-card:hover{background:rgba(31,61,46,0.03);}
+.portal-index{font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.16em;color:var(--sage2);}
+.portal-icon-wrap{width:52px;height:52px;border:1px solid var(--border2);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;background:rgba(31,61,46,0.04);transition:all 0.3s;}
+.portal-card:hover .portal-icon-wrap{background:var(--forest);border-color:var(--forest);transform:scale(1.08);}
+.portal-name{font-family:'Playfair Display',serif;font-size:1.55rem;font-weight:500;color:var(--ink);line-height:1.2;}
+.portal-desc{font-size:0.84rem;color:var(--muted);line-height:1.75;font-weight:300;flex:1;}
+.portal-arrow{display:flex;align-items:center;gap:0.5rem;font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--forest);transition:gap 0.2s;}
+.portal-card:hover .portal-arrow{gap:0.85rem;}
+
+/* FEATURE STRIP */
+.feature-strip{position:relative;z-index:2;background:var(--ink);padding:6rem 3rem;display:grid;grid-template-columns:1fr 1.2fr;gap:6rem;align-items:center;}
+.feature-label{font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.2em;color:var(--sage2);text-transform:uppercase;margin-bottom:1.5rem;display:flex;align-items:center;gap:0.75rem;}
+.feature-label::before{content:'';width:20px;height:1px;background:var(--sage2);}
+.feature-title{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,3.5vw,3.2rem);font-weight:400;line-height:1.15;color:var(--cream);letter-spacing:-0.02em;margin-bottom:2rem;}
+.feature-title em{font-style:italic;color:var(--sage2);}
+.feature-sub{font-size:0.88rem;color:rgba(245,240,232,0.5);line-height:1.85;font-weight:300;}
+.feature-right{display:flex;flex-direction:column;gap:0;}
+.feature-item{padding:2rem 0;border-bottom:1px solid rgba(245,240,232,0.06);display:grid;grid-template-columns:auto 1fr;gap:1.75rem;align-items:start;}
+.feature-item:first-child{border-top:1px solid rgba(245,240,232,0.06);}
+.fi-num{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:400;color:rgba(245,240,232,0.2);width:32px;padding-top:2px;}
+.fi-title{font-size:0.92rem;font-weight:500;color:var(--cream);margin-bottom:0.4rem;letter-spacing:0.01em;}
+.fi-desc{font-size:0.82rem;color:rgba(245,240,232,0.45);line-height:1.7;font-weight:300;}
+
+/* TRUST */
+.trust-section{position:relative;z-index:2;padding:7rem 3rem;background:var(--cream2);display:grid;grid-template-columns:1fr 1fr;gap:6rem;align-items:center;}
+blockquote{font-family:'Playfair Display',serif;font-size:clamp(1.5rem,2.5vw,2.2rem);font-weight:400;font-style:italic;line-height:1.45;color:var(--ink);letter-spacing:-0.01em;}
+blockquote::before{content:'\201C';color:var(--forest);font-size:4rem;line-height:0;display:block;margin-bottom:1rem;vertical-align:-0.4em;}
+.quote-attr{display:flex;align-items:center;gap:1rem;}
+.attr-line{width:24px;height:1px;background:var(--sage2);}
+.attr-name{font-size:0.78rem;font-weight:500;color:var(--muted);letter-spacing:0.08em;text-transform:uppercase;}
+.trust-right{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);}
+.trust-card{background:var(--cream);padding:2.5rem 2rem;display:flex;flex-direction:column;gap:0.5rem;}
+.tc-num{font-family:'Playfair Display',serif;font-size:2.8rem;font-weight:400;color:var(--forest);line-height:1;}
+.tc-label{font-size:0.8rem;color:var(--muted);font-weight:300;line-height:1.5;}
+
+/* FOOTER */
+footer{position:relative;z-index:2;background:var(--ink);padding:4rem 3rem 2rem;}
+.footer-top{display:flex;align-items:flex-start;justify-content:space-between;padding-bottom:3rem;border-bottom:1px solid rgba(245,240,232,0.08);margin-bottom:2rem;}
+.footer-logo{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--cream);letter-spacing:0.02em;}
+.footer-logo sup{font-size:0.5em;color:var(--sage2);vertical-align:super;}
+.footer-tagline{font-size:0.78rem;color:rgba(245,240,232,0.35);font-weight:300;margin-top:0.5rem;max-width:220px;line-height:1.6;}
+.footer-links{display:flex;gap:0.5rem;}
+.footer-link{font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(245,240,232,0.4);text-decoration:none;padding:0.4rem 0.8rem;transition:color 0.2s;}
+.footer-link:hover{color:rgba(245,240,232,0.8);}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;}
+.footer-copy{font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.12em;color:rgba(245,240,232,0.22);text-transform:uppercase;}
+.footer-badge{font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.12em;color:rgba(90,125,101,0.5);text-transform:uppercase;}
+
+/* SCROLL ANIMATIONS */
+.reveal{opacity:0;transform:translateY(28px);transition:opacity 0.7s cubic-bezier(0.4,0,0.2,1),transform 0.7s cubic-bezier(0.4,0,0.2,1);}
+.reveal.visible{opacity:1;transform:translateY(0);}
+.reveal-delay-1{transition-delay:0.1s;}
+.reveal-delay-2{transition-delay:0.2s;}
+.reveal-delay-3{transition-delay:0.3s;}
+
+/* ═══════════════════════════════════════════════════════
+   PATIENT PORTAL WIDGET
+═══════════════════════════════════════════════════════ */
+.portal-widget{position:fixed;bottom:2rem;right:2rem;z-index:600;display:flex;flex-direction:column;align-items:flex-end;gap:1rem;}
+
+.portal-panel{display:none;flex-direction:column;width:420px;max-height:85vh;background:var(--cream);border:1px solid var(--border2);overflow:hidden;box-shadow:0 40px 100px rgba(26,26,24,0.25),0 0 0 1px rgba(31,61,46,0.1);}
+.portal-panel.open{display:flex;animation:panelUp 0.35s cubic-bezier(0.4,0,0.2,1);}
+@keyframes panelUp{from{opacity:0;transform:translateY(20px) scale(0.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+.portal-head{display:flex;align-items:center;gap:0.9rem;padding:1.1rem 1.25rem;background:var(--forest);flex-shrink:0;}
+.portal-avatar{width:40px;height:40px;border-radius:50%;object-fit:cover;border:2px solid rgba(245,240,232,0.25);}
+.portal-head-info .portal-head-name{font-weight:500;font-size:0.88rem;color:var(--cream);}
+.portal-head-info .portal-head-sub{font-family:'DM Mono',monospace;font-size:0.62rem;color:var(--sage2);letter-spacing:0.08em;}
+.portal-head-actions{margin-left:auto;display:flex;align-items:center;gap:0.5rem;}
+.ph-btn{background:transparent;border:none;color:rgba(245,240,232,0.5);cursor:none;font-size:0.75rem;transition:color 0.2s;font-family:'DM Mono',monospace;letter-spacing:0.06em;text-transform:uppercase;padding:0.25rem 0.5rem;}
+.ph-btn:hover{color:var(--cream);}
+
+/* Scrollable body */
+.portal-body{flex:1;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--border) transparent;}
+
+/* Auth screens */
+.auth-screen{padding:2rem 1.5rem;display:flex;flex-direction:column;gap:1.25rem;}
+.auth-tabs{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--border);border-radius:2px;overflow:hidden;margin-bottom:0.25rem;}
+.auth-tab{padding:0.7rem;font-size:0.76rem;font-weight:500;letter-spacing:0.06em;text-transform:uppercase;background:transparent;border:none;cursor:none;color:var(--muted);transition:all 0.2s;}
+.auth-tab.active{background:var(--forest);color:var(--cream);}
+
+.auth-title{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:500;color:var(--ink);line-height:1.2;}
+.auth-sub{font-size:0.8rem;color:var(--muted);font-weight:300;line-height:1.5;}
+
+.f-group{display:flex;flex-direction:column;gap:0.35rem;}
+.f-label{font-family:'DM Mono',monospace;font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);}
+.f-input{background:white;border:1px solid var(--border);border-radius:2px;padding:0.7rem 0.9rem;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:0.85rem;outline:none;transition:border-color 0.2s;font-weight:300;width:100%;}
+.f-input:focus{border-color:var(--forest);}
+.f-input::placeholder{color:rgba(122,112,96,0.45);}
+.f-input.error{border-color:var(--red);}
+.f-hint{font-size:0.72rem;color:var(--red);margin-top:0.15rem;display:none;}
+.f-hint.show{display:block;}
+
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:0.75rem;}
+
+.generated-badge{background:rgba(31,61,46,0.08);border:1px solid rgba(31,61,46,0.2);border-radius:2px;padding:0.6rem 0.85rem;font-family:'DM Mono',monospace;font-size:0.75rem;color:var(--forest);letter-spacing:0.06em;display:flex;justify-content:space-between;align-items:center;}
+.gen-label{font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--sage);margin-bottom:0.15rem;}
+.gen-value{font-size:0.82rem;color:var(--forest);font-weight:500;}
+
+.auth-btn{background:var(--forest);color:var(--cream);border:none;border-radius:2px;padding:0.85rem;width:100%;font-family:'DM Sans',sans-serif;font-weight:500;font-size:0.82rem;letter-spacing:0.06em;text-transform:uppercase;cursor:none;transition:all 0.2s;}
+.auth-btn:hover{background:var(--forest2);}
+.auth-btn:disabled{opacity:0.4;cursor:not-allowed;}
+.auth-btn.loading{opacity:0.7;}
+
+.auth-error{background:rgba(192,57,43,0.08);border:1px solid rgba(192,57,43,0.25);border-radius:2px;padding:0.65rem 0.9rem;font-size:0.78rem;color:var(--red);display:none;}
+.auth-error.show{display:block;}
+.auth-success{background:rgba(39,174,96,0.08);border:1px solid rgba(39,174,96,0.25);border-radius:2px;padding:0.65rem 0.9rem;font-size:0.78rem;color:var(--green);display:none;}
+.auth-success.show{display:block;}
+
+/* Dashboard */
+.dashboard{display:flex;flex-direction:column;}
+.dash-welcome{padding:1.5rem;background:linear-gradient(135deg,var(--forest) 0%,var(--forest2) 100%);color:var(--cream);}
+.dash-welcome-name{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:500;}
+.dash-welcome-sub{font-size:0.76rem;color:var(--sage2);font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.08em;margin-top:0.2rem;}
+.dash-creds{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(245,240,232,0.1);margin-top:1rem;}
+.dash-cred{padding:0.6rem 0.9rem;background:rgba(0,0,0,0.12);}
+.dash-cred-label{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:rgba(245,240,232,0.4);margin-bottom:0.15rem;}
+.dash-cred-val{font-size:0.78rem;color:var(--cream);font-weight:300;}
+
+.dash-section{padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);}
+.dash-section:last-child{border-bottom:none;}
+.dash-sec-title{font-family:'DM Mono',monospace;font-size:0.63rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--sage);margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem;}
+.dash-sec-title::before{content:'';width:14px;height:1px;background:var(--sage);}
+
+/* Appointment cards */
+.appt-card{background:white;border:1px solid var(--border);border-radius:2px;padding:1rem 1.1rem;margin-bottom:0.6rem;position:relative;}
+.appt-card:last-child{margin-bottom:0;}
+.appt-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5rem;}
+.appt-doctor{font-weight:500;font-size:0.86rem;color:var(--ink);}
+.appt-specialty{font-size:0.74rem;color:var(--muted);font-weight:300;}
+.appt-status{font-family:'DM Mono',monospace;font-size:0.58rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.25rem 0.55rem;border-radius:20px;}
+.appt-status.pending{background:rgba(184,146,74,0.12);color:var(--gold);}
+.appt-status.confirmed{background:rgba(39,174,96,0.1);color:var(--green);}
+.appt-status.completed{background:rgba(90,125,101,0.1);color:var(--sage);}
+.appt-meta{font-size:0.76rem;color:var(--muted);font-weight:300;display:flex;gap:1.25rem;}
+.appt-meta span{display:flex;align-items:center;gap:0.3rem;}
+.appt-symptom{font-size:0.72rem;color:var(--sage);margin-top:0.35rem;}
+.no-appts{font-size:0.82rem;color:var(--muted);font-style:italic;font-weight:300;padding:0.5rem 0;}
+
+/* Booking flow */
+.booking-screen{padding:1.5rem;display:flex;flex-direction:column;gap:1.1rem;}
+.booking-title{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:500;color:var(--ink);}
+.booking-step-label{font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--sage2);margin-bottom:0.75rem;}
+
+.slot-choice{display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;}
+.slot-btn{padding:0.6rem;border:1px solid var(--border);background:white;border-radius:2px;cursor:none;font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);transition:all 0.2s;text-align:center;}
+.slot-btn:hover,.slot-btn.selected{border-color:var(--forest);background:rgba(31,61,46,0.06);color:var(--forest);}
+
+.problems-input{width:100%;background:white;border:1px solid var(--border);border-radius:2px;padding:0.8rem 0.9rem;color:var(--ink);font-family:'DM Sans',sans-serif;font-size:0.84rem;outline:none;resize:vertical;min-height:80px;transition:border-color 0.2s;font-weight:300;}
+.problems-input:focus{border-color:var(--forest);}
+.problems-input::placeholder{color:rgba(122,112,96,0.45);}
+
+.ai-badge{display:flex;align-items:center;gap:0.5rem;font-family:'DM Mono',monospace;font-size:0.6rem;letter-spacing:0.1em;color:var(--sage);text-transform:uppercase;padding:0.4rem 0;}
+.ai-dot{width:5px;height:5px;border-radius:50%;background:var(--sage2);animation:dot 1s infinite;}
+.ai-dot:nth-child(2){animation-delay:.2s}
+.ai-dot:nth-child(3){animation-delay:.4s}
+@keyframes dot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+
+.symptoms-chips{display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.2rem;}
+.s-chip{padding:0.3rem 0.65rem;background:rgba(31,61,46,0.08);border:1px solid rgba(31,61,46,0.2);border-radius:20px;font-size:0.72rem;color:var(--forest);font-weight:400;}
+
+.slot-preview-card{background:rgba(31,61,46,0.06);border:1px solid rgba(31,61,46,0.15);border-radius:2px;padding:1rem 1.1rem;font-size:0.83rem;color:var(--ink2);line-height:2;font-weight:300;}
+.slot-preview-card strong{color:var(--forest);font-weight:500;}
+
+.action-btn{background:var(--forest);color:var(--cream);border:none;border-radius:2px;padding:0.8rem;width:100%;font-family:'DM Sans',sans-serif;font-weight:500;font-size:0.82rem;letter-spacing:0.06em;text-transform:uppercase;cursor:none;transition:all 0.2s;}
+.action-btn:hover{background:var(--forest2);}
+.action-btn:disabled{opacity:0.4;}
+.action-btn.secondary{background:transparent;color:var(--forest);border:1px solid var(--border2);}
+.action-btn.secondary:hover{background:rgba(31,61,46,0.05);}
+
+/* ═══════════════════════════════════════════════════════
+   DISEASE BRIEF PANEL — NEW FEATURE
+═══════════════════════════════════════════════════════ */
+.disease-brief-panel {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  animation: briefReveal 0.45s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes briefReveal {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.disease-brief-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, rgba(31,61,46,0.07) 0%, rgba(31,61,46,0.03) 100%);
+  border-bottom: 1px solid var(--border);
+}
+.disease-brief-pulse {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--sage);
+  box-shadow: 0 0 0 0 rgba(90,125,101,0.4);
+  animation: briefPulse 1.8s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes briefPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(90,125,101,0.45); }
+  70%  { box-shadow: 0 0 0 8px rgba(90,125,101,0); }
+  100% { box-shadow: 0 0 0 0 rgba(90,125,101,0); }
+}
+.disease-brief-head-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sage);
+}
+.disease-brief-head-badge {
+  margin-left: auto;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  background: rgba(31,61,46,0.1);
+  color: var(--forest);
+  padding: 0.2rem 0.5rem;
+  border-radius: 20px;
+}
+.disease-brief-disclaimer {
+  padding: 0.6rem 1rem;
+  background: var(--amber-bg);
+  border-bottom: 1px solid var(--amber-border);
+  font-size: 0.7rem;
+  color: var(--amber);
+  font-weight: 300;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+  line-height: 1.5;
+}
+.disease-brief-disclaimer svg { flex-shrink: 0; margin-top: 1px; }
+
+.disease-cards-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.disease-card {
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 0.75rem;
+  align-items: start;
+  transition: background 0.2s;
+  cursor: default;
+}
+.disease-card:last-child { border-bottom: none; }
+.disease-card:hover { background: rgba(31,61,46,0.02); }
+
+.disease-rank {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: rgba(122,112,96,0.35);
+  padding-top: 1px;
+  min-width: 16px;
+}
+.disease-info { display: flex; flex-direction: column; gap: 0.25rem; }
+.disease-name {
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--ink);
+  line-height: 1.2;
+}
+.disease-desc {
+  font-size: 0.75rem;
+  color: var(--muted);
+  font-weight: 300;
+  line-height: 1.55;
+}
+.disease-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.3rem; }
+.disease-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.57rem;
+  letter-spacing: 0.08em;
+  padding: 0.18rem 0.45rem;
+  background: rgba(31,61,46,0.06);
+  border: 1px solid rgba(31,61,46,0.12);
+  border-radius: 20px;
+  color: var(--sage);
+  text-transform: uppercase;
+}
+
+.disease-likelihood {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  min-width: 52px;
+}
+.likelihood-bar-wrap {
+  width: 52px;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.likelihood-bar {
+  height: 100%;
+  border-radius: 2px;
+  background: var(--forest);
+  transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+  width: 0;
+}
+.likelihood-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.disease-brief-footer {
+  padding: 0.75rem 1rem;
+  background: rgba(245,240,232,0.6);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.disease-brief-footer-note {
+  font-size: 0.7rem;
+  color: var(--muted);
+  font-weight: 300;
+}
+.disease-brief-footer-cta {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--forest);
+  cursor: none;
+  background: none;
+  border: none;
+  padding: 0;
+  transition: opacity 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.disease-brief-footer-cta:hover { opacity: 0.65; }
+
+/* Brief loading skeleton */
+.brief-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1rem;
+}
+.skel-line {
+  height: 10px;
+  background: linear-gradient(90deg, var(--cream2) 25%, var(--cream3) 50%, var(--cream2) 75%);
+  background-size: 200% 100%;
+  animation: skelShimmer 1.4s infinite;
+  border-radius: 2px;
+}
+@keyframes skelShimmer { from{background-position:200% 0} to{background-position:-200% 0} }
+
+/* success / razorpay */
+.success-screen{padding:2rem 1.5rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:0.75rem;}
+.success-icon{width:56px;height:56px;border-radius:50%;background:rgba(39,174,96,0.12);border:1px solid rgba(39,174,96,0.3);display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto;}
+.success-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:500;color:var(--forest);}
+.success-sub{font-size:0.8rem;color:var(--muted);font-weight:300;line-height:1.6;}
+.success-ref{font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.12em;color:var(--sage);background:rgba(31,61,46,0.06);border:1px solid rgba(31,61,46,0.12);padding:0.5rem 0.9rem;border-radius:2px;}
+
+/* FAB */
+.portal-fab{width:58px;height:58px;border-radius:50%;background:var(--forest);border:none;cursor:none;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(31,61,46,0.4);transition:all 0.25s;overflow:hidden;padding:0;position:relative;}
+.portal-fab::after{content:'';position:absolute;bottom:10px;right:10px;width:10px;height:10px;border-radius:50%;background:#4caf7d;border:2px solid var(--cream);z-index:1;}
+.portal-fab:hover{transform:scale(1.06);box-shadow:0 12px 48px rgba(31,61,46,0.5);}
+.portal-fab img{width:100%;height:100%;object-fit:cover;border-radius:50%;}
+
+.hidden{display:none!important;}
+
+/* Responsive */
+@media(max-width:900px){
+  nav{padding:0 1.5rem;}
+  .nav-center{display:none;}
+  .hero-stage{grid-template-columns:1fr;}
+  .hero-left{border-right:none;border-bottom:1px solid var(--border);padding:3rem 1.5rem;}
+  .hero-right{min-height:50vw;}
+  .portals-section{padding:4rem 1.5rem;}
+  .section-header{grid-template-columns:1fr;gap:1.5rem;}
+  .portals-grid{grid-template-columns:1fr;}
+  .portal-card{border-right:none;border-bottom:1px solid var(--border);}
+  .feature-strip{grid-template-columns:1fr;gap:3rem;padding:4rem 1.5rem;}
+  .trust-section{grid-template-columns:1fr;gap:3rem;padding:4rem 1.5rem;}
+  .trust-right{grid-template-columns:1fr 1fr;}
+  .portal-panel{width:calc(100vw - 2rem);}
+  .footer-top{flex-direction:column;gap:2rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a href="#" class="logo">MediCare<sup>+</sup></a>
+  <div class="nav-center">
+    <a href="admin.html" class="nav-link">Admin</a>
+    <a href="doctor.html" class="nav-link">Doctors</a>
+    <a href="tests-portal.html" class="nav-link">Tests</a>
+  </div>
+  <div class="nav-right">
+    <button class="btn-primary" onclick="openPortal()">Patient Portal</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-stage">
+    <div class="hero-left">
+      <div class="hero-eyebrow"><span class="eyebrow-line"></span>Precision Healthcare — Est. 2026</div>
+      <h1 class="hero-headline">Where care<br>meets <em>precision</em><br><span class="stroke-text">medicine.</span></h1>
+      <div class="hero-bottom">
+        <p class="hero-desc">MediCare+ connects you to the right specialist, instantly. Describe your symptoms, receive a matched specialist, and book in under two minutes — from anywhere.</p>
+        <div class="hero-actions">
+          <button class="btn-large" onclick="openPortal()">Book Appointment<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          <a href="#portals" class="link-text">Explore portals</a>
+        </div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-image-container">
+        <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=900&q=85&auto=format&fit=crop" alt="Healthcare"/>
+        <div class="image-label">State-of-the-art facilities</div>
+      </div>
+      <div class="hero-data-strip">
+        <div class="data-cell"><div class="data-num">50+</div><div class="data-label">Specialists</div></div>
+        <div class="data-cell"><div class="data-num">98%</div><div class="data-label">Patient satisfaction</div></div>
+        <div class="data-cell"><div class="data-num">1 min</div><div class="data-label">Avg. booking time</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <div class="marquee-item"><span class="marquee-dot"></span>Cardiology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Neurology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Orthopedics</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Dermatology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Oncology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Pediatrics</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Ophthalmology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Gynecology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Nephrology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Pulmonology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Endocrinology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Psychiatry</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Cardiology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Neurology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Orthopedics</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Dermatology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Oncology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Pediatrics</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Ophthalmology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Gynecology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Nephrology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Pulmonology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Endocrinology</div>
+    <div class="marquee-item"><span class="marquee-dot"></span>Psychiatry</div>
+  </div>
+</div>
+
+<!-- PORTALS SECTION -->
+<section class="portals-section" id="portals">
+  <div class="section-header">
+    <div>
+      <div class="section-kicker reveal">Platform Access</div>
+      <h2 class="section-title-large reveal reveal-delay-1">Your <em>portal</em><br>to better care.</h2>
+    </div>
+    <p class="section-body reveal reveal-delay-2">Three dedicated environments — each built for a distinct role in the care ecosystem. Secure, purpose-built, and always in sync.</p>
+  </div>
+  <div class="portals-grid">
+    <a href="admin.html" class="portal-card reveal">
+      <div class="portal-index">01 — Administration</div>
+      <div class="portal-icon-wrap">🛡️</div>
+      <div class="portal-name">Admin<br>Panel</div>
+      <p class="portal-desc">Centralised control over users, doctors, appointments, and system configuration. Full visibility, full authority.</p>
+      <div class="portal-arrow">Access portal <span>→</span></div>
+    </a>
+    <a href="doctor.html" class="portal-card reveal reveal-delay-1">
+      <div class="portal-index">02 — Clinical</div>
+      <div class="portal-icon-wrap">🩺</div>
+      <div class="portal-name">Doctor<br>Panel</div>
+      <p class="portal-desc">Manage your schedule, review incoming appointments, and update your availability — all in real time.</p>
+      <div class="portal-arrow">Doctor login <span>→</span></div>
+    </a>
+    <a href="tests-portal.html" class="portal-card reveal reveal-delay-2">
+      <div class="portal-index">03 — Diagnostics</div>
+      <div class="portal-icon-wrap">🔬</div>
+      <div class="portal-name">Tests<br>Portal</div>
+      <p class="portal-desc">Track assigned tests, record results, and update statuses the moment they are ready — no paperwork required.</p>
+      <div class="portal-arrow">Tests login <span>→</span></div>
+    </a>
+  </div>
+</section>
+
+<!-- FEATURE STRIP -->
+<section class="feature-strip">
+  <div class="feature-left reveal">
+    <div class="feature-label">How it works</div>
+    <h2 class="feature-title">Booked in minutes,<br>cared for <em>for life.</em></h2>
+    <p class="feature-sub">Our intelligent matching system pairs your symptoms to the most appropriate specialist available — no guesswork, no waiting rooms, no phone calls.</p>
+  </div>
+  <div class="feature-right">
+    <div class="feature-item reveal"><div class="fi-num">01</div><div class="fi-content"><div class="fi-title">Create your patient account</div><div class="fi-desc">Sign up in seconds. Your Patient ID and password are auto-generated and sent to your email.</div></div></div>
+    <div class="feature-item reveal reveal-delay-1"><div class="fi-num">02</div><div class="fi-content"><div class="fi-title">Describe your symptoms</div><div class="fi-desc">Write naturally. Our AI extracts clinical symptoms and matches you to the right specialist.</div></div></div>
+    <div class="feature-item reveal reveal-delay-2"><div class="fi-num">03</div><div class="fi-content"><div class="fi-title">Choose your slot & pay</div><div class="fi-desc">Pick a date and preferred morning or evening slot. Complete a secure payment to confirm.</div></div></div>
+    <div class="feature-item reveal reveal-delay-3"><div class="fi-num">04</div><div class="fi-content"><div class="fi-title">Attend and receive care</div><div class="fi-desc">Your doctor is briefed. Your slot is reserved. A confirmation lands in your inbox immediately.</div></div></div>
+  </div>
+</section>
+
+<!-- TRUST -->
+<section class="trust-section">
+  <div class="trust-left reveal">
+    <blockquote>The experience felt nothing like a hospital system. It felt like a concierge.</blockquote>
+    <div class="quote-attr"><div class="attr-line"></div><div class="attr-name">Patient, Cardiac Care · 2026</div></div>
+  </div>
+  <div class="trust-right reveal reveal-delay-1">
+    <div class="trust-card"><div class="tc-num">50+</div><div class="tc-label">Board-certified specialists across 18 disciplines</div></div>
+    <div class="trust-card"><div class="tc-num">98%</div><div class="tc-label">Patient satisfaction score, independently audited</div></div>
+    <div class="trust-card"><div class="tc-num">24/7</div><div class="tc-label">Platform availability — book any time, any day</div></div>
+    <div class="trust-card"><div class="tc-num">1 min</div><div class="tc-label">Average time from symptom to confirmed booking</div></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo">MediCare<sup>+</sup></div>
+      <p class="footer-tagline">Precision healthcare for the modern patient. Trusted, transparent, always available.</p>
+    </div>
+    <div class="footer-links">
+      <a href="admin.html" class="footer-link">Admin</a>
+      <a href="doctor.html" class="footer-link">Doctors</a>
+      <a href="tests-portal.html" class="footer-link">Tests</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2026 MediCare+ — All rights reserved</div>
+    <div class="footer-badge">Est. Jaipur · 2026</div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════ PATIENT PORTAL WIDGET ═══════════════════════ -->
+<div class="portal-widget">
+  <div class="portal-panel" id="portalPanel">
+
+    <!-- Header -->
+    <div class="portal-head" id="portalHead">
+      <img class="portal-avatar" src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=120&q=80" alt="Portal"/>
+      <div class="portal-head-info">
+        <div class="portal-head-name" id="headTitle">Patient Portal</div>
+        <div class="portal-head-sub" id="headSub">● MediCare+ · Secure Access</div>
+      </div>
+      <div class="portal-head-actions">
+        <button class="ph-btn hidden" id="logoutBtn" onclick="doLogout()">Sign Out</button>
+        <button class="ph-btn" onclick="closePortal()">✕</button>
+      </div>
+    </div>
+
+    <!-- Portal body -->
+    <div class="portal-body" id="portalBody">
+
+      <!-- AUTH SCREEN -->
+      <div id="authScreen" class="auth-screen">
+        <div class="auth-tabs">
+          <button class="auth-tab active" id="tabSignIn" onclick="switchTab('signin')">Sign In</button>
+          <button class="auth-tab" id="tabSignUp" onclick="switchTab('signup')">Sign Up</button>
+        </div>
+
+        <!-- SIGN IN -->
+        <div id="signInForm">
+          <div class="auth-title">Welcome back.</div>
+          <div class="auth-sub">Sign in with your Patient ID and password.</div>
+          <div class="f-group">
+            <div class="f-label">Patient ID</div>
+            <input class="f-input" id="siId" type="text" placeholder="MCR-XXXXXX" onkeydown="if(event.key==='Enter')doSignIn()"/>
+          </div>
+          <div class="f-group">
+            <div class="f-label">Password</div>
+            <input class="f-input" id="siPass" type="password" placeholder="Your password" onkeydown="if(event.key==='Enter')doSignIn()"/>
+          </div>
+          <div class="auth-error" id="siError"></div>
+          <button class="auth-btn" id="siBtnEl" onclick="doSignIn()">Sign In →</button>
+        </div>
+
+        <!-- SIGN UP -->
+        <div id="signUpForm" class="hidden">
+          <div class="auth-title">New patient?</div>
+          <div class="auth-sub">Create your account. Your Patient ID and password are auto-generated.</div>
+          <div class="f-group">
+            <div class="f-label">Full Name</div>
+            <input class="f-input" id="suName" type="text" placeholder="e.g. Priya Sharma"/>
+          </div>
+          <div class="f-row">
+            <div class="f-group">
+              <div class="f-label">Age</div>
+              <input class="f-input" id="suAge" type="number" placeholder="25" min="1" max="120"/>
+            </div>
+            <div class="f-group">
+              <div class="f-label">Phone</div>
+              <input class="f-input" id="suPhone" type="tel" placeholder="+91 98765 43210"/>
+            </div>
+          </div>
+          <div class="f-group">
+            <div class="f-label">Generated Credentials</div>
+            <div class="generated-badge" id="genBadge">
+              <div>
+                <div class="gen-label">Patient ID</div>
+                <div class="gen-value" id="genId">—</div>
+              </div>
+              <div style="text-align:right">
+                <div class="gen-label">Password</div>
+                <div class="gen-value" id="genPass">—</div>
+              </div>
+            </div>
+            <div style="font-size:0.72rem;color:var(--muted);font-weight:300;margin-top:0.35rem;">📋 Save these credentials — they'll also be emailed to you.</div>
+          </div>
+          <div class="f-group">
+            <div class="f-label">Email (for confirmation)</div>
+            <input class="f-input" id="suEmail" type="email" placeholder="priya@example.com" oninput="regenerateCreds()"/>
+          </div>
+          <div class="auth-error" id="suError"></div>
+          <div class="auth-success" id="suSuccess"></div>
+          <button class="auth-btn" id="suBtnEl" onclick="doSignUp()">Create Account →</button>
+        </div>
+      </div>
+
+      <!-- DASHBOARD SCREEN -->
+      <div id="dashScreen" class="hidden dashboard">
+        <div class="dash-welcome">
+          <div class="dash-welcome-name" id="dashName">Welcome back</div>
+          <div class="dash-welcome-sub" id="dashSub">Patient since 2026</div>
+          <div class="dash-creds">
+            <div class="dash-cred"><div class="dash-cred-label">Patient ID</div><div class="dash-cred-val" id="dashId">—</div></div>
+            <div class="dash-cred"><div class="dash-cred-label">Age</div><div class="dash-cred-val" id="dashAge">—</div></div>
+            <div class="dash-cred"><div class="dash-cred-label">Phone</div><div class="dash-cred-val" id="dashPhone">—</div></div>
+            <div class="dash-cred"><div class="dash-cred-label">Email</div><div class="dash-cred-val" id="dashEmail">—</div></div>
+          </div>
+        </div>
+
+        <div class="dash-section">
+          <div class="dash-sec-title">Previous Appointments</div>
+          <div id="apptList"><div class="no-appts">Loading appointments…</div></div>
+        </div>
+
+        <div class="dash-section">
+          <button class="action-btn" onclick="startBooking()">+ Book New Appointment</button>
+        </div>
+      </div>
+
+      <!-- BOOKING SCREEN -->
+      <div id="bookingScreen" class="hidden booking-screen">
+        <div style="display:flex;align-items:center;gap:0.75rem;margin-bottom:0.25rem;">
+          <button class="action-btn secondary" style="width:auto;padding:0.5rem 0.9rem;font-size:0.72rem;" onclick="showDash()">← Back</button>
+          <div class="booking-title">New Appointment</div>
+        </div>
+
+        <!-- Step 1: Date -->
+        <div id="bStep1">
+          <div class="booking-step-label">Step 1 of 4 — Choose date & slot</div>
+          <div class="f-group">
+            <div class="f-label">Preferred Date</div>
+            <input class="f-input" id="bDate" type="date"/>
+          </div>
+          <div class="f-group" style="margin-top:0.75rem">
+            <div class="f-label">Preferred Slot</div>
+            <div class="slot-choice">
+              <button class="slot-btn" id="slotMorning" onclick="selectSlot('morning')">🌅 Morning<br><span style="font-size:0.6rem;color:inherit;opacity:0.7">9:00 AM – 12:00 PM</span></button>
+              <button class="slot-btn" id="slotEvening" onclick="selectSlot('evening')">🌆 Evening<br><span style="font-size:0.6rem;color:inherit;opacity:0.7">2:00 PM – 6:00 PM</span></button>
+            </div>
+          </div>
+          <div class="auth-error" id="bErr1" style="margin-top:0.5rem"></div>
+          <button class="action-btn" style="margin-top:0.75rem" onclick="bNext1()">Next →</button>
+        </div>
+
+        <!-- Step 2: Problems + Disease Brief -->
+        <div id="bStep2" class="hidden">
+          <div class="booking-step-label">Step 2 of 4 — Describe your problems</div>
+          <div class="f-group">
+            <div class="f-label">What's bothering you?</div>
+            <textarea class="problems-input" id="bProblems" placeholder="e.g. I've been having sharp chest pain for 3 days, feeling breathless and very tired…"></textarea>
+          </div>
+          <div class="auth-error" id="bErr2" style="margin-top:0.25rem"></div>
+
+          <button class="action-btn" style="margin-top:0.5rem" id="bAnalyseBtn" onclick="bNext2()">
+            <span id="bAnalyzeLabel">Analyse Symptoms →</span>
+          </button>
+          <div id="aiAnalysing" class="ai-badge hidden">
+            <div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div>
+            <span>AI extracting symptoms…</span>
+          </div>
+        </div>
+
+        <!-- Step 3: Symptoms & Doctor Match -->
+        <div id="bStep3" class="hidden">
+          <div class="booking-step-label">Step 3 of 4 — Confirm specialist match</div>
+          <div class="f-group">
+            <div class="f-label">Extracted Symptoms</div>
+            <div class="symptoms-chips" id="symptomChips"></div>
+          </div>
+          <div id="matchResult" style="margin-top:0.85rem"></div>
+          <!-- ── Disease Brief Panel (shown after analysis) ── -->
+          <div id="diseaseBriefWrap"></div>
+          <div class="auth-error" id="bErr3" style="margin-top:0.5rem"></div>
+          <button class="action-btn" style="margin-top:0.75rem" id="bConfirmBtn" onclick="bNext3()">Proceed to Payment →</button>
+        </div>
+
+        <!-- Step 4: Success (post-payment) -->
+        <div id="bStep4" class="hidden success-screen">
+          <div class="success-icon">✓</div>
+          <div class="success-title">Appointment Confirmed</div>
+          <div class="success-sub" id="bSuccessSub">Your booking is confirmed and a confirmation has been sent to your email.</div>
+          <div class="success-ref" id="bSuccessRef"></div>
+          <button class="action-btn" style="margin-top:0.5rem" onclick="showDash()">Back to Dashboard</button>
+        </div>
+
+      </div>
+
+    </div><!-- end portal-body -->
+  </div><!-- end portal-panel -->
+
+  <button class="portal-fab" onclick="togglePortal()" title="Patient Portal">
+    <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=200&q=80" alt="Patient Portal"/>
+  </button>
+</div>
+
+<!-- Razorpay SDK -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, query, where, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAUCZZXpiOfZVgjmIrNAnn_LF0SOm1WwhA",
+  authDomain: "healthcare-scheduler-5b242.firebaseapp.com",
+  projectId: "healthcare-scheduler-5b242",
+  storageBucket: "healthcare-scheduler-5b242.firebasestorage.app",
+  messagingSenderId: "28196196047",
+  appId: "1:28196196047:web:262b5a5020cd37f64b31ba"
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+emailjs.init("nEbb9aPtYh8imCD0M");
+
+// ── Cursor ────────────────────────────────────────────────────────────────
+const dot = document.getElementById('cursorDot');
+const ring = document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+(function animRing(){rx+=(mx-rx)*0.12;ry+=(my-ry)*0.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing);})();
+
+// ── Nav scroll ────────────────────────────────────────────────────────────
+const navEl=document.getElementById('mainNav');
+window.addEventListener('scroll',()=>navEl.classList.toggle('scrolled',window.scrollY>60));
+
+// ── Reveal on scroll ──────────────────────────────────────────────────────
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');}),{threshold:0.12});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// ── State ─────────────────────────────────────────────────────────────────
+let currentUser = null;
+let bookingData = {};
+let selectedSlot = null;
+let extractedSymptoms = [];
+let matchedDoctor = null;
+
+const SYMPTOMS_LIST = ["Chest Pain","Palpitations","Shortness of Breath","Headache","Seizures","Loss of Balance","Back Pain","Joint Pain","Fracture","Abdominal Pain","Nausea","Vomiting","Cough","Wheezing","Rash","Itching","Acne","Excessive Thirst","Frequent Urination","Weight Gain / Loss","Blood in Urine","Foamy Urine","Kidney Pain","Blurred Vision","Eye Pain","Redness","Ear Pain","Sore Throat","Nasal Congestion","Anxiety","Depression","Insomnia","Irregular Periods","Pelvic Pain","Heavy Bleeding","Fever in Children","Cough & Cold","Growth Concerns","Unexplained Weight Loss","Lumps / Swellings","Persistent Fatigue","Painful Urination","Kidney Stones","Morning Stiffness","Muscle Pain","Anemia","Easy Bruising","Prolonged Bleeding","High Fever","Chills","Body Aches","Fever","Fatigue","Severe Chest Pain","Stroke Symptoms","Unconsciousness"];
+
+// ── Helpers ───────────────────────────────────────────────────────────────
+function genPatientId(){return 'MCR-'+Math.random().toString(36).substr(2,6).toUpperCase();}
+function genPassword(){const c='ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789@#';let p='';for(let i=0;i<9;i++)p+=c[Math.floor(Math.random()*c.length)];return p;}
+function showEl(id){document.getElementById(id).classList.remove('hidden');}
+function hideEl(id){document.getElementById(id).classList.add('hidden');}
+function setErr(id,msg){const el=document.getElementById(id);el.textContent=msg;el.classList.toggle('show',!!msg);}
+
+function dateStr(offset=0){const d=new Date();d.setDate(d.getDate()+offset);return d.toISOString().split('T')[0];}
+function buildSlots(from,to){const s=[],[fh,fm]=from.split(':').map(Number),[th,tm]=to.split(':').map(Number);let c=fh*60+fm,e=th*60+tm;while(c+30<=e){s.push(`${String(Math.floor(c/60)).padStart(2,'0')}:${String(c%60).padStart(2,'0')}`);c+=30;}return s;}
+function fmtTime(hhmm){const[h,m]=hhmm.split(':');const d=new Date();d.setHours(+h,+m);return d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'});}
+function fmtDate(yyyymmdd){return new Date(yyyymmdd+'T00:00:00').toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric'});}
+
+// ── Portal open/close ─────────────────────────────────────────────────────
+let portalOpen=false;
+window.openPortal=function(){portalOpen=true;document.getElementById('portalPanel').classList.add('open');};
+window.closePortal=function(){portalOpen=false;document.getElementById('portalPanel').classList.remove('open');};
+window.togglePortal=function(){portalOpen?window.closePortal():window.openPortal();};
+
+// ── Auth tabs ─────────────────────────────────────────────────────────────
+window.switchTab=function(tab){
+  document.getElementById('tabSignIn').classList.toggle('active',tab==='signin');
+  document.getElementById('tabSignUp').classList.toggle('active',tab==='signup');
+  document.getElementById('signInForm').classList.toggle('hidden',tab!=='signin');
+  document.getElementById('signUpForm').classList.toggle('hidden',tab!=='signup');
+  if(tab==='signup') regenerateCreds();
+};
+
+let _genId='',_genPass='';
+window.regenerateCreds=function(){
+  if(!_genId){_genId=genPatientId();_genPass=genPassword();}
+  document.getElementById('genId').textContent=_genId;
+  document.getElementById('genPass').textContent=_genPass;
+};
+_genId=genPatientId();_genPass=genPassword();
+document.getElementById('genId').textContent=_genId;
+document.getElementById('genPass').textContent=_genPass;
+
+// ── Sign Up ───────────────────────────────────────────────────────────────
+window.doSignUp=async function(){
+  const name=document.getElementById('suName').value.trim();
+  const age=document.getElementById('suAge').value.trim();
+  const phone=document.getElementById('suPhone').value.trim();
+  const email=document.getElementById('suEmail').value.trim();
+  setErr('suError','');
+  document.getElementById('suSuccess').classList.remove('show');
+  if(!name||name.length<2){setErr('suError','Please enter your full name.');return;}
+  if(!age||+age<1||+age>120){setErr('suError','Please enter a valid age.');return;}
+  if(!phone||phone.length<6){setErr('suError','Please enter a valid phone number.');return;}
+  if(!email||!email.includes('@')){setErr('suError','Please enter a valid email address.');return;}
+  const btn=document.getElementById('suBtnEl');
+  btn.disabled=true;btn.textContent='Creating account…';
+  try{
+    const existing=await getDocs(query(collection(db,'patients'),where('email','==',email.toLowerCase())));
+    if(!existing.empty){setErr('suError','An account with this email already exists. Please sign in.');btn.disabled=false;btn.textContent='Create Account →';return;}
+    const patientId=_genId, password=_genPass;
+    const createdAt=serverTimestamp();
+    await addDoc(collection(db,'patients'),{patientId,name,age:+age,phone,email:email.toLowerCase(),password,createdAt});
+    const succ=document.getElementById('suSuccess');
+    succ.textContent=`Account created! Your ID: ${patientId} · Password: ${password} — saved to email.`;
+    succ.classList.add('show');
+    btn.textContent='Created! Signing in…';
+    setTimeout(()=>{currentUser={patientId,name,age:+age,phone,email:email.toLowerCase(),password};showDashboard();},1500);
+  }catch(err){
+    console.error(err);setErr('suError','Something went wrong. Please try again.');
+    btn.disabled=false;btn.textContent='Create Account →';
+  }
+};
+
+// ── Sign In ───────────────────────────────────────────────────────────────
+window.doSignIn=async function(){
+  const id=document.getElementById('siId').value.trim().toUpperCase();
+  const pass=document.getElementById('siPass').value.trim();
+  setErr('siError','');
+  if(!id||!pass){setErr('siError','Please fill in both fields.');return;}
+  const btn=document.getElementById('siBtnEl');
+  btn.disabled=true;btn.textContent='Verifying…';
+  try{
+    const snap=await getDocs(query(collection(db,'patients'),where('patientId','==',id)));
+    if(snap.empty){setErr('siError','Patient ID not found.');btn.disabled=false;btn.textContent='Sign In →';return;}
+    const data=snap.docs[0].data();
+    if(data.password!==pass){setErr('siError','Incorrect password. Please try again.');btn.disabled=false;btn.textContent='Sign In →';return;}
+    currentUser={...data};showDashboard();
+  }catch(err){
+    console.error(err);setErr('siError','Error connecting. Try again.');
+    btn.disabled=false;btn.textContent='Sign In →';
+  }
+};
+
+// ── Show Dashboard ────────────────────────────────────────────────────────
+async function showDashboard(){
+  document.getElementById('headTitle').textContent=currentUser.name;
+  document.getElementById('headSub').textContent=`● Patient · ${currentUser.patientId}`;
+  showEl('logoutBtn');
+  hideEl('authScreen');hideEl('bookingScreen');
+  showEl('dashScreen');
+  document.getElementById('dashName').textContent=`Hello, ${currentUser.name.split(' ')[0]} 👋`;
+  document.getElementById('dashSub').textContent=`MediCare+ Patient · ID: ${currentUser.patientId}`;
+  document.getElementById('dashId').textContent=currentUser.patientId;
+  document.getElementById('dashAge').textContent=currentUser.age+' yrs';
+  document.getElementById('dashPhone').textContent=currentUser.phone;
+  document.getElementById('dashEmail').textContent=currentUser.email;
+  await loadAppointments();
+  const sib=document.getElementById('siBtnEl');if(sib){sib.disabled=false;sib.textContent='Sign In →';}
+  const sub=document.getElementById('suBtnEl');if(sub){sub.disabled=false;sub.textContent='Create Account →';}
+}
+
+window.showDash=function(){hideEl('bookingScreen');showEl('dashScreen');loadAppointments();};
+
+// ── Load Appointments ─────────────────────────────────────────────────────
+async function loadAppointments(){
+  const listEl=document.getElementById('apptList');
+  listEl.innerHTML='<div class="no-appts">Loading…</div>';
+  try{
+    const snap=await getDocs(query(collection(db,'appointments'),where('patientId','==',currentUser.patientId)));
+    if(snap.empty){listEl.innerHTML='<div class="no-appts">No appointments yet. Book your first one below.</div>';return;}
+    const appts=[];
+    snap.forEach(d=>appts.push({id:d.id,...d.data()}));
+    appts.sort((a,b)=>(b.createdAt?.seconds||0)-(a.createdAt?.seconds||0));
+    listEl.innerHTML=appts.map(a=>`
+      <div class="appt-card">
+        <div class="appt-card-top">
+          <div><div class="appt-doctor">${a.doctorName||'TBC'}</div><div class="appt-specialty">${a.speciality||'—'}</div></div>
+          <div class="appt-status ${(a.status||'pending').toLowerCase()}">${a.status||'Pending'}</div>
+        </div>
+        <div class="appt-meta"><span>📅 ${a.date?fmtDate(a.date):'TBC'}</span><span>🕐 ${a.time?fmtTime(a.time):'TBC'}</span></div>
+        <div class="appt-symptom">Symptoms: ${Array.isArray(a.symptoms)?a.symptoms.slice(0,3).join(', '):a.symptom||'—'}</div>
+      </div>
+    `).join('');
+  }catch(e){console.error(e);listEl.innerHTML='<div class="no-appts">Could not load appointments.</div>';}
+}
+
+// ── Logout ────────────────────────────────────────────────────────────────
+window.doLogout=function(){
+  currentUser=null;bookingData={};selectedSlot=null;extractedSymptoms=[];matchedDoctor=null;
+  hideEl('dashScreen');hideEl('bookingScreen');showEl('authScreen');hideEl('logoutBtn');
+  document.getElementById('headTitle').textContent='Patient Portal';
+  document.getElementById('headSub').textContent='● MediCare+ · Secure Access';
+  document.getElementById('siId').value='';document.getElementById('siPass').value='';
+  setErr('siError','');
+  _genId=genPatientId();_genPass=genPassword();
+  document.getElementById('genId').textContent=_genId;
+  document.getElementById('genPass').textContent=_genPass;
+};
+
+// ── Booking Flow ──────────────────────────────────────────────────────────
+window.startBooking=function(){
+  bookingData={};selectedSlot=null;extractedSymptoms=[];matchedDoctor=null;
+  hideEl('dashScreen');showEl('bookingScreen');
+  showEl('bStep1');hideEl('bStep2');hideEl('bStep3');hideEl('bStep4');
+  document.getElementById('diseaseBriefWrap').innerHTML='';
+  const tomorrow=new Date();tomorrow.setDate(tomorrow.getDate()+1);
+  document.getElementById('bDate').min=tomorrow.toISOString().split('T')[0];
+  document.getElementById('bDate').value='';
+  document.getElementById('slotMorning').classList.remove('selected');
+  document.getElementById('slotEvening').classList.remove('selected');
+  setErr('bErr1','');
+};
+
+window.selectSlot=function(slot){
+  selectedSlot=slot;
+  document.getElementById('slotMorning').classList.toggle('selected',slot==='morning');
+  document.getElementById('slotEvening').classList.toggle('selected',slot==='evening');
+};
+
+window.bNext1=function(){
+  const date=document.getElementById('bDate').value;
+  if(!date){setErr('bErr1','Please choose a date.');return;}
+  if(!selectedSlot){setErr('bErr1','Please choose a morning or evening slot.');return;}
+  setErr('bErr1','');
+  bookingData.date=date;bookingData.slotPref=selectedSlot;
+  hideEl('bStep1');showEl('bStep2');
+  setErr('bErr2','');
+  document.getElementById('bProblems').value='';
+};
+
+// ── DISEASE BRIEF ─────────────────────────────────────────────────────────
+const WORKER_URL="https://gemini-proxy.subhranilbaul2017.workers.dev";
+const GROQ_WORKER_URL="https://groqda.subhranilbaul2017.workers.dev";
+
+async function getDiseaseBriefData(text){
+  const prompt=`A patient says: "${text}"
+
+List 3 possible medical conditions this could indicate. For each, give:
+1. The condition name
+2. A likelihood percentage (integer, 10-90)
+3. One short sentence why it fits (max 15 words, use "may suggest" or "could indicate")
+4. Two lowercase tags (e.g. cardiac, respiratory, gastric, neurological, infectious, dermal)
+
+Reply ONLY in this exact JSON format, nothing else:
+{"conditions":[{"name":"Condition Name","likelihood":75,"brief":"May suggest X due to Y symptom.","tags":["tag1","tag2"]},{"name":"Condition 2","likelihood":55,"brief":"Could indicate X based on described symptoms.","tags":["tag1","tag2"]},{"name":"Condition 3","likelihood":35,"brief":"May suggest X given the reported symptoms.","tags":["tag1","tag2"]}]}`;
+
+  try{
+    const res = await fetch(GROQ_WORKER_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({prompt})
+    });
+    if(!res.ok) throw new Error(`Groq worker HTTP ${res.status}`);
+    const data = await res.json();
+
+    let raw = (data.text || data.response || data.content || '').trim();
+    console.log('[DiseaseBrief] Groq raw response:', raw);
+
+    // Strip markdown fences if present
+    raw = raw.replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/\s*```$/,'').trim();
+
+    // Extract JSON object from anywhere in the response
+    const objMatch = raw.match(/\{[\s\S]*"conditions"[\s\S]*\}/);
+    if(objMatch){
+      const parsed = JSON.parse(objMatch[0]);
+      if(Array.isArray(parsed.conditions) && parsed.conditions.length){
+        return parsed.conditions;
+      }
+    }
+
+    // Try parsing the whole string
+    const parsed = JSON.parse(raw);
+    if(Array.isArray(parsed.conditions) && parsed.conditions.length){
+      return parsed.conditions;
+    }
+    throw new Error('No valid conditions in response');
+
+  }catch(err){
+    console.error('[DiseaseBrief] Groq worker failed:', err);
+    return buildLocalFallback(text);
+  }
+}
+
+// Keyword-based fallback when API is unavailable
+function buildLocalFallback(text){
+  const t = text.toLowerCase();
+  const map = [
+    {kw:['chest pain','chest','heart','palpitation','breathless','shortness of breath'], name:'Cardiac Issue', tags:['cardiac','chest'], brief:'Chest discomfort and breathlessness may suggest a cardiac condition.'},
+    {kw:['headache','head','migraine','dizziness','dizzy','vision'], name:'Migraine / Tension Headache', tags:['neurological','head'], brief:'Recurring head pain could indicate migraine or tension headache.'},
+    {kw:['stomach','abdomen','abdominal','nausea','vomit','diarrhea','bloat','gastric'], name:'Gastrointestinal Disorder', tags:['gastric','digestive'], brief:'Stomach symptoms may suggest a gastrointestinal condition.'},
+    {kw:['cough','cold','fever','throat','sore','sneeze','congestion','flu'], name:'Upper Respiratory Infection', tags:['respiratory','infectious'], brief:'Fever and throat symptoms could indicate an upper respiratory infection.'},
+    {kw:['rash','itch','skin','acne','red','spot'], name:'Dermatological Condition', tags:['dermal','skin'], brief:'Skin changes may suggest a dermatological condition.'},
+    {kw:['joint','back','knee','bone','pain','ache','stiff'], name:'Musculoskeletal Pain', tags:['orthopaedic','pain'], brief:'Joint or muscle pain may suggest a musculoskeletal condition.'},
+    {kw:['anxiety','stress','depressed','mood','sleep','insomnia','tired','fatigue'], name:'Anxiety / Stress Disorder', tags:['mental health','fatigue'], brief:'Fatigue and mood symptoms may suggest anxiety or a stress-related disorder.'},
+    {kw:['urine','urination','kidney','bladder','blood in urine'], name:'Urinary Tract Issue', tags:['urological','kidney'], brief:'Urinary symptoms could indicate a UTI or kidney condition.'},
+  ];
+  const matches = map.filter(m => m.kw.some(k => t.includes(k)));
+  if(!matches.length){
+    return [{name:'General Medical Review', likelihood:70, brief:'Your described symptoms may require a general medical evaluation.', tags:['general','review']}];
+  }
+  return matches.slice(0,3).map((m,i)=>({
+    name: m.name,
+    likelihood: Math.max(30, 75 - i*15),
+    brief: m.brief,
+    tags: m.tags
+  }));
+}
+
+function renderDiseaseBrief(conditions){
+  const wrap=document.getElementById('diseaseBriefWrap');
+
+  if(!conditions || !conditions.length){
+    wrap.innerHTML=`
+      <div class="disease-brief-panel" style="margin-top:0.75rem">
+        <div class="disease-brief-head">
+          <div class="disease-brief-pulse" style="background:var(--muted)"></div>
+          <div class="disease-brief-head-text">AI Preliminary Assessment</div>
+          <div class="disease-brief-head-badge">unavailable</div>
+        </div>
+        <div style="padding:1rem;font-size:0.78rem;color:var(--muted);font-weight:300;font-style:italic;">
+          Could not generate a disease brief. Your doctor will assess you at the appointment.
+        </div>
+      </div>`;
+    return;
+  }
+
+  const cardsHTML=conditions.map((c,i)=>{
+    const pct=Math.max(8,Math.min(95,c.likelihood||50));
+    const tagsHTML=(c.tags||[]).map(t=>`<span class="disease-tag">${t}</span>`).join('');
+    return `
+      <div class="disease-card">
+        <div class="disease-rank">${i+1}</div>
+        <div class="disease-info">
+          <div class="disease-name">${c.name||'Unknown'}</div>
+          <div class="disease-desc">${c.brief||''}</div>
+          <div class="disease-tags">${tagsHTML}</div>
+        </div>
+        <div class="disease-likelihood">
+          <div class="likelihood-label">${pct}%</div>
+          <div class="likelihood-bar-wrap">
+            <div class="likelihood-bar" data-pct="${pct}" style="width:0"></div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  wrap.innerHTML=`
+    <div class="disease-brief-panel" style="margin-top:0.75rem">
+      <div class="disease-brief-head">
+        <div class="disease-brief-pulse"></div>
+        <div class="disease-brief-head-text">AI Preliminary Assessment</div>
+        <div class="disease-brief-head-badge">informational only</div>
+      </div>
+      <div class="disease-brief-disclaimer">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Not a diagnosis. Possible conditions based on your description — your doctor will confirm.
+      </div>
+      <div class="disease-cards-list">${cardsHTML}</div>
+      <div class="disease-brief-footer">
+        <span class="disease-brief-footer-note">Powered by Groq · Llama 3</span>
+      </div>
+    </div>`;
+
+  // Animate likelihood bars after paint
+  requestAnimationFrame(()=>{
+    wrap.querySelectorAll('.likelihood-bar').forEach(bar=>{
+      const pct=bar.getAttribute('data-pct');
+      setTimeout(()=>{bar.style.width=pct+'%';},80);
+    });
+  });
+}
+
+// ── AI symptom extraction ─────────────────────────────────────────────────
+async function extractSymptomsAI(problemText){
+  const prompt=`You are a medical AI. The patient says: "${problemText}"
+
+From this list of symptoms, identify which ones match what the patient is describing:
+${SYMPTOMS_LIST.join(', ')}
+
+Rules:
+1. Return ONLY a JSON array of matching symptom strings from the list above. Nothing else.
+2. Match symptoms that are explicitly mentioned OR strongly implied.
+3. Return at least 1 and at most 6 symptoms.
+4. Use the exact strings from the list.
+5. Example output: ["Chest Pain","Shortness of Breath","Fatigue"]
+Return only the JSON array:`;
+
+  try{
+    const res=await fetch(WORKER_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})});
+    const data=await res.json();
+    const text=(data.text||'').trim();
+    const match=text.match(/\[[\s\S]*\]/);
+    if(!match) throw new Error('No array found');
+    const arr=JSON.parse(match[0]);
+    return arr.filter(s=>SYMPTOMS_LIST.includes(s));
+  }catch(e){
+    console.error('AI symptom extraction failed:',e);
+    const lower=problemText.toLowerCase();
+    return SYMPTOMS_LIST.filter(s=>{
+      const kw=s.toLowerCase().split(/[\s\/]+/);
+      return kw.some(k=>k.length>3&&lower.includes(k));
+    }).slice(0,4);
+  }
+}
+
+window.bNext2=async function(){
+  const text=document.getElementById('bProblems').value.trim();
+  if(!text||text.length<10){setErr('bErr2','Please describe your symptoms in a bit more detail.');return;}
+  setErr('bErr2','');
+  bookingData.problemText=text;
+  const analyseBtn=document.getElementById('bAnalyseBtn');
+  analyseBtn.disabled=true;
+  document.getElementById('bAnalyzeLabel').textContent='Analysing…';
+  showEl('aiAnalysing');
+  try{
+    // Run symptom extraction + disease brief in parallel
+    const [symptoms, diseaseBriefResult] = await Promise.allSettled([
+      extractSymptomsAI(text),
+      getDiseaseBriefData(text)
+    ]);
+
+    extractedSymptoms = (symptoms.status==='fulfilled' && symptoms.value.length)
+      ? symptoms.value : ['Fatigue'];
+
+    document.getElementById('symptomChips').innerHTML=extractedSymptoms.map(s=>`<div class="s-chip">${s}</div>`).join('');
+
+    // Render disease brief panel in step 3
+    const conditions = diseaseBriefResult.status==='fulfilled' ? diseaseBriefResult.value : [];
+
+    const result=await findBestSlot(extractedSymptoms,bookingData.date,bookingData.slotPref);
+    const matchEl=document.getElementById('matchResult');
+    if(result){
+      matchedDoctor=result;
+      matchEl.innerHTML=`<div class="slot-preview-card">
+        <strong>Doctor:</strong> ${result.doctor.name}<br/>
+        <strong>Speciality:</strong> ${result.doctor.speciality||'—'}<br/>
+        <strong>Date:</strong> ${fmtDate(result.date)}<br/>
+        <strong>Time:</strong> ${fmtTime(result.time)}<br/>
+        <strong>Slot:</strong> ${bookingData.slotPref==='morning'?'Morning 🌅':'Evening 🌆'}
+      </div>`;
+    }else{
+      matchedDoctor=null;
+      matchEl.innerHTML=`<div class="slot-preview-card" style="border-color:rgba(184,146,74,0.3);">
+        <span style="color:var(--gold)">⚠ No specialist available for the selected slot.</span><br/>
+        We'll assign one and confirm via email.
+      </div>`;
+    }
+    hideEl('bStep2');showEl('bStep3');setErr('bErr3','');
+    // Render disease brief AFTER step 3 is visible so bar animations work
+    renderDiseaseBrief(conditions);
+  }catch(e){
+    console.error(e);setErr('bErr2','Could not analyse symptoms. Please try again.');
+  }finally{
+    analyseBtn.disabled=false;
+    document.getElementById('bAnalyzeLabel').textContent='Analyse Symptoms →';
+    hideEl('aiAnalysing');
+  }
+};
+
+// ── Find best slot ─────────────────────────────────────────────────────────
+async function findBestSlot(symptoms,preferredDate,slotPref){
+  const docSnap=await getDocs(collection(db,'doctors'));
+  const candidates=[];
+  docSnap.forEach(d=>{
+    const data=d.data();
+    const docSymptoms=Array.isArray(data.symptoms)?data.symptoms:[];
+    const match=symptoms.some(s=>docSymptoms.includes(s));
+    if(match) candidates.push({id:d.id,...data});
+  });
+  if(!candidates.length) return null;
+
+  const apptSnap=await getDocs(collection(db,'appointments'));
+  const takenMap={};
+  apptSnap.forEach(d=>{
+    const a=d.data();
+    if(!a.doctorName||!a.date||!a.time) return;
+    if(!takenMap[a.doctorName]) takenMap[a.doctorName]={};
+    if(!takenMap[a.doctorName][a.date]) takenMap[a.doctorName][a.date]=new Set();
+    takenMap[a.doctorName][a.date].add(a.time);
+  });
+
+  const morningRange={from:'09:00',to:'12:00'};
+  const eveningRange={from:'14:00',to:'18:00'};
+  const range=slotPref==='morning'?morningRange:eveningRange;
+  const slots=buildSlots(range.from,range.to);
+  const nowMins=new Date().getHours()*60+new Date().getMinutes();
+
+  for(const doc of candidates){
+    const taken=(takenMap[doc.name]||{})[preferredDate]||new Set();
+    for(const slot of slots){
+      if(preferredDate===dateStr(0)){
+        const[sh,sm]=slot.split(':').map(Number);
+        if(sh*60+sm<=nowMins+30) continue;
+      }
+      if(taken.has(slot)) continue;
+      return{doctor:doc,date:preferredDate,time:slot};
+    }
+  }
+  for(let day=1;day<=7;day++){
+    const tryDate=dateStr(day);
+    for(const doc of candidates){
+      const taken=(takenMap[doc.name]||{})[tryDate]||new Set();
+      for(const slot of slots){
+        if(!taken.has(slot)) return{doctor:doc,date:tryDate,time:slot};
+      }
+    }
+  }
+  return null;
+}
+
+// ── Razorpay Payment ──────────────────────────────────────────────────────
+const RAZORPAY_KEY = 'rzp_live_SRCE9sabTGkSGi';
+
+window.bNext3 = function() {
+  const apptDate    = matchedDoctor ? matchedDoctor.date          : bookingData.date;
+  const apptTime    = matchedDoctor ? matchedDoctor.time          : '09:00';
+  const doctorName  = matchedDoctor ? matchedDoctor.doctor.name   : 'Unassigned';
+  const speciality  = matchedDoctor ? matchedDoctor.doctor.speciality : '—';
+
+  const confirmBtn = document.getElementById('bConfirmBtn');
+  confirmBtn.disabled = true;
+  confirmBtn.textContent = 'Opening payment…';
+
+  const options = {
+    key: RAZORPAY_KEY,
+    amount: 100,
+    currency: 'INR',
+    name: 'MediCare+',
+    description: `Consultation — ${doctorName} (${speciality})`,
+    image: 'https://lh3.googleusercontent.com/pw/AP1GczN5NKp-gdC4g_ZU5tF_XD2rYIjna4kGRsxJjHpZ3puZ7t3UCNrDHc96-gcHWtdEfXqfdenTXg25JZbTt910OceNs6tR_hR7qIcZoySqHWhYs9e5YtuzCrwCTwaQOLR4syZWu2LgCA9TeiccyJDx5NVr=w407-h407-s-no-gm?authuser=0',
+    prefill: {name:currentUser.name,email:currentUser.email,contact:currentUser.phone||''},
+    notes: {patient_id:currentUser.patientId,doctor:doctorName,appointment:`${apptDate} ${apptTime}`},
+    theme: { color: '#1f3d2e' },
+    handler: async function(response) {
+      const razorpayPaymentId = response.razorpay_payment_id;
+      const refId = razorpayPaymentId || ('PAY-' + Date.now().toString(36).toUpperCase());
+      try {
+        await addDoc(collection(db, 'appointments'), {
+          patientId:currentUser.patientId,patientName:currentUser.name,name:currentUser.name,
+          email:currentUser.email,symptoms:extractedSymptoms,symptom:extractedSymptoms[0]||'—',
+          date:apptDate,time:apptTime,status:'Confirmed',doctorName,speciality,
+          slotPreference:bookingData.slotPref,paymentRef:refId,razorpayPaymentId,
+          amountPaid:100,createdAt:serverTimestamp()
+        });
+        try {
+          await emailjs.send('default_service','template_smasli7',{
+            to_name:currentUser.name,name:currentUser.name,patient_name:currentUser.name,
+            from_name:'MediCare+',to_email:currentUser.email,email:currentUser.email,
+            user_email:currentUser.email,reply_to:currentUser.email,doctor:doctorName,
+            doctor_name:doctorName,speciality,date:fmtDate(apptDate),time:fmtTime(apptTime),
+            symptom:extractedSymptoms.join(', ')
+          });
+        } catch(e){console.warn('Patient email failed:',e);}
+        const doctorEmail=matchedDoctor?.doctor?.personalEmail||null;
+        if(doctorEmail){
+          try{
+            await emailjs.send('default_service','template_936u3an',{
+              to_name:doctorName,to_email:doctorEmail,from_name:'MediCare+',doctor_name:doctorName,
+              patient_name:currentUser.name,patient_id:currentUser.patientId,patient_age:currentUser.age,
+              patient_phone:currentUser.phone,symptoms:extractedSymptoms.join(', '),
+              date:fmtDate(apptDate),time:fmtTime(apptTime),speciality
+            },'b4DyfMQc57sZlO_u1');
+          }catch(e){console.warn('Doctor email failed:',e);}
+        }
+        document.getElementById('bSuccessSub').textContent=
+          `Confirmed for ${fmtDate(apptDate)} at ${fmtTime(apptTime)} with ${doctorName}. Check ${currentUser.email} for details.`;
+        document.getElementById('bSuccessRef').textContent=`Razorpay ID: ${refId} · ₹1 paid`;
+        hideEl('bStep3');showEl('bStep4');
+      }catch(err){
+        console.error(err);
+        alert('Payment was received but booking could not be saved. Please contact support with your payment ID: '+refId);
+      }
+    },
+    modal:{
+      ondismiss:function(){confirmBtn.disabled=false;confirmBtn.textContent='Proceed to Payment →';}
+    }
+  };
+
+  try{
+    const rzp=new window.Razorpay(options);
+    rzp.on('payment.failed',function(response){
+      console.error('Razorpay payment failed:',response.error);
+      alert(`Payment failed: ${response.error.description}. Please try again.`);
+      confirmBtn.disabled=false;confirmBtn.textContent='Proceed to Payment →';
+    });
+    rzp.open();
+  }catch(e){
+    console.error('Razorpay init error:',e);
+    alert('Could not open payment gateway. Please check your Razorpay key and try again.');
+    confirmBtn.disabled=false;confirmBtn.textContent='Proceed to Payment →';
+  }
+};
+</script>
+</body>
+</html>

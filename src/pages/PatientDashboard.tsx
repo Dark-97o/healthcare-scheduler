@@ -1,0 +1,160 @@
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import { useAuth } from '../contexts/AuthContext';
+import { db } from '../lib/firebase';
+import { collection, query, where, getDocs, doc, updateDoc } from 'firebase/firestore';
+import { Calendar, Clock, XCircle, RefreshCw, Activity, LogOut } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
+export default function PatientDashboard() {
+  const { userProfile, user, signOut } = useAuth();
+  const navigate = useNavigate();
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/');
+      return;
+    }
+
+    const fetchAppointments = async () => {
+      try {
+        const q = query(
+          collection(db, 'appointments'),
+          where('patientId', '==', user.uid)
+        );
+        const snapshot = await getDocs(q);
+        const apps = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setAppointments(apps);
+      } catch (err) {
+        console.error("Failed to fetch appointments", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAppointments();
+  }, [user, navigate]);
+
+  const handleCancel = async (appId: string, appDate: string, appTime: string) => {
+    if (!confirm("Are you sure you want to cancel this appointment? Refunds are processed via Razorpay based on the 24-hr policy.")) return;
+    
+    // Calculate 24 hr difference
+    const appointmentDateTime = new Date(`${appDate}T${appTime}`);
+    const now = new Date();
+    const diffHours = (appointmentDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+    
+    const refundPercentage = diffHours > 24 ? 80 : 30;
+    
+    try {
+      await updateDoc(doc(db, 'appointments', appId), {
+        status: 'cancelled',
+        refundStatus: `Initiated (${refundPercentage}%)`
+      });
+      alert(`Appointment cancelled. A ${refundPercentage}% Razorpay refund has been initiated.`);
+      // Update local state
+      setAppointments(prev => prev.map(a => a.id === appId ? { ...a, status: 'cancelled', refundStatus: `Initiated (${refundPercentage}%)` } : a));
+    } catch (error) {
+      console.error("Cancel failed", error);
+      alert("Failed to cancel appointment.");
+    }
+  };
+
+  const handleRebook = (doctorId: string) => {
+    navigate(`/book-appointment?rebookDoc=${doctorId}`);
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/');
+  };
+
+  if (loading) return <div className="min-h-screen bg-(--color-primary-base) text-white flex items-center justify-center font-mono animate-pulse tracking-widest text-sm uppercase">Loading Secure Portal...</div>;
+
+  const upcoming = appointments.filter(a => a.status === 'upcoming');
+  const past = appointments.filter(a => a.status !== 'upcoming');
+
+  return (
+    <div className="min-h-screen bg-(--color-primary-base) text-white py-24 px-8 md:px-16 w-full">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-12 gap-6">
+          <div>
+            <h1 className="text-4xl font-serif font-black mb-2">Patient <span className="text-gradient">Portal</span></h1>
+            <p className="text-gray-400 font-light">Welcome back, {userProfile?.name || 'Patient'}</p>
+          </div>
+          <div className="flex gap-4">
+            <button onClick={() => navigate('/book-appointment')} className="bg-(--color-accent-blue) text-black px-6 py-3 rounded font-bold uppercase tracking-widest text-xs hover:bg-white transition-colors cursor-pointer shadow-[0_0_20px_rgba(0,229,255,0.3)]">
+              Book New Appointment
+            </button>
+            <button onClick={handleSignOut} className="px-5 py-3 rounded border border-white/10 hover:bg-white/5 transition-colors cursor-pointer text-xs uppercase tracking-widest font-semibold flex items-center gap-2 text-gray-300">
+              <LogOut size={16} /> Sign Out
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          {/* Upcoming */}
+          <div>
+            <h2 className="text-2xl font-serif mb-6 flex items-center gap-3"><Activity className="text-(--color-accent-blue)"/> Upcoming Appointments</h2>
+            <div className="flex flex-col gap-4">
+              {upcoming.length === 0 ? (
+                <div className="p-8 border border-white/5 rounded-xl text-center bg-white/5 glass-panel">
+                  <p className="text-gray-500 font-mono text-sm">No scheduled appointments.</p>
+                </div>
+              ) : (
+                upcoming.map(app => (
+                  <motion.div key={app.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-panel p-6 rounded-xl border border-(--color-accent-blue)/20 flex justify-between items-center group hover:bg-white/5 transition-colors">
+                    <div>
+                      <h3 className="font-serif text-xl font-bold text-white">{app.doctorName}</h3>
+                      <p className="text-sm text-(--color-accent-blue) tracking-wider font-mono mb-2 uppercase">{app.specialization}</p>
+                      <div className="flex gap-4 text-xs text-gray-400">
+                        <span className="flex items-center gap-1"><Calendar size={14}/> {app.date}</span>
+                        <span className="flex items-center gap-1"><Clock size={14}/> {app.time}</span>
+                      </div>
+                    </div>
+                    <button 
+                      onClick={() => handleCancel(app.id, app.date, app.time)}
+                      className="text-red-400 hover:text-red-300 flex flex-col items-center justify-center gap-2 text-xs uppercase tracking-widest font-bold opacity-70 group-hover:opacity-100 transition-opacity cursor-pointer px-4 py-2 hover:bg-red-500/10 rounded-lg"
+                    >
+                      <XCircle size={24} /> Cancel
+                    </button>
+                  </motion.div>
+                ))
+              )}
+            </div>
+          </div>
+
+          {/* Past */}
+          <div>
+            <h2 className="text-2xl font-serif mb-6 flex items-center gap-3 text-gray-400"><Clock className="text-gray-500"/> History & Records</h2>
+            <div className="flex flex-col gap-4">
+              {past.length === 0 ? (
+                <div className="p-8 border border-white/5 rounded-xl text-center bg-transparent">
+                  <p className="text-gray-500 font-mono text-sm">No past records found.</p>
+                </div>
+              ) : (
+                past.map(app => (
+                  <motion.div key={app.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="glass-panel p-6 rounded-xl border border-white/5 flex justify-between items-center opacity-70 hover:opacity-100 transition-opacity">
+                    <div>
+                      <h3 className="font-serif text-xl font-bold">{app.doctorName}</h3>
+                      <p className="text-xs text-gray-500 mb-2 font-mono">{app.date} • <span className={app.status === 'cancelled' ? 'text-red-400' : 'text-green-400'}>{app.status.toUpperCase()}</span></p>
+                      {app.refundStatus && <p className="text-xs text-orange-400 font-mono bg-orange-500/10 px-2 py-1 rounded inline-block mt-1">Refund: {app.refundStatus}</p>}
+                    </div>
+                    {app.status === 'concluded' && (
+                      <button 
+                        onClick={() => handleRebook(app.doctorId)}
+                        className="text-(--color-accent-blue) hover:text-white flex flex-col items-center gap-1 justify-center text-xs uppercase tracking-widest font-bold cursor-pointer hover:bg-white/10 px-4 py-2 rounded-lg transition-colors"
+                      >
+                        <RefreshCw size={20} /> Rebook
+                      </button>
+                    )}
+                  </motion.div>
+                ))
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

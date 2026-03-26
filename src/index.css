@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary-base: #030014;
+  --color-primary-surface: #0a0a2a;
+  --color-primary-highlight: #121a30;
+  
+  --color-accent-blue: #00e5ff;
+  --color-accent-purple: #7c3aed;
+  --color-accent-blue-dim: rgba(0, 229, 255, 0.15);
+  --color-accent-purple-dim: rgba(124, 58, 237, 0.15);
+  
+  --color-text-main: #f8fafc;
+  --color-text-muted: #94a3b8;
+  
+  --font-sans: "Inter", sans-serif;
+  --font-serif: "Outfit", sans-serif; /* Using Outfit for a modern tech feel instead of traditional serif */
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    background-color: var(--color-primary-base);
+    color: var(--color-text-main);
+    font-family: var(--font-sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(135deg, var(--color-accent-blue), var(--color-accent-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  .glass-nav {
+    background: rgba(6, 9, 19, 0.7);
+    backdrop-filter: blur(20px) saturate(1.5);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  
+  .glass-panel {
+    background: rgba(10, 15, 29, 0.6);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  }
+
+  .glow-button {
+    background: linear-gradient(135deg, var(--color-accent-blue), var(--color-accent-purple));
+    box-shadow: 0 0 20px var(--color-accent-purple-dim), 0 0 40px var(--color-accent-blue-dim);
+    transition: all 0.3s ease;
+  }
+  
+  .glow-button:hover {
+    box-shadow: 0 0 30px rgba(124, 58, 237, 0.4), 0 0 60px rgba(0, 229, 255, 0.4);
+    transform: translateY(-2px);
+  }
+
+  @keyframes marquee {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); } /* Animates half the duplicated width */
+  }
+
+  .animate-marquee {
+    animation: marquee 30s linear infinite;
+  }
+}
